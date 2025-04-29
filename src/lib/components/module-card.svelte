@@ -1,0 +1,72 @@
+<script lang="ts">
+	import { dataService } from '$lib/services';
+	import type { Module } from '$lib/services/models';
+	import { Circle2 } from 'svelte-loading-spinners';
+
+	let { module }: { module: Module } = $props();
+
+	async function getModuleImageUrl() {
+		if (!module?.coverImageUUID) {
+			return '/default-module.png';
+		}
+		try {
+			return await dataService.getImageUrl(module.coverImageUUID);
+		} catch (error) {
+			console.error('Error fetching image URL:', error);
+			return '/default-module.png';
+		}
+	}
+
+	async function getUserInfo() {
+		const user = await dataService.getUserInfo(module.createdBy!);
+		console.log('User info:', user);
+		return user;
+	}
+
+	getUserInfo();
+</script>
+
+<div
+	class="max-w-sm rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800"
+>
+	<!-- <img class="rounded-t-lg" src="{getModuleImageUrl()}" alt="" /> -->
+	<div class="flex items-center justify-center">
+		{#await getModuleImageUrl()}
+			<Circle2 size="50" />
+		{:then imageUrl}
+			<img class="h-48 rounded-t-lg object-cover" src={imageUrl} alt="" />
+		{:catch error}
+			<Circle2 size="50" />
+		{/await}
+	</div>
+
+	<div class="p-5">
+		<a href="/modules/{module?.id}">
+			<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+				{module.name}
+			</h5>
+		</a>
+		<p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{module.description}</p>
+		<a
+			href="/modules/{module?.id}"
+			class="inline-flex items-center rounded-lg bg-blue-700 px-3 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+		>
+			Open
+			<svg
+				class="ms-2 h-3.5 w-3.5 rtl:rotate-180"
+				aria-hidden="true"
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 14 10"
+			>
+				<path
+					stroke="currentColor"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M1 5h12m0 0L9 1m4 4L9 9"
+				/>
+			</svg>
+		</a>
+	</div>
+</div>
