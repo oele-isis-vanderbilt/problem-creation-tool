@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@layer base {
+	button:not(:disabled),
+	[role='button']:not(:disabled) {
+		cursor: pointer;
+	}
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+.tooltip {
+	@apply invisible absolute;
+}
+
+.has-tooltip:hover .tooltip {
+	@apply visible z-50;
+}
