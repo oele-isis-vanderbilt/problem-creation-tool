@@ -1,37 +1,27 @@
 <script lang="ts">
-	import { dataService } from '$lib/services';
 	import type { Module } from '$lib/services/models';
 	import { Circle2 } from 'svelte-loading-spinners';
+	import HeroIconsTrash from 'virtual:icons/heroicons-solid/trash';
 
-	let { module }: { module: Module } = $props();
-
-	async function getModuleImageUrl() {
-		if (!module?.coverImageUUID) {
-			return '/default-module.png';
-		}
-		try {
-			return await dataService.getImageUrl(module.coverImageUUID);
-		} catch (error) {
-			console.error('Error fetching image URL:', error);
-			return '/default-module.png';
-		}
-	}
-
-	async function getUserInfo() {
-		const user = await dataService.getUserInfo(module.createdBy!);
-		console.log('User info:', user);
-		return user;
-	}
-
-	getUserInfo();
+	let {
+		module,
+		onModuleDelete,
+		coverImageUrl
+	}: {
+		module: Module;
+		onModuleDelete: (uuid: string) => void;
+		coverImageUrl: Promise<string>;
+	} = $props();
 </script>
 
 <div
 	class="max-w-sm rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800"
 >
 	<!-- <img class="rounded-t-lg" src="{getModuleImageUrl()}" alt="" /> -->
-	<div class="flex items-center justify-center">
-		{#await getModuleImageUrl()}
+	<div
+		class="flex items-center justify-center rounded-lg border-1 border-gray-200 dark:border-gray-500"
+	>
+		{#await coverImageUrl}
 			<Circle2 size="50" />
 		{:then imageUrl}
 			<img class="h-48 rounded-t-lg object-cover" src={imageUrl} alt="" />
@@ -68,5 +58,12 @@
 				/>
 			</svg>
 		</a>
+		<button
+			onclick={() => onModuleDelete(module.id)}
+			class="inline-flex items-center justify-center gap-1 rounded-lg bg-red-700 px-3 py-2 text-center text-sm font-medium text-white hover:bg-red-800 focus:ring-4 focus:ring-red-300 focus:outline-none dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+		>
+			Delete
+			<HeroIconsTrash />
+		</button>
 	</div>
 </div>

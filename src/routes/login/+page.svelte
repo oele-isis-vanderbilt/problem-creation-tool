@@ -1,14 +1,14 @@
 <script lang="ts">
 	import GoogleIcon from 'virtual:icons/logos/google-icon';
 	import MicrosoftIcon from 'virtual:icons/logos/microsoft-icon';
-	import { dataService } from '$lib/services';
 	import { onMount } from 'svelte';
 	import { isAnonUser } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { getContext } from 'svelte';
+	import { login } from '$lib/services/knowLearing.svelte';
 
 	async function handleLogin(provider: 'google' | 'microsoft') {
-		dataService.login(provider);
+		login(provider);
 	}
 
 	onMount(async () => {

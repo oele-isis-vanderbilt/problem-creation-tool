@@ -1,0 +1,154 @@
+{
+	"concepts": [
+		{
+			"name": "addition",
+			"description": "Combining two or more numbers to find the total or sum.",
+			"relatedConcepts": ["subtraction", "multiplication", "place value"],
+			"aiPrompt": "Explain how to add two numbers together using simple examples."
+		},
+		{
+			"name": "subtraction",
+			"description": "Finding the difference between two numbers by taking one away from another.",
+			"relatedConcepts": ["addition", "comparison", "number line"],
+			"aiPrompt": "Describe subtraction using a real-life example."
+		},
+		{
+			"name": "multiplication",
+			"description": "Repeated addition of the same number a certain number of times.",
+			"relatedConcepts": ["division", "arrays", "skip counting"],
+			"aiPrompt": "Explain multiplication in simple terms with an example."
+		},
+		{
+			"name": "division",
+			"description": "Splitting a number into equal parts or groups.",
+			"relatedConcepts": ["multiplication", "fractions", "remainder"],
+			"aiPrompt": "Describe division using a simple word problem."
+		},
+		{
+			"name": "place value",
+			"description": "Understanding the value of each digit in a number based on its position.",
+			"relatedConcepts": ["addition", "number sense", "rounding"],
+			"aiPrompt": "Explain what place value means with an example number."
+		},
+		{
+			"name": "fractions",
+			"description": "A way of showing part of a whole, written as one number over another.",
+			"relatedConcepts": ["division", "equivalent fractions", "decimals"],
+			"aiPrompt": "Introduce the idea of fractions using a simple visual."
+		},
+		{
+			"name": "equivalent fractions",
+			"description": "Different fractions that represent the same value or part of a whole.",
+			"relatedConcepts": ["fractions", "simplifying", "common denominators"],
+			"aiPrompt": "Explain what equivalent fractions are using a pizza example."
+		},
+		{
+			"name": "area",
+			"description": "The amount of space a shape covers, measured in square units.",
+			"relatedConcepts": ["perimeter", "multiplication", "geometry"],
+			"aiPrompt": "Describe how to find the area of a rectangle."
+		},
+		{
+			"name": "perimeter",
+			"description": "The total distance around the edges of a shape.",
+			"relatedConcepts": ["area", "measurement", "addition"],
+			"aiPrompt": "Explain how to calculate the perimeter of a square."
+		},
+		{
+			"name": "geometry",
+			"description": "The study of shapes, sizes, and the properties of space.",
+			"relatedConcepts": ["angles", "area", "perimeter"],
+			"aiPrompt": "Introduce basic 2D shapes and their names."
+		},
+		{
+			"name": "time",
+			"description": "Measuring and telling time using clocks and calendars.",
+			"relatedConcepts": ["elapsed time", "measurement", "number line"],
+			"aiPrompt": "Explain how to read an analog clock."
+		},
+		{
+			"name": "measurement",
+			"description": "Finding the size, length, or amount of something using standard units.",
+			"relatedConcepts": ["time", "area", "perimeter"],
+			"aiPrompt": "Describe how to measure the length of an object."
+		},
+		{
+			"name": "rounding",
+			"description": "Changing a number to a nearby value that is easier to work with.",
+			"relatedConcepts": ["place value", "estimation", "number sense"],
+			"aiPrompt": "Explain how to round a number to the nearest ten."
+		},
+		{
+			"name": "estimation",
+			"description": "A quick way of finding a value that is close enough to the right answer.",
+			"relatedConcepts": ["rounding", "addition", "multiplication"],
+			"aiPrompt": "Show how to estimate a sum using rounding."
+		},
+		{
+			"name": "patterns",
+			"description": "Repeating sequences of numbers, shapes, or colors that follow a rule.",
+			"relatedConcepts": ["skip counting", "multiplication", "sequences"],
+			"aiPrompt": "Give an example of a number pattern and ask what comes next."
+		},
+		{
+			"name": "arrays",
+			"description": "A way to show multiplication using rows and columns of objects.",
+			"relatedConcepts": ["multiplication", "skip counting", "area"],
+			"aiPrompt": "Explain what an array is in math using dots or objects."
+		},
+		{
+			"name": "skip counting",
+			"description": "Counting forward by numbers other than 1, like 2s, 5s, or 10s.",
+			"relatedConcepts": ["multiplication", "patterns", "arrays"],
+			"aiPrompt": "Show how skip counting by 5 works up to 50."
+		},
+		{
+			"name": "angles",
+			"description": "A figure formed by two rays meeting at a point, measured in degrees.",
+			"relatedConcepts": ["geometry", "shapes", "measurement"],
+			"aiPrompt": "Introduce right, acute, and obtuse angles with simple drawings."
+		},
+		{
+			"name": "remainder",
+			"description": "The amount left over after dividing a number that doesn't divide evenly.",
+			"relatedConcepts": ["division", "multiplication", "fractions"],
+			"aiPrompt": "Explain what a remainder is with a simple division problem."
+		},
+		{
+			"name": "simplifying",
+			"description": "Making a fraction as simple as possible by dividing the top and bottom by the same number.",
+			"relatedConcepts": ["fractions", "equivalent fractions", "common denominators"],
+			"aiPrompt": "Explain how to simplify 4/8 to its simplest form."
+		},
+		{
+			"name": "common denominators",
+			"description": "A shared bottom number in two or more fractions, used to compare or add them.",
+			"relatedConcepts": ["fractions", "equivalent fractions", "simplifying"],
+			"aiPrompt": "Describe how to find a common denominator for 1/2 and 1/3."
+		},
+		{
+			"name": "decimals",
+			"description": "A way of writing numbers that are less than one using a dot.",
+			"relatedConcepts": ["fractions", "place value", "money"],
+			"aiPrompt": "Explain what a decimal is and how it's like a fraction."
+		},
+		{
+			"name": "number sense",
+			"description": "Understanding numbers and how they relate to each other, including size, order, and patterns.",
+			"relatedConcepts": ["place value", "estimation", "rounding"],
+			"aiPrompt": "Describe what number sense means and give a simple example."
+		},
+		{
+			"name": "comparison",
+			"description": "Looking at two numbers or amounts to decide which is bigger, smaller, or if they are equal.",
+			"relatedConcepts": ["subtraction", "number sense", "place value"],
+			"aiPrompt": "Show how to compare 456 and 465 using place value."
+		},
+		{
+			"name": "elapsed time",
+			"description": "The amount of time that passes from the start to the end of an event.",
+			"relatedConcepts": ["time", "measurement", "number line"],
+			"aiPrompt": "Explain how to figure out elapsed time between 2:00 PM and 3:30 PM."
+		}
+	]
+}

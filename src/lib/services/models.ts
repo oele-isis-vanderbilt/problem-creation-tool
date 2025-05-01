@@ -5,6 +5,14 @@ export interface AppUser {
 	provider: string;
 }
 
+export interface Concept {
+	id: string;
+	name: string;
+	description: string;
+	relatedConcepts?: string[];
+	aiPrompt: string;
+}
+
 export interface Module {
 	id: string;
 	name: string;

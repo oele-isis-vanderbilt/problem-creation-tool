@@ -3,28 +3,19 @@
 	import Modal from './modal.svelte';
 	import type { Module } from '$lib/services/models';
 	import { onMount } from 'svelte';
-	import { dataService } from '$lib/services';
 	import { getContext } from 'svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
+	import { addModule, uploadImage, uuid } from '$lib/services/knowLearing.svelte';
 
 	let open = $state(false);
 	let submissionErrors = $state<string[]>([]);
 	let imageFiles = $state<FileList | null | undefined>(null);
 	const env = getContext<AgentEnvironment>('appEnv');
 
-	let currentModule = $state<Module>({
-		id: '',
-		name: '',
-		description: '',
-		coverImageUUID: '',
-		createdAt: new Date().toISOString(),
-		updatedAt: new Date().toDateString(),
-		createdBy: '',
-		problems: []
-	});
+	let currentModule = $state<Module>(emptyModule());
 
-	onMount(() => {
-		currentModule = {
+	function emptyModule() {
+		return {
 			id: '',
 			name: '',
 			description: '',
@@ -34,6 +25,10 @@
 			createdBy: '',
 			problems: []
 		};
+	}
+
+	onMount(() => {
+		currentModule = emptyModule();
 		submissionErrors = [];
 	});
 
@@ -54,7 +49,7 @@
 		// Upload Image if provided
 		if (imageFiles && imageFiles[0]) {
 			try {
-				const moduleImageUUID = await dataService.uploadImage(imageFiles[0]);
+				const moduleImageUUID = await uploadImage(imageFiles[0]);
 				currentModule.coverImageUUID = moduleImageUUID;
 			} catch (error) {
 				console.error('Error uploading image:', error);
@@ -66,9 +61,9 @@
 		currentModule.createdBy = env.auth.user;
 		currentModule.createdAt = new Date().toISOString();
 		currentModule.updatedAt = new Date().toISOString();
-		currentModule.id = dataService.uuid();
+		currentModule.id = uuid();
 
-		await dataService.addModule(currentModule);
+		addModule(currentModule);
 		return true;
 	};
 </script>
@@ -125,9 +120,13 @@
 			<button
 				class="flex flex-row items-center gap-2 rounded-lg border-2 border-green-200 bg-green-200 p-2 text-black dark:border-green-400 dark:bg-green-400 dark:text-slate-800"
 				onclick={async () => {
-					console.log('clicked');
 					const success = await validateAndSubmit();
-					open = false;
+					if (success) {
+						// Reset the form
+						currentModule = emptyModule();
+						submissionErrors = [];
+						open = false;
+					}
 				}}
 			>
 				Add Module

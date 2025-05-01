@@ -25,7 +25,7 @@
 			style="z-index: 1000;"
 		>
 			<div class="flex h-full w-full flex-row items-center justify-between p-2">
-				<h2 class="text-xl font-bold text-gray-900 dark:text-gray-300">{title}</h2>
+				<h2 class="text-xl font-bold text-gray-900 dark:text-white">{title}</h2>
 				<button
 					class="rounded-lg border-2 border-gray-200 p-1 text-sm text-black dark:text-gray-300"
 					onclick={() => onClose()}

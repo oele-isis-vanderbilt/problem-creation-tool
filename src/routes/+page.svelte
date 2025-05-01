@@ -1,14 +1,27 @@
 <script lang="ts">
 	import AddModuleButton from '$lib/components/add-module-button.svelte';
-	import { onMount } from 'svelte';
-	import type { PageData } from './$types';
+	import { onMount, tick } from 'svelte';
 	import ModuleCard from '$lib/components/module-card.svelte';
+	import { removeModule, getModulesState, getImageUrl } from '$lib/services/knowLearing.svelte';
 
-	const { data }: PageData = $props();
+	let modules = getModulesState();
 
-	onMount(() => {
-		// Initialize any necessary state or perform actions on mount
-		console.log('Modules state:', data.modulesState);
+	async function getModuleImageUrl(uuid: string | undefined) {
+		if (!uuid) {
+			return '/default-module.png';
+		}
+		try {
+			return await getImageUrl(uuid);
+		} catch (error) {
+			console.error('Error fetching image URL:', error);
+			return '/default-module.png';
+		}
+	}
+
+	$effect(() => {
+		// currentModules = dataService.modules;
+		// console.log('Modules updated:', currentModules);
+		console.log('Modules updated:', modules);
 	});
 </script>
 
@@ -18,9 +31,12 @@
 		<AddModuleButton />
 	</div>
 	<div class="grid grid-cols-1 gap-5 md:grid-cols-4">
-		{#each data.modulesState?.modules || [] as module}
-			<ModuleCard {module} />
+		{#each Object.values(modules() || {}) as module}
+			<ModuleCard
+				{module}
+				onModuleDelete={removeModule}
+				coverImageUrl={getModuleImageUrl(module?.coverImageUUID)}
+			/>
 		{/each}
 	</div>
-	<!-- <ConceptsButton/> -->
 </div>

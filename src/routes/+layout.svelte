@@ -1,32 +1,29 @@
 <script lang="ts">
 	import '../app.css';
-	import { onMount } from 'svelte';
+	import { onMount, setContext } from 'svelte';
 	import { goto } from '$app/navigation';
 
 	import { ModeWatcher } from 'mode-watcher';
 	import { isAnonUser } from '$lib/utils';
 	import AuthButton from '$lib/components/auth-button.svelte';
-	import { setContext } from 'svelte';
 
 	import type { LayoutProps } from './$types';
 	import DarkModeToggle from '$lib/components/dark-mode-toggle.svelte';
-	import { dataService } from '$lib/services';
+	import { logout } from '$lib/services/knowLearing.svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
 
 	let { data, children }: LayoutProps = $props();
+	let env = $state<AgentEnvironment | null>(data.env);
+	setContext('appEnv', env);
 
-	let env = data.env;
-	setContext<AgentEnvironment>('appEnv', data.env);
-
-	onMount(() => {
-		if (isAnonUser(data.env.auth)) {
-			console.log('Redirecting anonymous user...');
+	onMount(async () => {
+		if (isAnonUser(env.auth)) {
 			goto('/login');
 		}
 	});
 
 	async function handleLogout() {
-		await dataService.logout();
+		await logout();
 	}
 </script>
 
@@ -41,7 +38,13 @@
 			</button>
 		</div>
 		<div class="flex h-16 items-center justify-end gap-2">
-			<AuthButton user={env.auth} onLogin={() => goto('/login')} onLogout={() => handleLogout()} />
+			{#if env}
+				<AuthButton
+					user={env.auth}
+					onLogin={() => goto('/login')}
+					onLogout={() => handleLogout()}
+				/>
+			{/if}
 			<DarkModeToggle />
 		</div>
 	</div>

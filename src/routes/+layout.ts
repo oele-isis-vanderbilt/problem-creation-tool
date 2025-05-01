@@ -1,11 +1,11 @@
+import type { LayoutLoad } from './$types';
 export const ssr = false;
 
-import type { LayoutLoad } from './$types';
-
 export const load: LayoutLoad = async () => {
-	const { dataService } = await import('$lib/services');
-	const env = await dataService.getEnvironment();
-	console.log(env);
+	const { initialize, getEnvironment } = await import('$lib/services/knowLearing.svelte');
+
+	await initialize();
+	const env = await getEnvironment();
 	return {
 		env
 	};
