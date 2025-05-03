@@ -1,13 +1,13 @@
 <script lang="ts">
 	import HeroiconsPlusCircle16Solid from 'virtual:icons/heroicons-solid/plus-circle';
-	import Modal from './modal.svelte';
 	import type { Module } from '$lib/services/models';
+	import Modal from './modal.svelte';
 	import { onMount } from 'svelte';
 	import { getContext } from 'svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
 	import { addModule, uploadImage, uuid } from '$lib/services/knowLearing.svelte';
 
-	let open = $state(false);
+	let isModalOpen = $state(false);
 	let submissionErrors = $state<string[]>([]);
 	let imageFiles = $state<FileList | null | undefined>(null);
 	const env = getContext<AgentEnvironment>('appEnv');
@@ -69,14 +69,14 @@
 </script>
 
 <button
-	onclick={() => (open = true)}
+	onclick={() => (isModalOpen = true)}
 	class=" flex flex-row items-center gap-2 rounded-lg border-2 border-gray-200 p-2 text-black dark:border-gray-400 dark:text-white"
 >
 	Add Module
 	<HeroiconsPlusCircle16Solid />
 </button>
 
-<Modal {open} title="Add a New Module" onClose={() => (open = false)}>
+<Modal open={isModalOpen} title="Add a New Module" onClose={() => (isModalOpen = false)}>
 	{#snippet main()}
 		<form class="flex h-full w-full flex-col">
 			<input
@@ -84,13 +84,13 @@
 				required
 				type="text"
 				placeholder="Module Name"
-				class="mb-2 w-full rounded-lg border-2 border-gray-200 p-2 text-black dark:border-gray-400 dark:text-white"
+				class="mb-2 w-full rounded-lg border-2 border-gray-200 p-2 text-black dark:border-gray-400 dark:bg-gray-700 dark:text-white"
 				bind:value={currentModule.name}
 			/>
 			<!-- svelte-ignore element_invalid_self_closing_tag -->
 			<textarea
 				placeholder="Module Description"
-				class="mb-2 w-full rounded-lg border-2 border-gray-200 p-2 text-black dark:border-gray-400 dark:text-white"
+				class="mb-2 w-full rounded-lg border-2 border-gray-200 p-2 text-black dark:border-gray-400 dark:bg-gray-700 dark:text-white"
 				bind:value={currentModule.description}
 			/>
 			<label for="moduleImage" class="text-gray-500 dark:text-gray-400"
@@ -125,7 +125,7 @@
 						// Reset the form
 						currentModule = emptyModule();
 						submissionErrors = [];
-						open = false;
+						isModalOpen = false;
 					}
 				}}
 			>
