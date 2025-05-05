@@ -17,12 +17,6 @@
 			return '/default-module.png';
 		}
 	}
-
-	$effect(() => {
-		// currentModules = dataService.modules;
-		// console.log('Modules updated:', currentModules);
-		console.log('Modules updated:', modules);
-	});
 </script>
 
 <div class="container mx-auto flex h-full w-full flex-col">

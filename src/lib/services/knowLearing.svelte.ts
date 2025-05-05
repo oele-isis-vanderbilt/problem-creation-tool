@@ -1,6 +1,7 @@
 import Agent, { type AgentEnvironment } from '@knowlearning/agents/browser.js';
-import type { Concept, Module } from './models';
+import { ProblemKind, type Concept, type Module } from './models';
 import CONCEPTS from '$lib/components/concepts.json';
+import type { MultipleChoiceProblem, Problem, WordProblem } from './models';
 
 let modules = $state<Record<string, Module>>({});
 let concepts = $state<Concept[]>([]);
@@ -20,7 +21,6 @@ function populateConcepts(conceptsJSON: typeof CONCEPTS) {
 	const validConcepts = conceptsJSON.concepts
 		.filter((concept) => {
 			return concept.relatedConcepts.every((relatedConcept) => {
-				console.log('relatedConcept', relatedConcept, validConceptNames);
 				return validConceptNames.includes(relatedConcept);
 			});
 		})
@@ -85,7 +85,6 @@ export function addModule(module: Module) {
 }
 
 export function removeModule(id: string) {
-	// delete modules[id];
 	delete klModules[id];
 	delete modules[id];
 	modules = { ...modules };
@@ -115,4 +114,58 @@ export function uuid() {
 export async function getImageUrl(uuid: string) {
 	const downloadUrl = (await Agent.download(uuid)).url;
 	return downloadUrl;
+}
+
+export function addNewProblem(moduleId: string, kind: ProblemKind, userId: string) {
+	const module = klModules[moduleId];
+	if (!module) {
+		throw new Error(`Module with id ${moduleId} not found`);
+	}
+
+	switch (kind) {
+		case ProblemKind.MULTIPLE_CHOICE:
+			const mcqProblem: MultipleChoiceProblem = {
+				id: Agent.uuid(),
+				kind: ProblemKind.MULTIPLE_CHOICE,
+				title: '',
+				description: '',
+				concepts: [],
+				options: [],
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+				createdBy: userId,
+				conceptIds: []
+			};
+			module.problems.push(mcqProblem);
+		case ProblemKind.WORD_PROBLEM:
+			const wordProblem: WordProblem = {
+				id: Agent.uuid(),
+				kind: ProblemKind.WORD_PROBLEM,
+				title: '',
+				description: '',
+				answer: '',
+				concepts: [],
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+				createdBy: userId
+			};
+			module.problems.push(wordProblem);
+	}
+
+	modules[moduleId] = klModules[moduleId];
+}
+
+export function deleteProblem(problemId: string, moduleId: string) {
+	const module = klModules[moduleId];
+	if (!module) {
+		throw new Error(`Module with id ${moduleId} not found`);
+	}
+
+	const problemIndex = module.problems.findIndex((problem) => problem.id === problemId);
+	if (problemIndex === -1) {
+		throw new Error(`Problem with id ${problemId} not found`);
+	}
+
+	module.problems.splice(problemIndex, 1);
+	modules[moduleId] = klModules[moduleId];
 }

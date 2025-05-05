@@ -66,6 +66,13 @@
 		addModule(currentModule);
 		return true;
 	};
+
+	function closeModal() {
+		isModalOpen = false;
+		currentModule = emptyModule();
+		submissionErrors = [];
+		imageFiles = null;
+	}
 </script>
 
 <button
@@ -76,7 +83,7 @@
 	<HeroiconsPlusCircle16Solid />
 </button>
 
-<Modal open={isModalOpen} title="Add a New Module" onClose={() => (isModalOpen = false)}>
+<Modal open={isModalOpen} title="Add a New Module" onClose={() => closeModal()}>
 	{#snippet main()}
 		<form class="flex h-full w-full flex-col">
 			<input
