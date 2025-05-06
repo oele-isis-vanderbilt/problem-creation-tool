@@ -1,5 +1,5 @@
 import Agent, { type AgentEnvironment } from '@knowlearning/agents/browser.js';
-import { ProblemKind, type Concept, type Module } from './models';
+import { ProblemDifficulty, ProblemKind, type Concept, type Module } from './models';
 import CONCEPTS from '$lib/components/concepts.json';
 import type { MultipleChoiceProblem, Problem, WordProblem } from './models';
 
@@ -128,7 +128,8 @@ export function addNewProblem(moduleId: string, kind: ProblemKind, userId: strin
 				id: Agent.uuid(),
 				kind: ProblemKind.MULTIPLE_CHOICE,
 				title: '',
-				description: '',
+				description: {},
+				difficulty: ProblemDifficulty.EASY,
 				concepts: [],
 				options: [],
 				createdAt: new Date().toISOString(),
@@ -136,20 +137,23 @@ export function addNewProblem(moduleId: string, kind: ProblemKind, userId: strin
 				createdBy: userId,
 				conceptIds: []
 			};
-			module.problems.push(mcqProblem);
+			module.problems[mcqProblem.id] = mcqProblem;
+			break;
 		case ProblemKind.WORD_PROBLEM:
 			const wordProblem: WordProblem = {
 				id: Agent.uuid(),
 				kind: ProblemKind.WORD_PROBLEM,
 				title: '',
-				description: '',
+				description: {},
+				difficulty: ProblemDifficulty.EASY,
 				answer: '',
 				concepts: [],
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
 				createdBy: userId
 			};
-			module.problems.push(wordProblem);
+			module.problems[wordProblem.id] = wordProblem;
+			break;
 	}
 
 	modules[moduleId] = klModules[moduleId];
@@ -160,12 +164,42 @@ export function deleteProblem(problemId: string, moduleId: string) {
 	if (!module) {
 		throw new Error(`Module with id ${moduleId} not found`);
 	}
+	delete module.problems[problemId];
+	modules[moduleId] = klModules[moduleId];
+}
 
-	const problemIndex = module.problems.findIndex((problem) => problem.id === problemId);
-	if (problemIndex === -1) {
-		throw new Error(`Problem with id ${problemId} not found`);
+export function updateProblem(moduleId: string, problem: Problem) {
+	const module = klModules[moduleId];
+	if (!module) {
+		throw new Error(`Module with id ${moduleId} not found`);
+	}
+	const moduleProblem = module.problems[problem.id];
+	moduleProblem.title = problem.title;
+	moduleProblem.description = problem.description;
+	moduleProblem.difficulty = problem.difficulty;
+	moduleProblem.concepts = problem.concepts;
+	moduleProblem.updatedAt = new Date().toISOString();
+	moduleProblem.createdBy = problem.createdBy;
+	if (problem.kind === ProblemKind.MULTIPLE_CHOICE) {
+		const incoming = problem as MultipleChoiceProblem;
+		const existing = moduleProblem as MultipleChoiceProblem;
+		existing.options = incoming.options;
+		existing.conceptIds = incoming.conceptIds;
+	} else if (problem.kind === ProblemKind.WORD_PROBLEM) {
+		const incoming = problem as WordProblem;
+		const existing = moduleProblem as WordProblem;
+		existing.answer = incoming.answer;
+	}
+	modules[moduleId] = klModules[moduleId];
+}
+
+export function updateModuleNameDescription(moduleId: string, name: string, description: string) {
+	const module = klModules[moduleId];
+	if (!module) {
+		throw new Error(`Module with id ${moduleId} not found`);
 	}
 
-	module.problems.splice(problemIndex, 1);
+	module.name = name;
+	module.description = description;
 	modules[moduleId] = klModules[moduleId];
 }

@@ -57,4 +57,25 @@
 	}
 }
 
+.ProseMirror h1,
+.ProseMirror h2 {
+	@apply font-bold;
+}
+
+.ProseMirror h1 {
+	@apply text-3xl;
+}
+
+.ProseMirror h2 {
+	@apply text-2xl;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+	color: #adb5bd;
+	content: attr(data-placeholder);
+	float: left;
+	height: 0;
+	pointer-events: none;
+}
+
 @source "../node_modules/flowbite-svelte/dist";

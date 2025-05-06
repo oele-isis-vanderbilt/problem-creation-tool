@@ -23,7 +23,7 @@
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toDateString(),
 			createdBy: '',
-			problems: []
+			problems: {}
 		};
 	}
 

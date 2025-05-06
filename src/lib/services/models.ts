@@ -1,3 +1,4 @@
+import type { JSONContent } from '@tiptap/core';
 export interface AppUser {
 	id: string;
 	name: string;
@@ -21,7 +22,7 @@ export interface Module {
 	createdAt?: string;
 	updatedAt?: string;
 	createdBy?: string;
-	problems: Problem[];
+	problems: Record<string, Problem>;
 }
 
 export enum ProblemKind {
@@ -29,10 +30,17 @@ export enum ProblemKind {
 	WORD_PROBLEM = 'word_problem'
 }
 
+export enum ProblemDifficulty {
+	EASY = 'easy',
+	MEDIUM = 'medium',
+	HARD = 'hard'
+}
+
 interface BaseProblem {
 	id: string;
 	title: string;
-	description: string;
+	description: JSONContent;
+	difficulty: ProblemDifficulty;
 	concepts: string[];
 	createdAt?: string;
 	updatedAt?: string;
