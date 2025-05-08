@@ -9,7 +9,7 @@
 
 	import type { LayoutProps } from './$types';
 	import DarkModeToggle from '$lib/components/dark-mode-toggle.svelte';
-	import { logout } from '$lib/services/knowLearing.svelte';
+	import { logout } from '$lib/services/knowLearningStore.svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
 
 	let { data, children }: LayoutProps = $props();
@@ -29,7 +29,7 @@
 
 <ModeWatcher defaultMode={'dark'} />
 <header
-	class="sticky top-0 z-40 mx-auto flex w-full flex-row justify-between border-b border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-900"
+	class="sticky top-0 z-40 mx-auto flex w-full flex-row justify-between border-b border-gray-200 bg-white p-2 dark:border-gray-600 dark:bg-gray-900"
 >
 	<div class="container mx-auto flex w-full justify-between">
 		<div class="flex h-16 items-center">
@@ -51,7 +51,7 @@
 </header>
 
 <main
-	class="mb-20 h-full min-w-0 flex-auto divide-y overflow-auto lg:static lg:max-h-full lg:overflow-visible dark:divide-gray-700 dark:bg-gray-900"
+	class="mb-20 h-full min-w-0 flex-auto divide-y overflow-auto p-2 lg:static lg:max-h-full lg:overflow-visible dark:divide-gray-700 dark:bg-gray-900"
 >
 	{@render children()}
 </main>

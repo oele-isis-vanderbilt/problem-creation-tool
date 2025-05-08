@@ -1,10 +1,9 @@
 <script lang="ts">
-	import AddModuleButton from '$lib/components/add-module-button.svelte';
-	import { onMount, tick } from 'svelte';
-	import ModuleCard from '$lib/components/module-card.svelte';
-	import { removeModule, getModulesState, getImageUrl } from '$lib/services/knowLearing.svelte';
+	import AddModuleButton from '$lib/components/module/add-module-button.svelte';
+	import ModuleCard from '$lib/components/module/module-card.svelte';
+	import { store } from '$lib/services/knowLearningStore.svelte';
 
-	let modules = getModulesState();
+	const { getFn, deleteModule, getImageUrl } = store!;
 
 	async function getModuleImageUrl(uuid: string | undefined) {
 		if (!uuid) {
@@ -17,12 +16,6 @@
 			return '/default-module.png';
 		}
 	}
-
-	$effect(() => {
-		// currentModules = dataService.modules;
-		// console.log('Modules updated:', currentModules);
-		console.log('Modules updated:', modules);
-	});
 </script>
 
 <div class="container mx-auto flex h-full w-full flex-col">
@@ -31,10 +24,10 @@
 		<AddModuleButton />
 	</div>
 	<div class="grid grid-cols-1 gap-5 md:grid-cols-4">
-		{#each Object.values(modules() || {}) as module}
+		{#each Object.values(getFn()) as module}
 			<ModuleCard
 				{module}
-				onModuleDelete={removeModule}
+				onModuleDelete={deleteModule}
 				coverImageUrl={getModuleImageUrl(module?.coverImageUUID)}
 			/>
 		{/each}

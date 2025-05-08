@@ -21,6 +21,10 @@ export interface Module {
 	createdAt?: string;
 	updatedAt?: string;
 	createdBy?: string;
+	problems: string[];
+}
+
+export interface StateModule extends Omit<Module, 'problems'> {
 	problems: Problem[];
 }
 
@@ -29,11 +33,19 @@ export enum ProblemKind {
 	WORD_PROBLEM = 'word_problem'
 }
 
+export enum ProblemDifficulty {
+	EASY = 'easy',
+	MEDIUM = 'medium',
+	HARD = 'hard'
+}
+
 interface BaseProblem {
 	id: string;
 	title: string;
 	description: string;
+	difficulty: ProblemDifficulty;
 	concepts: string[];
+	aiPrompt: string;
 	createdAt?: string;
 	updatedAt?: string;
 	createdBy?: string;
@@ -48,7 +60,6 @@ export interface MultipleChoiceOption {
 
 export interface MultipleChoiceProblem extends BaseProblem {
 	kind: ProblemKind.MULTIPLE_CHOICE;
-	conceptIds?: string[];
 	options: MultipleChoiceOption[];
 }
 

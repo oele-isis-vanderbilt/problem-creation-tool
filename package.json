@@ -19,6 +19,7 @@
 		"@eslint/compat": "^1.2.5",
 		"@eslint/js": "^9.18.0",
 		"@iconify-json/heroicons-solid": "^1.2.1",
+		"@iconify-json/ic": "^1.2.2",
 		"@iconify-json/icon-park": "^1.2.2",
 		"@iconify-json/logos": "^1.2.4",
 		"@iconify-json/mdi": "^1.2.3",
@@ -31,6 +32,7 @@
 		"@tailwindcss/vite": "^4.0.0",
 		"@testing-library/jest-dom": "^6.6.3",
 		"@testing-library/svelte": "^5.2.4",
+		"@types/underscore": "^1.13.0",
 		"@vitejs/plugin-basic-ssl": "^2.0.0",
 		"eslint": "^9.18.0",
 		"eslint-config-prettier": "^10.0.1",
@@ -53,6 +55,10 @@
 		"vitest": "^3.0.0"
 	},
 	"dependencies": {
-		"mode-watcher": "^1.0.2"
+		"@tiptap/extension-placeholder": "^2.12.0",
+		"@tiptap/starter-kit": "^2.12.0",
+		"mode-watcher": "^1.0.2",
+		"svelte-tiptap": "^2.1.0",
+		"underscore": "^1.13.7"
 	}
 }
