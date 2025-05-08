@@ -9,7 +9,7 @@
 
 	import type { LayoutProps } from './$types';
 	import DarkModeToggle from '$lib/components/dark-mode-toggle.svelte';
-	import { logout } from '$lib/services/knowLearing.svelte';
+	import { logout } from '$lib/services/knowLearningStore.svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
 
 	let { data, children }: LayoutProps = $props();

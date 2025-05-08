@@ -9,8 +9,14 @@
 	let {
 		content,
 		readOnly = false,
-		placeholder
-	}: { content: JSONContent; readOnly?: boolean; placeholder?: string } = $props();
+		placeholder,
+		onContentUpdate
+	}: {
+		content: JSONContent;
+		readOnly?: boolean;
+		placeholder?: string;
+		onContentUpdate?: (content: JSONContent) => void;
+	} = $props();
 
 	let editor = $state<Readable<Editor>>();
 
@@ -26,12 +32,15 @@
 
 			editorProps: {
 				attributes: {
-					class: 'border-2 border-black rounded-b-md p-3 outline-hidden'
+					class:
+						'border-2 border-black rounded-b-md p-3 outline-hidden min-h-[300px] bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
 				}
 			},
 			onUpdate: ({ editor }) => {
 				const json = editor.getJSON();
-				console.log(json);
+				if (onContentUpdate) {
+					onContentUpdate(json);
+				}
 			},
 			editable: !readOnly
 		});
@@ -39,8 +48,5 @@
 </script>
 
 <div class="flex h-full w-full flex-col">
-	<div class="flex h-full w-full items-start gap-2"></div>
-	<div class="min-h-[300px] w-full">
-		<EditorContent editor={$editor} class="h-full w-full" />
-	</div>
+	<EditorContent editor={$editor} />
 </div>

@@ -1,18 +1,20 @@
 <script lang="ts">
 	import HeroiconsPlusCircle16Solid from 'virtual:icons/heroicons-solid/plus-circle';
-	import type { Module } from '$lib/services/models';
+	import type { StateModule } from '$lib/services/models';
 	import Modal from './modal.svelte';
 	import { onMount } from 'svelte';
 	import { getContext } from 'svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
-	import { addModule, uploadImage, uuid } from '$lib/services/knowLearing.svelte';
+	import { store } from '$lib/services/knowLearningStore.svelte';
+	// import { uploadImage, uuid } from '$lib/services/knowLearing.svelte';
 
 	let isModalOpen = $state(false);
 	let submissionErrors = $state<string[]>([]);
 	let imageFiles = $state<FileList | null | undefined>(null);
 	const env = getContext<AgentEnvironment>('appEnv');
+	const { addEmptyModule, uploadImage, uuid } = store!;
 
-	let currentModule = $state<Module>(emptyModule());
+	let currentModule = $state<StateModule>(emptyModule());
 
 	function emptyModule() {
 		return {
@@ -23,7 +25,7 @@
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toDateString(),
 			createdBy: '',
-			problems: {}
+			problems: []
 		};
 	}
 
@@ -63,7 +65,7 @@
 		currentModule.updatedAt = new Date().toISOString();
 		currentModule.id = uuid();
 
-		addModule(currentModule);
+		await addEmptyModule(currentModule);
 		return true;
 	};
 

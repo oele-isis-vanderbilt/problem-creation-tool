@@ -3,9 +3,9 @@ import { error } from '@sveltejs/kit';
 export const prerender = false;
 
 export const load: PageLoad = async ({ params }) => {
-	const { getModule } = await import('$lib/services/knowLearing.svelte');
+	const { store } = await import('$lib/services/knowLearningStore.svelte');
 
-	const module = getModule(params.uuid);
+	const module = store!.getModule(params.uuid);
 
 	if (!module) {
 		error(404, `Module with id ${params.uuid} not found`);

@@ -4,32 +4,26 @@
 	import HeadingDescriptionEditor from '$lib/components/name-description-editor.svelte';
 	import {
 		ProblemKind,
-		type Module,
 		type MultipleChoiceProblem,
-		type Problem
+		type Problem,
+		type StateModule
 	} from '$lib/services/models';
-	import {
-		addNewProblem,
-		deleteProblem,
-		getModule,
-		getModulesState,
-		updateModuleNameDescription,
-		updateProblem
-	} from '$lib/services/knowLearing.svelte';
 	import { getContext } from 'svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
 	import Mcq from '$lib/components/mcq.svelte';
 	import { Accordion, AccordionItem } from 'flowbite-svelte';
 	import ProblemHeader from '$lib/components/problem-header.svelte';
 	import { debounce, friendlyDateTime } from '$lib/utils';
+	import { store } from '$lib/services/knowLearningStore.svelte';
 
 	const appEnv = getContext<AgentEnvironment>('appEnv');
 	let { data }: PageProps = $props();
 
-	const modules = getModulesState();
+	const { getFn, updateModuleNameDescription, addNewProblem, deleteProblem, updateProblem } =
+		store!;
 
-	let module: Module = $derived.by(() => {
-		return modules()[data.module.id];
+	let module = $derived.by(() => {
+		return getFn()[data.module.id];
 	});
 
 	function onAddProblem(kind: ProblemKind) {
@@ -70,7 +64,7 @@
 		</div>
 	</div>
 	<Accordion>
-		{#each Object.entries(module?.problems) as [id, problem], index}
+		{#each module?.problems as problem, index}
 			<AccordionItem>
 				{#snippet header()}
 					<ProblemHeader
@@ -81,7 +75,10 @@
 				{/snippet}
 
 				{#if problem.kind === ProblemKind.MULTIPLE_CHOICE}
-					<Mcq bind:problem={module.problems[id] as MultipleChoiceProblem} />
+					<Mcq
+						bind:problem={module.problems[index] as MultipleChoiceProblem}
+						onProblemUpdated={onUpdateProblem}
+					/>
 				{/if}
 			</AccordionItem>
 		{/each}
