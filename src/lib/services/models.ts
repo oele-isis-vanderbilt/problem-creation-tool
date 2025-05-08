@@ -45,6 +45,7 @@ interface BaseProblem {
 	description: string;
 	difficulty: ProblemDifficulty;
 	concepts: string[];
+	aiPrompt: string;
 	createdAt?: string;
 	updatedAt?: string;
 	createdBy?: string;

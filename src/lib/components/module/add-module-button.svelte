@@ -1,7 +1,7 @@
 <script lang="ts">
 	import HeroiconsPlusCircle16Solid from 'virtual:icons/heroicons-solid/plus-circle';
 	import type { StateModule } from '$lib/services/models';
-	import Modal from './modal.svelte';
+	import Modal from '$lib/components/modal.svelte';
 	import { onMount } from 'svelte';
 	import { getContext } from 'svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';

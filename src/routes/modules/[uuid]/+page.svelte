@@ -1,18 +1,13 @@
 <script lang="ts">
-	import AddProblemsButton from '$lib/components/add-problems-button.svelte';
+	import AddProblemsButton from '$lib/components/problems/add-problems-button.svelte';
 	import type { PageProps } from './$types';
-	import HeadingDescriptionEditor from '$lib/components/name-description-editor.svelte';
-	import {
-		ProblemKind,
-		type MultipleChoiceProblem,
-		type Problem,
-		type StateModule
-	} from '$lib/services/models';
+	import HeadingDescriptionEditor from '$lib/components/module/name-description-editor.svelte';
+	import { ProblemKind, type MultipleChoiceProblem, type Problem } from '$lib/services/models';
 	import { getContext } from 'svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
-	import Mcq from '$lib/components/mcq.svelte';
+	import Mcq from '$lib/components/problems/mcq/problem.svelte';
 	import { Accordion, AccordionItem } from 'flowbite-svelte';
-	import ProblemHeader from '$lib/components/problem-header.svelte';
+	import ProblemHeader from '$lib/components/problems/problem-header.svelte';
 	import { debounce, friendlyDateTime } from '$lib/utils';
 	import { store } from '$lib/services/knowLearningStore.svelte';
 
@@ -63,13 +58,14 @@
 			<AddProblemsButton onProblemKindSelected={onAddProblem} />
 		</div>
 	</div>
-	<Accordion>
+	<Accordion class="mb-20">
 		{#each module?.problems as problem, index}
 			<AccordionItem>
 				{#snippet header()}
 					<ProblemHeader
 						title={problem.title}
 						lastUpdated={friendlyDateTime(problem.updatedAt!)}
+						kind={problem.kind}
 						onProblemDeleted={() => onDeleteProblem(problem.id)}
 					/>
 				{/snippet}

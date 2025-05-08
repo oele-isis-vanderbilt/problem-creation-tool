@@ -2,12 +2,14 @@ import Agent from '@knowlearning/agents/browser.js';
 import {
 	ProblemDifficulty,
 	ProblemKind,
+	type Concept,
 	type Module,
 	type MultipleChoiceProblem,
 	type Problem,
 	type StateModule,
 	type WordProblem
 } from './models';
+import { clone } from 'underscore';
 
 export let store: {
 	getFn: () => Record<string, StateModule>;
@@ -21,6 +23,10 @@ export let store: {
 	deleteProblem: (problemId: string, moduleId: string) => void;
 	getImageUrl: (uuid: string) => Promise<string>;
 	updateProblem: (moduleId: string, problem: Problem) => void;
+	addConcept: (concept: Concept) => Promise<void>;
+	updateConcept: (concept: Concept) => void;
+	getConcept: (id: string) => Concept | undefined;
+	getConceptsFn: () => () => Record<string, Concept>;
 } | null = null;
 
 export async function initialize() {
@@ -63,6 +69,9 @@ async function initializeStore() {
 	const _problemsState = (await Agent.state('mathProblems')) as {
 		problems: Record<string, Problem>;
 	};
+	const _conceptsState = (await Agent.state('mathConcepts')) as {
+		concepts: Record<string, Concept>;
+	};
 
 	if (!_modulesState.modules) {
 		_modulesState.modules = {};
@@ -72,16 +81,28 @@ async function initializeStore() {
 		_problemsState.problems = {};
 	}
 
+	if (!_conceptsState.concepts) {
+		_conceptsState.concepts = {};
+	}
+
 	let state = $state<Record<string, StateModule>>(
 		composeStore(_modulesState.modules, _problemsState.problems)
 	);
+
+	let concepts = $state<Record<string, Concept>>(_conceptsState.concepts);
 
 	const modulesCallback = (update: { state: object }) => {
 		const _state = update.state as { modules: Record<string, Module> };
 		state = composeStore(_state.modules, _problemsState.problems);
 	};
 
+	const conceptsCallback = (update: { state: object }) => {
+		const _state = update.state as { concepts: Record<string, Concept> };
+		concepts = _state.concepts;
+	};
+
 	Agent.watch('mathModules', modulesCallback);
+	Agent.watch('mathConcepts', conceptsCallback);
 
 	return {
 		getFn: () => state,
@@ -141,6 +162,7 @@ async function initializeStore() {
 						difficulty: ProblemDifficulty.EASY,
 						concepts: [],
 						options: [],
+						aiPrompt: '',
 						createdAt: new Date().toISOString(),
 						updatedAt: new Date().toISOString(),
 						createdBy: userId
@@ -158,6 +180,7 @@ async function initializeStore() {
 						description: '',
 						difficulty: ProblemDifficulty.EASY,
 						answer: '',
+						aiPrompt: '',
 						concepts: [],
 						createdAt: new Date().toISOString(),
 						updatedAt: new Date().toISOString(),
@@ -207,7 +230,7 @@ async function initializeStore() {
 			if (problem.kind === ProblemKind.MULTIPLE_CHOICE) {
 				let mcqProblem = problem as MultipleChoiceProblem;
 				let existingMCQProblem = existingProblem as MultipleChoiceProblem;
-				existingMCQProblem.options = [...mcqProblem.options];
+				existingMCQProblem.options = mcqProblem.options.map((option) => clone(option));
 			} else if (problem.kind === ProblemKind.WORD_PROBLEM) {
 				let wordProblem = problem as WordProblem;
 				let existingWordProblem = existingProblem as WordProblem;
@@ -215,6 +238,30 @@ async function initializeStore() {
 			}
 
 			state = composeStore(_modulesState.modules, _problemsState.problems);
+		},
+		addConcept: async (concept: Concept) => {
+			let newConcept = (await Agent.state(concept.id)) as Concept;
+			newConcept = {
+				...newConcept,
+				...concept
+			};
+			_conceptsState.concepts[newConcept.id] = newConcept;
+		},
+		getConcept: (id: string) => {
+			return _conceptsState.concepts[id];
+		},
+		getConceptsFn: () => {
+			return () => concepts;
+		},
+		updateConcept: (concept: Concept) => {
+			const existingConcept = _conceptsState.concepts[concept.id];
+			if (!existingConcept) {
+				throw new Error(`Concept with id ${concept.id} not found`);
+			}
+			existingConcept.name = concept.name;
+			existingConcept.description = concept.description;
+			existingConcept.relatedConcepts = clone(concept.relatedConcepts);
+			existingConcept.aiPrompt = concept.aiPrompt;
 		}
 	};
 }
