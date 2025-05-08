@@ -6,6 +6,7 @@
 	import { goto } from '$app/navigation';
 	import { getContext } from 'svelte';
 	import { login } from '$lib/services/knowLearningStore.svelte';
+	import { prependBaseUrl } from '$lib/utils';
 
 	async function handleLogin(provider: 'google' | 'microsoft') {
 		login(provider);
@@ -14,7 +15,7 @@
 	onMount(async () => {
 		const env = getContext('appEnv');
 		if (!isAnonUser(env.auth)) {
-			goto('/');
+			goto(prependBaseUrl("/"));
 		}
 	});
 </script>
