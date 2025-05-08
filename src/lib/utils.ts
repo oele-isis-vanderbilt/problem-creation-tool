@@ -1,5 +1,7 @@
 import type { AgentAuth } from '@knowlearning/agents/browser';
 import { debounce as df } from 'underscore';
+import { base } from '$app/paths'
+
 
 export const isAnonUser = (auth: AgentAuth) => {
 	return auth.info?.name === 'anonymous';
@@ -24,3 +26,15 @@ export const friendlyDateTime = (isoString: string) => {
 	};
 	return date.toLocaleDateString('en-US', options);
 };
+
+
+
+export function prependBaseUrl(url: string) {
+	const urlWithoutLeadingSlash = url.replace(/^\//, '');
+    if (base) {
+		return `${base}/${urlWithoutLeadingSlash}`;
+	}
+	else {
+		return `/${urlWithoutLeadingSlash}`;
+	}
+}

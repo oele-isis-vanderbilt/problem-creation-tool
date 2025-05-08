@@ -11,6 +11,7 @@
 	import DarkModeToggle from '$lib/components/dark-mode-toggle.svelte';
 	import { logout } from '$lib/services/knowLearningStore.svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
+	import { prependBaseUrl } from '$lib/utils';
 
 	let { data, children }: LayoutProps = $props();
 	let env = $state<AgentEnvironment | null>(data.env);
@@ -18,7 +19,7 @@
 
 	onMount(async () => {
 		if (isAnonUser(env.auth)) {
-			goto('/login');
+			goto(prependBaseUrl('/login'));
 		}
 	});
 
@@ -33,7 +34,7 @@
 >
 	<div class="container mx-auto flex w-full justify-between">
 		<div class="flex h-16 items-center">
-			<button onclick={() => goto('/')} class="text-xl font-bold text-gray-900 dark:text-white">
+			<button onclick={() => goto(prependBaseUrl("/"))} class="text-xl font-bold text-gray-900 dark:text-white">
 				Betty's Brain Mathematics
 			</button>
 		</div>
@@ -41,7 +42,7 @@
 			{#if env}
 				<AuthButton
 					user={env.auth}
-					onLogin={() => goto('/login')}
+					onLogin={() => goto(prependBaseUrl('/login'))}
 					onLogout={() => handleLogout()}
 				/>
 			{/if}
