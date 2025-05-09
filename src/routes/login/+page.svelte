@@ -15,7 +15,7 @@
 	onMount(async () => {
 		const env = getContext('appEnv');
 		if (!isAnonUser(env.auth)) {
-			goto(prependBaseUrl("/"));
+			goto(prependBaseUrl('/'));
 		}
 	});
 </script>
