@@ -116,6 +116,10 @@ async function initializeStore() {
 			_modulesState.modules[module.id] = moduleState;
 		},
 		deleteModule: (id: string) => {
+			const toDeleteModule = _modulesState.modules[id];
+			if (toDeleteModule) {
+				toDeleteModule.problems.forEach((problemId) => store!.deleteProblem(problemId, id));
+			}
 			delete _modulesState.modules[id];
 		},
 		getModule: (id: string) => {
