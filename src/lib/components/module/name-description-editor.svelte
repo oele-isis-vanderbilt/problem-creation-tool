@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Input } from 'flowbite-svelte';
+
 	let { name, description, onChange } = $props();
 	let nameDisabled = $state(true);
 	let descriptionDisabled = $state(true);
@@ -26,7 +28,7 @@
 <div class="flex w-full flex-col gap-2">
 	{#if nameDisabled}
 		<div
-			class="text-2xl font-bold text-gray-900 dark:text-white"
+			class="text-2xl font-bold"
 			ondblclick={() => (nameDisabled = false)}
 			role="button"
 			tabindex="0"
@@ -34,16 +36,16 @@
 			{name}
 		</div>
 	{:else}
-		<input
+		<Input
 			type="text"
 			bind:value={editableName}
-			class="bg-gray-200 text-2xl font-bold text-gray-900 dark:bg-gray-900 dark:text-white"
+			class="text-2xl font-bold"
 			onkeydown={(e) => handleKeyDown(e, 'name')}
 		/>
 	{/if}
 	{#if descriptionDisabled}
 		<div
-			class="text-lg text-gray-900 dark:text-white"
+			class="text-lg"
 			ondblclick={() => (descriptionDisabled = false)}
 			role="button"
 			tabindex="0"
@@ -51,10 +53,10 @@
 			{description}
 		</div>
 	{:else}
-		<input
+		<Input
 			type="text"
 			bind:value={editableDescription}
-			class="bg-gray-200 text-lg text-gray-900 dark:bg-gray-900 dark:text-white"
+			class="text-lg"
 			onkeydown={(e) => handleKeyDown(e, 'description')}
 		/>
 	{/if}

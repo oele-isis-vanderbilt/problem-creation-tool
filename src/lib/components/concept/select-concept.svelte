@@ -40,7 +40,6 @@
 		onclick={() => {
 			isConceptAdderOpen = !isConceptAdderOpen;
 		}}
-		class="gap-2 rounded-lg border-2 border-gray-200 p-2 text-black dark:border-gray-400 dark:text-white"
 	>
 		Add new concept
 	</Button>

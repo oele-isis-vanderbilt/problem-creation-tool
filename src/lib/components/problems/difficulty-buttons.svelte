@@ -24,8 +24,8 @@
 			pill
 			class={[
 				difficulty === value
-					? `bg-${activeColor}-700 text-white dark:bg-${activeColor}-500 dark:text-white hover:bg-${activeColor}-700 dark:hover:bg-${activeColor}-500`
-					: 'text-gray-900 dark:text-gray-400'
+					? `bg-${activeColor}-500 dark:bg-${activeColor}-500 hover:bg-${activeColor}-700 dark:hover:bg-${activeColor}-700`
+					: ''
 			]}
 		>
 			{value}

@@ -54,7 +54,7 @@
 	/>
 	<div class="flex h-full flex-col items-start justify-center gap-4 md:flex-row">
 		<div class="flex w-full items-center justify-between py-2">
-			<h2 class="text-2xl font-bold text-gray-900 dark:text-white">Problems</h2>
+			<h2 class="text-lg font-bold md:text-2xl">Problems</h2>
 			<AddProblemsButton onProblemKindSelected={onAddProblem} />
 		</div>
 	</div>

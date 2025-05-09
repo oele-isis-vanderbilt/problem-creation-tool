@@ -20,31 +20,20 @@
 </script>
 
 <div
-	class="flex h-full w-full items-center justify-between gap-2 rounded-lg border-none bg-gray-50 dark:bg-gray-500"
+	class="bg-primary-50 dark:bg-primary-400 flex h-full w-full items-center justify-between gap-2 rounded-lg border-none"
 >
-	<Input
-		id="value"
-		required
-		type="text"
-		bind:value={option.value}
-		placeholder="Option Value"
-		class="dark:text-white "
-	/>
+	<Input id="value" required type="text" bind:value={option.value} placeholder="Option Value" />
 	{#if isLast}
-		<Button
-			class="bg-gray-500 text-lg hover:bg-gray-600 dark:bg-gray-800 hover:dark:bg-gray-800"
-			onclick={onAddOption}
-		>
-			<HeroiconsPlusCircle16Solid />
+		<Button onclick={onAddOption}>
+			<HeroiconsPlusCircle16Solid class="text-lg" />
 		</Button>
 	{/if}
 	<Toggle id="isCorrect" bind:checked={option.isCorrect} onchange={onToggleCorrect}></Toggle>
 	<Button
-		class="bg-gray-500 text-lg hover:bg-gray-600 dark:bg-gray-800 hover:dark:bg-gray-800"
 		onclick={() => {
 			onDeleteOption();
 		}}
 	>
-		<HeroIconsTrash class="hover:text-red-500"></HeroIconsTrash>
+		<HeroIconsTrash class="text-lg hover:text-red-500"></HeroIconsTrash>
 	</Button>
 </div>
