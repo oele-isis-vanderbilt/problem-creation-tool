@@ -2,18 +2,19 @@
 	import AddModuleButton from '$lib/components/module/add-module-button.svelte';
 	import ModuleCard from '$lib/components/module/module-card.svelte';
 	import { store } from '$lib/services/knowLearningStore.svelte';
+	import { prependBaseUrl } from '$lib/utils';
 
 	const { getFn, deleteModule, getImageUrl } = store!;
 
 	async function getModuleImageUrl(uuid: string | undefined) {
 		if (!uuid) {
-			return '/default-module.png';
+			return prependBaseUrl('/default-module.png');
 		}
 		try {
 			return await getImageUrl(uuid);
 		} catch (error) {
 			console.error('Error fetching image URL:', error);
-			return '/default-module.png';
+			return prependBaseUrl('/default-module.png');
 		}
 	}
 </script>

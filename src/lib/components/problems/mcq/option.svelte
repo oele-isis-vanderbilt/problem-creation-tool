@@ -42,7 +42,6 @@
 	<Button
 		class="bg-gray-500 text-lg hover:bg-gray-600 dark:bg-gray-800 hover:dark:bg-gray-800"
 		onclick={() => {
-			console.log('Delete option clicked');
 			onDeleteOption();
 		}}
 	>
