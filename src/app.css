@@ -118,12 +118,32 @@
 	@apply text-2xl;
 }
 
+.ProseMirror h3 {
+	@apply text-xl;
+}
+
 .tiptap p.is-editor-empty:first-child::before {
 	color: #adb5bd;
 	content: attr(data-placeholder);
 	float: left;
 	height: 0;
 	pointer-events: none;
+}
+
+.tiptap {
+	img {
+		&.ProseMirror-selectednode {
+			@apply outline-primary-800 outline-4;
+		}
+	}
+}
+
+.ProseMirror ul {
+	@apply /* li p { margin-top: 0.25em; margin-bottom: 0.25em; } */ list-disc px-5;
+}
+
+.ProseMirror ol {
+	@apply list-decimal px-5;
 }
 
 @source "../node_modules/flowbite-svelte/dist";
