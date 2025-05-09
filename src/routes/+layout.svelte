@@ -12,6 +12,7 @@
 	import { logout } from '$lib/services/knowLearningStore.svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
 	import { prependBaseUrl } from '$lib/utils';
+	import { A, Button } from 'flowbite-svelte';
 
 	let { data, children }: LayoutProps = $props();
 	let env = $state<AgentEnvironment | null>(data.env);
@@ -30,18 +31,15 @@
 
 <ModeWatcher defaultMode={'dark'} />
 <header
-	class="sticky top-0 z-40 mx-auto flex w-full flex-row justify-between border-b border-gray-200 bg-white p-2 dark:border-gray-600 dark:bg-gray-900"
+	class="bg-primary-100 dark:bg-secondary-800 sticky top-0 z-40 mx-auto flex w-full flex-row justify-between border-b border-gray-200 px-2 py-4"
 >
 	<div class="container mx-auto flex w-full justify-between">
-		<div class="flex h-16 items-center">
-			<button
-				onclick={() => goto(prependBaseUrl('/'))}
-				class="text-xl font-bold text-gray-900 dark:text-white"
+		<div class="flex items-center">
+			<A class="dark:text-secondary-200 text-lg font-bold" href={prependBaseUrl('/')}
+				>Betty's Brain Mathematics</A
 			>
-				Betty's Brain Mathematics
-			</button>
 		</div>
-		<div class="flex h-16 items-center justify-end gap-2">
+		<div class="flex items-center justify-end gap-2">
 			{#if env}
 				<AuthButton
 					user={env.auth}
@@ -55,13 +53,13 @@
 </header>
 
 <main
-	class="mb-20 h-full min-w-0 flex-auto divide-y overflow-auto p-2 lg:static lg:max-h-full lg:overflow-visible dark:divide-gray-700 dark:bg-gray-900"
+	class="mb-20 h-full min-w-0 flex-auto divide-y overflow-auto p-2 lg:static lg:max-h-full lg:overflow-visible dark:divide-gray-700"
 >
 	{@render children()}
 </main>
-<footer class="footer fixed bottom-0 w-full p-4 text-center text-white dark:bg-gray-800">
+<footer class="footer bg-primary-100 dark:bg-secondary-800 fixed bottom-0 w-full p-4 text-center">
 	<div class="container mx-auto">
-		<span class="text-sm text-gray-500 dark:text-gray-400">
+		<span class="text-primary-500 dark:text-secondary-400 text-sm">
 			&copy; 2025 <a
 				href="https://teachableagents.org"
 				target="_blank"

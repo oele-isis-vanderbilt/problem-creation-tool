@@ -6,6 +6,7 @@
 	import { getContext } from 'svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
 	import { store } from '$lib/services/knowLearningStore.svelte';
+	import { Button } from 'flowbite-svelte';
 	// import { uploadImage, uuid } from '$lib/services/knowLearing.svelte';
 
 	let isModalOpen = $state(false);
@@ -77,13 +78,10 @@
 	}
 </script>
 
-<button
-	onclick={() => (isModalOpen = true)}
-	class=" flex flex-row items-center gap-2 rounded-lg border-2 border-gray-200 p-2 text-black dark:border-gray-400 dark:text-white"
->
+<Button onclick={() => (isModalOpen = true)} class="gap-2">
 	Add Module
 	<HeroiconsPlusCircle16Solid />
-</button>
+</Button>
 
 <Modal open={isModalOpen} title="Add a New Module" onClose={() => closeModal()}>
 	{#snippet main()}
@@ -96,7 +94,6 @@
 				class="mb-2 w-full rounded-lg border-2 border-gray-200 p-2 text-black dark:border-gray-400 dark:bg-gray-700 dark:text-white"
 				bind:value={currentModule.name}
 			/>
-			<!-- svelte-ignore element_invalid_self_closing_tag -->
 			<textarea
 				placeholder="Module Description"
 				class="mb-2 w-full rounded-lg border-2 border-gray-200 p-2 text-black dark:border-gray-400 dark:bg-gray-700 dark:text-white"
@@ -126,8 +123,7 @@
 	{/snippet}
 	{#snippet footer()}
 		<div class="flex w-full items-end justify-end">
-			<button
-				class="flex flex-row items-center gap-2 rounded-lg border-2 border-green-200 bg-green-200 p-2 text-black dark:border-green-400 dark:bg-green-400 dark:text-slate-800"
+			<Button
 				onclick={async () => {
 					const success = await validateAndSubmit();
 					if (success) {
@@ -139,7 +135,7 @@
 				}}
 			>
 				Add Module
-			</button>
+			</Button>
 		</div>
 	{/snippet}
 </Modal>

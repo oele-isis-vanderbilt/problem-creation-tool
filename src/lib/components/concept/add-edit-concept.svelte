@@ -2,7 +2,7 @@
 	import Modal from '$lib/components/modal.svelte';
 	import { store } from '$lib/services/knowLearningStore.svelte';
 	import type { Concept } from '$lib/services/models';
-	import { Input, MultiSelect, Textarea, type SelectOptionType } from 'flowbite-svelte';
+	import { Button, Input, MultiSelect, Textarea, type SelectOptionType } from 'flowbite-svelte';
 
 	const { addConcept, getConceptsFn, uuid, updateConcept } = store!;
 
@@ -81,21 +81,14 @@
 				type="text"
 				bind:value={currentConcept.name}
 				placeholder="Concept Name"
-				class="dark:text-white"
 			/>
 			<Textarea
 				id="conceptDescription"
 				required
 				bind:value={currentConcept.description}
 				placeholder="Concept Description"
-				class="dark:text-white"
 			/>
-			<Textarea
-				id="conceptAiPrompt"
-				bind:value={currentConcept.aiPrompt}
-				placeholder="AI Prompt"
-				class="dark:text-white"
-			/>
+			<Textarea id="conceptAiPrompt" bind:value={currentConcept.aiPrompt} placeholder="AI Prompt" />
 			<MultiSelect
 				id="relatedConcepts"
 				bind:value={currentConcept.relatedConcepts}
@@ -103,9 +96,7 @@
 				items={conceptItems}
 			></MultiSelect>
 			{#if submissionErrors.length > 0}
-				<div
-					class="mb-2 w-full rounded-lg border-2 border-red-200 bg-red-100 p-2 text-red-600 dark:border-red-400 dark:bg-red-400 dark:text-white"
-				>
+				<div class="bg-danger-600 text-primary-600 mb-2 w-full rounded-lg border-2 p-2">
 					{#each submissionErrors as error}
 						<p>{error}</p>
 					{/each}
@@ -115,8 +106,7 @@
 	{/snippet}
 	{#snippet footer()}
 		<div class="flex w-full items-end justify-end">
-			<button
-				class="flex flex-row items-center gap-2 rounded-lg border-2 border-green-200 bg-green-200 p-2 text-black dark:border-green-400 dark:bg-green-400 dark:text-slate-800"
+			<Button
 				onclick={async () => {
 					const success = await validateAndSubmit();
 					if (success) {
@@ -128,7 +118,7 @@
 				}}
 			>
 				{currentConcept.id ? 'Update Concept' : 'Add Concept'}
-			</button>
+			</Button>
 		</div>
 	{/snippet}
 </Modal>

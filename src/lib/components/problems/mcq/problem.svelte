@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { MultipleChoiceProblem } from '$lib/services/models';
-	import { Input, Radio, Textarea } from 'flowbite-svelte';
+	import { Button, Input, Radio, Textarea } from 'flowbite-svelte';
 	import FlipEditPreview from '$lib/components/problems/flip-edit-preview.svelte';
 	import { isEqual } from 'underscore';
 	import DifficultyButtons from '$lib/components/problems/difficulty-buttons.svelte';
@@ -61,8 +61,7 @@
 				</div>
 				<div class="mb-2 flex flex-row items-center justify-between gap-2">
 					<h2 class="text-2xl font-bold text-gray-900 dark:text-white">Options</h2>
-					<button
-						class="flex flex-row items-center gap-2 rounded-lg border-2 border-gray-200 bg-gray-200 p-2 text-black dark:border-gray-400 dark:bg-gray-400 dark:text-slate-800"
+					<Button
 						onclick={() => {
 							problemState.options.push({
 								value: '',
@@ -73,7 +72,7 @@
 						}}
 					>
 						Add Option
-					</button>
+					</Button>
 				</div>
 				<div class="mb-2 flex flex-col gap-4">
 					{#each options as _, index}

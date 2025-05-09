@@ -6,7 +6,7 @@
 </script>
 
 <Button
-	class="cdark:text-white flex flex-col bg-gray-400 p-2 text-center text-lg text-gray-100 dark:bg-gray-700"
+	class="flex flex-col p-2 text-center text-lg"
 	onclick={() => alert('AI Prompt clicked but not implemented yet!')}
 >
 	<IcBaselineChatBubbleOutline />
