@@ -34,7 +34,10 @@
 >
 	<div class="container mx-auto flex w-full justify-between">
 		<div class="flex h-16 items-center">
-			<button onclick={() => goto(prependBaseUrl("/"))} class="text-xl font-bold text-gray-900 dark:text-white">
+			<button
+				onclick={() => goto(prependBaseUrl('/'))}
+				class="text-xl font-bold text-gray-900 dark:text-white"
+			>
 				Betty's Brain Mathematics
 			</button>
 		</div>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-    import { prependBaseUrl } from '$lib/utils';
+	import { prependBaseUrl } from '$lib/utils';
 </script>
 
 <div class="container mx-auto flex h-full w-full flex-col">
@@ -11,7 +11,7 @@
 			</h2>
 			<h3 class="text-lg text-gray-900 dark:text-white">
 				{page.error.message}. Please check the URL or return to the
-				<a href="{prependBaseUrl('/')}" class="underline">homepage</a>.
+				<a href={prependBaseUrl('/')} class="underline">homepage</a>.
 			</h3>
 		</div>
 	{:else}
@@ -19,7 +19,7 @@
 			<h2 class="text-2xl font-bold text-gray-900 dark:text-white">Oops! Something went wrong.</h2>
 			<h3 class="text-lg text-gray-900 dark:text-white">
 				{page.error.message}. Please check the URL or return to the
-				<a href="{prependBaseUrl('/')}" class="underline">homepage</a>.
+				<a href={prependBaseUrl('/')} class="underline">homepage</a>.
 			</h3>
 		</div>
 	{/if}
