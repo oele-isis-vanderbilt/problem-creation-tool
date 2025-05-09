@@ -5,7 +5,7 @@
 		type Problem,
 		type WordProblem
 	} from '$lib/services/models';
-	import { Input, Radio, Textarea } from 'flowbite-svelte';
+	import { Input } from 'flowbite-svelte';
 	import FlipEditPreview from '$lib/components/problems/flip-edit-preview.svelte';
 	import { isEqual } from 'underscore';
 	import DifficultyButtons from '$lib/components/problems/difficulty-buttons.svelte';
@@ -14,6 +14,7 @@
 	import validateProblem from './questionValidator';
 	import McqOptionAdder from './mcq-option-adder.svelte';
 	import McqOptionPreview from './mcq-option-preview.svelte';
+	import Editor from '$lib/components/tiptap/editor.svelte';
 
 	let {
 		problem = $bindable(),
@@ -32,6 +33,14 @@
 		return validationErrors;
 	});
 
+	function getEditorContent(content: string) {
+		try {
+			return JSON.parse(content);
+		} catch (e) {
+			return content;
+		}
+	}
+
 	$effect(() => {
 		if (!isEqual(problemState, problem)) {
 			onProblemUpdated(problemState);
@@ -48,10 +57,12 @@
 				</div>
 			{:else}
 				<Input type="text" placeholder="Title" bind:value={problemState.title} class="mb-2" />
-				<Textarea
-					placeholder="Problem Description"
-					bind:value={problemState.description}
-					class="mb-2"
+				<Editor
+					content={getEditorContent(problemState.description)}
+					onContentUpdate={(contentJson) => {
+						problemState.description = JSON.stringify(contentJson);
+					}}
+					placeholder="Click to Edit Problem Description"
 				/>
 				<div class="mb-4 flex flex-row items-center justify-between gap-2">
 					<div class="w-2/3">
@@ -83,11 +94,10 @@
 			<h2 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">
 				{problem.title}
 			</h2>
-			<Textarea
+			<Editor
 				placeholder="Problem Description"
-				bind:value={problemState.description}
-				class="mb-2"
-				disabled
+				readOnly
+				content={getEditorContent(problem.description)}
 			/>
 			{#if problem.kind === ProblemKind.MULTIPLE_CHOICE}
 				{@const state = problemState as MultipleChoiceProblem}

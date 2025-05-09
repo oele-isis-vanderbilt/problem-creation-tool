@@ -4,7 +4,10 @@
 	import PlaceHolder from '@tiptap/extension-placeholder';
 	import type { JSONContent } from '@tiptap/core';
 	import { Editor, EditorContent, createEditor } from 'svelte-tiptap';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
+	import TopMenu from './top-menu.svelte';
+	import { Image as TipTapImage } from '@tiptap/extension-image';
+	import TextAlign from '@tiptap/extension-text-align';
 
 	let {
 		content,
@@ -18,7 +21,7 @@
 		onContentUpdate?: (content: JSONContent) => void;
 	} = $props();
 
-	let editor = $state<Readable<Editor>>();
+	let editor = $state() as Readable<Editor>;
 
 	onMount(() => {
 		editor = createEditor({
@@ -26,14 +29,21 @@
 				StarterKit,
 				PlaceHolder.configure({
 					placeholder: placeholder || 'Type something...'
+				}),
+				TipTapImage.configure({
+					HTMLAttributes: {
+						class: 'mx-auto object-contain px-10 click:border-2 border-primary-500'
+					}
+				}),
+				TextAlign.configure({
+					types: ['heading', 'paragraph']
 				})
 			],
 			content: content,
-
 			editorProps: {
 				attributes: {
 					class:
-						'border-2 border-black rounded-b-md p-3 outline-hidden min-h-[300px] bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
+						'min-h-96 block w-full rtl:text-right p-2.5 focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-500 dark:focus:ring-primary-500 bg-gray-50 text-gray-900 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 border border-gray-300 dark:border-gray-500'
 				}
 			},
 			onUpdate: ({ editor }) => {
@@ -45,8 +55,17 @@
 			editable: !readOnly
 		});
 	});
+
+	onDestroy(() => {
+		if (editor) {
+			$editor.destroy();
+		}
+	});
 </script>
 
-<div class="flex h-full w-full flex-col">
+<div class="mb-3 flex h-full w-full flex-col rounded-lg">
+	{#if editor && !readOnly}
+		<TopMenu bind:editor={$editor} />
+	{/if}
 	<EditorContent editor={$editor} />
 </div>
