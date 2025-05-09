@@ -5,7 +5,7 @@
 	import { ProblemKind, type MultipleChoiceProblem, type Problem } from '$lib/services/models';
 	import { getContext } from 'svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
-	import Mcq from '$lib/components/problems/mcq/problem.svelte';
+	import ProblemComponent from '$lib/components/problems/problem/problem.svelte';
 	import { Accordion, AccordionItem } from 'flowbite-svelte';
 	import ProblemHeader from '$lib/components/problems/problem-header.svelte';
 	import { debounce, friendlyDateTime } from '$lib/utils';
@@ -22,11 +22,7 @@
 	});
 
 	function onAddProblem(kind: ProblemKind) {
-		if (kind === ProblemKind.MULTIPLE_CHOICE) {
-			addNewProblem(module.id, kind, appEnv.auth.user);
-		} else {
-			alert('Problem kind not supported yet: ' + kind);
-		}
+		addNewProblem(module.id, kind, appEnv.auth.user);
 	}
 
 	function onDeleteProblem(problemId: string) {
@@ -69,13 +65,10 @@
 						onProblemDeleted={() => onDeleteProblem(problem.id)}
 					/>
 				{/snippet}
-
-				{#if problem.kind === ProblemKind.MULTIPLE_CHOICE}
-					<Mcq
-						bind:problem={module.problems[index] as MultipleChoiceProblem}
-						onProblemUpdated={onUpdateProblem}
-					/>
-				{/if}
+				<ProblemComponent
+					bind:problem={module.problems[index]}
+					onProblemUpdated={onUpdateProblem}
+				/>
 			</AccordionItem>
 		{/each}
 	</Accordion>
