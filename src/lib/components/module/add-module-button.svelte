@@ -83,7 +83,7 @@
 	<HeroiconsPlusCircle16Solid />
 </Button>
 
-<Modal open={isModalOpen} title="Add a New Module" onClose={() => closeModal()}>
+<Modal bind:open={isModalOpen} title="Add a New Module" onClose={() => closeModal()}>
 	{#snippet main()}
 		<form class="flex h-full w-full flex-col">
 			<input
