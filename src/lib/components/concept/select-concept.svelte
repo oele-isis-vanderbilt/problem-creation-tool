@@ -34,7 +34,11 @@
 </script>
 
 <div class="flex h-full w-full flex-row gap-2">
-	<MultiSelect class="flex-1" bind:value={selectedConceptIds} bind:items={conceptItems}
+	<MultiSelect
+		class="flex-1"
+		bind:value={selectedConceptIds}
+		items={conceptItems}
+		placeholder="Select concepts related to this problem"
 	></MultiSelect>
 	<Button
 		onclick={() => {

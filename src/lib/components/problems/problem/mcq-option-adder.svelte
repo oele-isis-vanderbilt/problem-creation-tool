@@ -18,7 +18,7 @@
 				value: '',
 				displayName: '',
 				isCorrect: false,
-				misconceptions: []
+				misconception: ''
 			});
 		}}
 	>
@@ -38,7 +38,7 @@
 					value: '',
 					displayName: '',
 					isCorrect: false,
-					misconceptions: []
+					misconception: ''
 				});
 			}}
 			onToggleCorrect={() => {

@@ -3,6 +3,7 @@ import {
 	ProblemDifficulty,
 	ProblemKind,
 	type Concept,
+	type Misconception,
 	type Module,
 	type MultipleChoiceProblem,
 	type Problem,
@@ -18,15 +19,23 @@ export let store: {
 	deleteModule: (id: string) => void;
 	uploadImage: (imageFile: File) => Promise<string>;
 	uuid: () => string;
+	getImageUrl: (uuid: string) => Promise<string>;
+
 	updateModuleNameDescription: (id: string, name: string, description: string) => void;
+
 	addNewProblem: (moduleId: string, kind: ProblemKind, userId: string) => Promise<void>;
 	deleteProblem: (problemId: string, moduleId: string) => void;
-	getImageUrl: (uuid: string) => Promise<string>;
 	updateProblem: (moduleId: string, problem: Problem) => void;
+
 	addConcept: (concept: Concept) => Promise<void>;
 	updateConcept: (concept: Concept) => void;
 	getConcept: (id: string) => Concept | undefined;
 	getConceptsFn: () => () => Record<string, Concept>;
+
+	getMisconceptionsFn: () => () => Record<string, Misconception>;
+	addMisconception: (misconception: Misconception) => Promise<void>;
+	getMisconception: (id: string) => Misconception;
+	updateMisconception: (misconception: Misconception) => void;
 } | null = null;
 
 export async function initialize() {
@@ -73,6 +82,10 @@ async function initializeStore() {
 		concepts: Record<string, Concept>;
 	};
 
+	const _misconceptionsState = (await Agent.state('mathMisconceptions')) as {
+		misconceptions: Record<string, Misconception>;
+	};
+
 	if (!_modulesState.modules) {
 		_modulesState.modules = {};
 	}
@@ -85,11 +98,16 @@ async function initializeStore() {
 		_conceptsState.concepts = {};
 	}
 
+	if (!_misconceptionsState.misconceptions) {
+		_misconceptionsState.misconceptions = {};
+	}
+
 	let state = $state<Record<string, StateModule>>(
 		composeStore(_modulesState.modules, _problemsState.problems)
 	);
 
 	let concepts = $state<Record<string, Concept>>(_conceptsState.concepts);
+	let misconceptions = $state<Record<string, Misconception>>(_misconceptionsState.misconceptions);
 
 	const modulesCallback = (update: { state: object }) => {
 		const _state = update.state as { modules: Record<string, Module> };
@@ -101,8 +119,14 @@ async function initializeStore() {
 		concepts = _state.concepts;
 	};
 
+	const misconceptionsCallback = (update: { state: object }) => {
+		const _state = update.state as { misconceptions: Record<string, Misconception> };
+		misconceptions = _state.misconceptions;
+	};
+
 	Agent.watch('mathModules', modulesCallback);
 	Agent.watch('mathConcepts', conceptsCallback);
+	Agent.watch('mathMisconceptions', misconceptionsCallback);
 
 	return {
 		getFn: () => state,
@@ -266,6 +290,30 @@ async function initializeStore() {
 			existingConcept.description = concept.description;
 			existingConcept.relatedConcepts = clone(concept.relatedConcepts);
 			existingConcept.aiPrompt = concept.aiPrompt;
+		},
+
+		getMisconceptionsFn: () => {
+			return () => misconceptions;
+		},
+		getMisconception: (id: string) => {
+			return _misconceptionsState.misconceptions[id];
+		},
+		addMisconception: async (misconception: Misconception) => {
+			let newMisconception = (await Agent.state(misconception.id)) as Misconception;
+			newMisconception = {
+				...newMisconception,
+				...misconception
+			};
+			_misconceptionsState.misconceptions[newMisconception.id] = newMisconception;
+		},
+		updateMisconception: (misconception: Misconception) => {
+			const existingMisconception = _misconceptionsState.misconceptions[misconception.id];
+			if (!existingMisconception) {
+				throw new Error(`Misconception with id ${misconception.id} not found`);
+			}
+			existingMisconception.name = misconception.name;
+			existingMisconception.aiDefinition = misconception.aiDefinition;
+			existingMisconception.aiFeedback = misconception.aiFeedback;
 		}
 	};
 }

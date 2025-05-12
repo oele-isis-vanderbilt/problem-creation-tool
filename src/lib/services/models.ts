@@ -13,6 +13,13 @@ export interface Concept {
 	aiPrompt: string;
 }
 
+export interface Misconception {
+	id: string;
+	name: string;
+	aiDefinition: string;
+	aiFeedback: string;
+}
+
 export interface Module {
 	id: string;
 	name: string;
@@ -55,7 +62,7 @@ export interface MultipleChoiceOption {
 	displayName: string;
 	value: string;
 	isCorrect: boolean;
-	misconceptions?: string[];
+	misconception: string;
 }
 
 export interface MultipleChoiceProblem extends BaseProblem {

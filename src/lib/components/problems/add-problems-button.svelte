@@ -11,7 +11,7 @@
 </script>
 
 <Button>Add a Problem<ChevronDownOutline /></Button>
-<Dropdown bind:open={isDropdownOpen}>
+<Dropdown bind:isOpen={isDropdownOpen} simple>
 	{#each Object.values(ProblemKind) as value}
 		<DropdownItem
 			onclick={() => {
