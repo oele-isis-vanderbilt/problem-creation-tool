@@ -58,7 +58,7 @@
 	}
 </script>
 
-<Modal {open} size="lg" onClose={closeModal} title="Add a Concept">
+<Modal {open} size="lg" onClose={closeModal} title="Add a Misconception">
 	{#snippet main()}
 		<form class="flex h-full min-h-64 w-full flex-col gap-2">
 			<Input
