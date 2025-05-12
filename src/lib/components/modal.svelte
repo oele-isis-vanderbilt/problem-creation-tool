@@ -6,7 +6,7 @@
 		title,
 		footer: modalFooter,
 		main,
-		open,
+		open = $bindable(),
 		onClose,
 		size = 'lg'
 	}: {
@@ -19,11 +19,9 @@
 	} = $props();
 </script>
 
-{#if open}
-	<Modal {size} {open} {title} on:close={onClose}>
-		{@render main()}
-		{#snippet footer()}
-			{@render modalFooter()}
-		{/snippet}
-	</Modal>
-{/if}
+<Modal {size} bind:open {title} onclose={onClose}>
+	{@render main()}
+	{#snippet footer()}
+		{@render modalFooter()}
+	{/snippet}
+</Modal>
