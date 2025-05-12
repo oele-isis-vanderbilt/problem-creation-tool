@@ -3,8 +3,6 @@
 	import { Button, Input, Toggle } from 'flowbite-svelte';
 	import HeroiconsPlusCircle16Solid from 'virtual:icons/heroicons-solid/plus-circle';
 	import HeroIconsTrash from 'virtual:icons/heroicons-solid/trash';
-	import { Select } from 'flowbite-svelte';
-	import AddEditMisconception from '$lib/components/concept/add-edit-misconception.svelte';
 	import SelectMisconception from '$lib/components/concept/select-misconception.svelte';
 
 	let {
@@ -27,7 +25,9 @@
 >
 	<div class="flex w-3/4 flex-1 flex-row gap-2">
 		<Input id="value" required type="text" bind:value={option.value} placeholder="Option Value" />
-		<SelectMisconception bind:selectedMisconceptionId={option.misconception} />
+		{#if !option.isCorrect}
+			<SelectMisconception bind:selectedMisconceptionId={option.misconception} />
+		{/if}
 	</div>
 	{#if isLast}
 		<Button onclick={onAddOption}>

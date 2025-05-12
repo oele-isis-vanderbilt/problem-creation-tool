@@ -35,6 +35,7 @@
 		bind:value={selectedMisconceptionId}
 		items={misconceptionItems}
 		clearable
+		placeholder="Select misconception"
 	/>
 	<Button
 		onclick={() => {
