@@ -42,6 +42,9 @@
 	}
 
 	$effect(() => {
+		if (problemState.kind === ProblemKind.MULTIPLE_CHOICE) {
+			problemState.options;
+		}
 		if (!isEqual(problemState, problem)) {
 			onProblemUpdated(problemState);
 		}
@@ -83,7 +86,7 @@
 					<div
 						class="mb-2 w-full rounded-lg border-2 border-red-200 bg-red-100 p-2 text-red-600 dark:border-red-400 dark:bg-red-400 dark:text-white"
 					>
-						{#each errors as error}
+						{#each new Set(errors) as error}
 							<p>{error}</p>
 						{/each}
 					</div>

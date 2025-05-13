@@ -58,12 +58,42 @@ interface BaseProblem {
 	createdBy?: string;
 }
 
-export interface MultipleChoiceOption {
-	displayName: string;
-	value: string;
+export enum MCQOptionKind {
+	TEXT = 'text',
+	FRACTION = 'fraction',
+	IMAGE = 'image'
+}
+
+interface BaseMultipleChoiceOption {
+	id: string;
+	kind: MCQOptionKind;
 	isCorrect: boolean;
 	misconception: string;
 }
+
+export interface MultipleChoiceOptionText extends BaseMultipleChoiceOption {
+	kind: MCQOptionKind.TEXT;
+	displayName: string;
+	value: string;
+}
+
+export interface MultipleChoiceOptionFraction extends BaseMultipleChoiceOption {
+	kind: MCQOptionKind.FRACTION;
+	numerator: string;
+	denominator: string;
+	wholeNumber?: string;
+}
+
+export interface MultipleChoiceOptionImage extends BaseMultipleChoiceOption {
+	kind: MCQOptionKind.IMAGE;
+	imageUUID: string;
+	altText: string;
+}
+
+export type MultipleChoiceOption =
+	| MultipleChoiceOptionText
+	| MultipleChoiceOptionFraction
+	| MultipleChoiceOptionImage;
 
 export interface MultipleChoiceProblem extends BaseProblem {
 	kind: ProblemKind.MULTIPLE_CHOICE;
