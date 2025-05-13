@@ -2,26 +2,28 @@
 	import Modal from '$lib/components/modal.svelte';
 	import { store } from '$lib/services/knowLearningStore.svelte';
 	import type { Concept } from '$lib/services/models';
-	import { Button, Input, MultiSelect, Textarea, type SelectOptionType } from 'flowbite-svelte';
+	import {
+		Button,
+		Input,
+		Label,
+		MultiSelect,
+		Textarea,
+		type SelectOptionType
+	} from 'flowbite-svelte';
+	import { emptyConcept } from '$lib/utils';
 
 	const { addConcept, getConceptsFn, uuid, updateConcept } = store!;
 
-	const emptyConcept = () => {
-		return {
-			id: '',
-			name: '',
-			description: '',
-			aiPrompt: '',
-			relatedConcepts: []
-		} as Concept;
-	};
-
 	let {
 		open = $bindable(),
-		currentConcept = $bindable(emptyConcept())
+		previewOnly = false,
+		currentConcept = $bindable(emptyConcept()),
+		onClose
 	}: {
 		open: boolean;
+		previewOnly?: boolean;
 		currentConcept?: Concept;
+		onClose?: () => void;
 	} = $props();
 
 	const conceptItems = $derived.by(() => {
@@ -48,6 +50,9 @@
 		open = false;
 		currentConcept = emptyConcept();
 		submissionErrors = [];
+		if (onClose) {
+			onClose();
+		}
 	}
 
 	function validateAndSubmit() {
@@ -72,28 +77,45 @@
 	}
 </script>
 
-<Modal {open} size="lg" onClose={closeModal} title="Add a Concept">
+<Modal
+	{open}
+	size="lg"
+	onClose={closeModal}
+	title={previewOnly ? 'Preview Concept' : 'Add a Concept'}
+>
 	{#snippet main()}
 		<form class="flex h-full min-h-64 w-full flex-col gap-2">
+			<Label for="conceptName" class="text-lg font-bold">Concept Name</Label>
 			<Input
 				id="conceptName"
 				required
 				type="text"
 				bind:value={currentConcept.name}
 				placeholder="Concept Name"
+				disabled={previewOnly}
 			/>
+			<Label for="conceptDescription" class="text-lg font-bold">Concept Description</Label>
 			<Textarea
 				id="conceptDescription"
 				required
 				bind:value={currentConcept.description}
 				placeholder="Concept Description"
+				disabled={previewOnly}
 			/>
-			<Textarea id="conceptAiPrompt" bind:value={currentConcept.aiPrompt} placeholder="AI Prompt" />
+			<Label for="conceptAiPrompt" class="text-lg font-bold">AI Prompt</Label>
+			<Textarea
+				id="conceptAiPrompt"
+				bind:value={currentConcept.aiPrompt}
+				placeholder="AI Prompt"
+				disabled={previewOnly}
+			/>
+			<Label for="relatedConcepts" class="text-lg font-bold">Related Concepts</Label>
 			<MultiSelect
 				id="relatedConcepts"
 				bind:value={currentConcept.relatedConcepts}
 				placeholder={'Select Related Concepts'}
 				items={conceptItems}
+				disabled={previewOnly}
 			></MultiSelect>
 			{#if submissionErrors.length > 0}
 				<div class="bg-danger-600 text-primary-600 mb-2 w-full rounded-lg border-2 p-2">
@@ -116,6 +138,7 @@
 						open = false;
 					}
 				}}
+				disabled={previewOnly}
 			>
 				{currentConcept.id ? 'Update Concept' : 'Add Concept'}
 			</Button>

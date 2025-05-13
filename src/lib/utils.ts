@@ -1,6 +1,7 @@
 import type { AgentAuth } from '@knowlearning/agents/browser';
-import { debounce as df } from 'underscore';
+import { debounce as df, chunk } from 'underscore';
 import { base } from '$app/paths';
+import type { Concept, Misconception } from './services/models';
 
 export const isAnonUser = (auth: AgentAuth) => {
 	return auth.info?.name === 'anonymous';
@@ -33,4 +34,27 @@ export function prependBaseUrl(url: string) {
 	} else {
 		return `/${urlWithoutLeadingSlash}`;
 	}
+}
+
+export function paginate<T>(array: T[], pageSize: number = 10) {
+	return chunk(array, pageSize);
+}
+
+export function emptyConcept(): Concept {
+	return {
+		id: '',
+		name: '',
+		description: '',
+		aiPrompt: '',
+		relatedConcepts: []
+	} as Concept;
+}
+
+export function emptyMisconception(): Misconception {
+	return {
+		id: '',
+		name: '',
+		aiDefinition: '',
+		aiFeedback: ''
+	} as Misconception;
 }
