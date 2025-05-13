@@ -15,6 +15,8 @@
 	import McqOptionAdder from './mcq-option-adder.svelte';
 	import McqOptionPreview from './mcq-option-preview.svelte';
 	import Editor from '$lib/components/tiptap/editor.svelte';
+	import AnswerBlocksAdder from './answer-blocks-adder.svelte';
+	import AnswerBlockComponent from './answer-block.svelte';
 
 	let {
 		problem = $bindable(),
@@ -79,7 +81,8 @@
 					<McqOptionAdder bind:options={state.options} />
 				{:else if problem.kind === ProblemKind.WORD_PROBLEM}
 					{@const state = problemState as WordProblem}
-					<Input type="text" placeholder="Answer" bind:value={state.answer} class="mb-2" />
+					<!-- <Input type="text" placeholder="Answer" bind:value={state.answer} class="mb-2" /> -->
+					<AnswerBlocksAdder bind:answerBlocks={state.answerBlocks} />
 				{/if}
 
 				{#if errors.length > 0}
@@ -106,7 +109,12 @@
 				{@const state = problemState as MultipleChoiceProblem}
 				<McqOptionPreview options={state.options} />
 			{:else if problem.kind === ProblemKind.WORD_PROBLEM}
-				<Input type="text" placeholder="Answer" class="mb-2" />
+				{@const state = problemState as WordProblem}
+				<div class="flex w-full flex-row items-center justify-center">
+					{#each state.answerBlocks as block}
+						<AnswerBlockComponent mode="preview" answerBlock={block} />
+					{/each}
+				</div>
 			{/if}
 		{/snippet}
 	</FlipEditPreview>

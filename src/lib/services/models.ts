@@ -100,9 +100,15 @@ export interface MultipleChoiceProblem extends BaseProblem {
 	options: MultipleChoiceOption[];
 }
 
+export interface AnswerBlock {
+	label?: string;
+	value: string;
+	placeholder: string;
+}
+
 export interface WordProblem extends BaseProblem {
 	kind: ProblemKind.WORD_PROBLEM;
-	answer: string;
+	answerBlocks: AnswerBlock[];
 }
 
 export type Problem = MultipleChoiceProblem | WordProblem;

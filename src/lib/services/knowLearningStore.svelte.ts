@@ -131,7 +131,7 @@ async function initializeStore() {
 	return {
 		getFn: () => state,
 		addEmptyModule: async (module: StateModule) => {
-			let moduleState = (await Agent.state(module.id)) as Module;
+			let moduleState = {} as Module;
 			moduleState = {
 				...moduleState,
 				...module,
@@ -180,7 +180,7 @@ async function initializeStore() {
 
 			switch (kind) {
 				case ProblemKind.MULTIPLE_CHOICE:
-					let mcqProblem = (await Agent.state(uuid)) as MultipleChoiceProblem;
+					let mcqProblem = {} as MultipleChoiceProblem;
 					mcqProblem = {
 						...mcqProblem,
 						id: uuid,
@@ -199,7 +199,7 @@ async function initializeStore() {
 					module.problems = [...module.problems, mcqProblem.id];
 					break;
 				case ProblemKind.WORD_PROBLEM:
-					let wordProblem = (await Agent.state(uuid)) as WordProblem;
+					let wordProblem = {} as WordProblem;
 					wordProblem = {
 						...wordProblem,
 						id: uuid,
@@ -207,7 +207,7 @@ async function initializeStore() {
 						title: '',
 						description: '',
 						difficulty: ProblemDifficulty.EASY,
-						answer: '',
+						answerBlocks: [],
 						aiPrompt: '',
 						concepts: [],
 						createdAt: new Date().toISOString(),
@@ -262,7 +262,7 @@ async function initializeStore() {
 			} else if (problem.kind === ProblemKind.WORD_PROBLEM) {
 				let wordProblem = problem as WordProblem;
 				let existingWordProblem = existingProblem as WordProblem;
-				existingWordProblem.answer = wordProblem.answer;
+				existingWordProblem.answerBlocks = [...wordProblem.answerBlocks];
 			}
 
 			state = composeStore(_modulesState.modules, _problemsState.problems);
