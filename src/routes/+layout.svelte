@@ -51,8 +51,8 @@
 				href={prependBaseUrl('/')}
 				class={[
 					'dark:text-primary-600 font-bold',
-					isActive('/') && 'text-primary-800 dark:text-secondary-100 font-bold',
-					isActive('/modules') && 'text-primary-800 dark:text-secondary-100 font-bold'
+					isActive('/') && 'text-primary-800 dark:text-secondary-100 text-lg font-bold',
+					isActive('/modules') && 'text-primary-800 dark:text-secondary-100 text-lg font-bold'
 				]}
 			>
 				Modules
