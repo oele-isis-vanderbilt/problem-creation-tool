@@ -48,7 +48,7 @@
 		</div>
 		<div class="flex items-center justify-center gap-4 text-center">
 			<A
-				href="/"
+				href={prependBaseUrl('/')}
 				class={[
 					'dark:text-primary-600 font-bold',
 					isActive('/') && 'text-primary-800 dark:text-secondary-100 font-bold',
@@ -58,7 +58,7 @@
 				Modules
 			</A>
 			<A
-				href="/concepts"
+				href={prependBaseUrl('/concepts')}
 				class={[
 					'dark:text-primary-600 font-bold',
 					isActive('/concepts') && 'text-primary-800 dark:text-secondary-100 text-lg font-bold'
