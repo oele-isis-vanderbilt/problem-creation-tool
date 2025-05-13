@@ -27,6 +27,7 @@
 
 	const isActive = (url: string) => {
 		const currentPath = page.url.pathname;
+		console.log('Current Path:', currentPath, currentPath.startsWith(url + '/'), url);
 		return currentPath === url || currentPath.startsWith(url + '/');
 	};
 
@@ -50,7 +51,8 @@
 				href="/"
 				class={[
 					'dark:text-primary-600 font-bold',
-					isActive('/') && 'text-primary-800 dark:text-secondary-100 font-bold'
+					isActive('/') && 'text-primary-800 dark:text-secondary-100 font-bold',
+					isActive('/modules') && 'text-primary-800 dark:text-secondary-100 font-bold'
 				]}
 			>
 				Modules

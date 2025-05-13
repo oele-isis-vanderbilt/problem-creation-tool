@@ -2,7 +2,7 @@
 	import Modal from '$lib/components/modal.svelte';
 	import { store } from '$lib/services/knowLearningStore.svelte';
 	import type { Misconception } from '$lib/services/models';
-	import { Button, Input, Textarea } from 'flowbite-svelte';
+	import { Button, Input, Label, Textarea } from 'flowbite-svelte';
 	import { emptyMisconception } from '$lib/utils';
 
 	const { uuid, updateMisconception, addMisconception } = store!;
@@ -65,6 +65,7 @@
 >
 	{#snippet main()}
 		<form class="flex h-full min-h-64 w-full flex-col gap-2">
+			<Label for="misconceptionName" class="text-sm font-bold">Misconception Name</Label>
 			<Input
 				id="misconceptionName"
 				required
@@ -73,6 +74,9 @@
 				placeholder="Misconception Name"
 				disabled={previewOnly}
 			/>
+			<Label for="misconceptionAiDefinition" class="text-sm font-bold"
+				>Misconception AI Definition</Label
+			>
 			<Textarea
 				id="misconceptionAiDefinition"
 				required
@@ -80,6 +84,9 @@
 				placeholder="Misconception Description"
 				disabled={previewOnly}
 			/>
+			<Label for="misconceptionAiFeedback" class="text-sm font-bold"
+				>Misconception AI Feedback</Label
+			>
 			<Textarea
 				id="misconceptionAiFeedback"
 				bind:value={currentMisconception.aiFeedback}

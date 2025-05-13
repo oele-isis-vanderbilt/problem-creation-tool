@@ -85,7 +85,7 @@
 >
 	{#snippet main()}
 		<form class="flex h-full min-h-64 w-full flex-col gap-2">
-			<Label for="conceptName" class="text-lg font-bold">Concept Name</Label>
+			<Label for="conceptName" class="text-sm font-bold">Concept Name</Label>
 			<Input
 				id="conceptName"
 				required
@@ -94,7 +94,7 @@
 				placeholder="Concept Name"
 				disabled={previewOnly}
 			/>
-			<Label for="conceptDescription" class="text-lg font-bold">Concept Description</Label>
+			<Label for="conceptDescription" class="text-sm font-bold">Concept Description</Label>
 			<Textarea
 				id="conceptDescription"
 				required
@@ -102,14 +102,14 @@
 				placeholder="Concept Description"
 				disabled={previewOnly}
 			/>
-			<Label for="conceptAiPrompt" class="text-lg font-bold">AI Prompt</Label>
+			<Label for="conceptAiPrompt" class="text-sm font-bold">AI Prompt</Label>
 			<Textarea
 				id="conceptAiPrompt"
 				bind:value={currentConcept.aiPrompt}
 				placeholder="AI Prompt"
 				disabled={previewOnly}
 			/>
-			<Label for="relatedConcepts" class="text-lg font-bold">Related Concepts</Label>
+			<Label for="relatedConcepts" class="text-sm font-bold">Related Concepts</Label>
 			<MultiSelect
 				id="relatedConcepts"
 				bind:value={currentConcept.relatedConcepts}
