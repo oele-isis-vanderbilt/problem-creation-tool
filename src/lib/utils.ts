@@ -58,3 +58,14 @@ export function emptyMisconception(): Misconception {
 		aiFeedback: ''
 	} as Misconception;
 }
+
+export function getMathJAXFraction(
+	numerator: string,
+	denominator: string,
+	wholeNumber: string | null = null
+): string {
+	const wholeNumberPart = wholeNumber
+		? `\$\$${wholeNumber} \\frac{${numerator}}{${denominator}}\$\$`
+		: `\$\$\\frac{${numerator}}{${denominator}}\$\$`;
+	return wholeNumberPart;
+}

@@ -23,6 +23,13 @@
 
 	let editor = $state() as Readable<Editor>;
 
+	const getEditorClass = () => {
+		if (readOnly) {
+			return 'block w-full rtl:text-right p-2.5 focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-500 dark:focus:ring-primary-500 bg-gray-50 text-gray-900 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 border border-gray-300 dark:border-gray-500';
+		}
+		return 'min-h-96 block w-full rtl:text-right p-2.5 focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-500 dark:focus:ring-primary-500 bg-gray-50 text-gray-900 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 border border-gray-300 dark:border-gray-500';
+	};
+
 	onMount(() => {
 		editor = createEditor({
 			extensions: [
@@ -42,8 +49,7 @@
 			content: content,
 			editorProps: {
 				attributes: {
-					class:
-						'min-h-96 block w-full rtl:text-right p-2.5 focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-500 dark:focus:ring-primary-500 bg-gray-50 text-gray-900 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 border border-gray-300 dark:border-gray-500'
+					class: getEditorClass()
 				}
 			},
 			onUpdate: ({ editor }) => {

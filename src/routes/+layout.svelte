@@ -27,7 +27,6 @@
 
 	const isActive = (url: string) => {
 		const currentPath = page.url.pathname;
-		console.log('Current Path:', currentPath, currentPath.startsWith(url + '/'), url);
 		return currentPath === url || currentPath.startsWith(url + '/');
 	};
 
