@@ -2,25 +2,21 @@
 	import Modal from '$lib/components/modal.svelte';
 	import { store } from '$lib/services/knowLearningStore.svelte';
 	import type { Misconception } from '$lib/services/models';
-	import { Button, Input, Textarea } from 'flowbite-svelte';
+	import { Button, Input, Label, Textarea } from 'flowbite-svelte';
+	import { emptyMisconception } from '$lib/utils';
 
 	const { uuid, updateMisconception, addMisconception } = store!;
 
-	const emptyMisconception = () => {
-		return {
-			id: '',
-			name: '',
-			aiDefinition: '',
-			aiFeedback: ''
-		} as Misconception;
-	};
-
 	let {
 		open = $bindable(),
-		currentMisconception = $bindable(emptyMisconception())
+		currentMisconception = $bindable(emptyMisconception()),
+		previewOnly = false,
+		onClose
 	}: {
 		open: boolean;
 		currentMisconception?: Misconception;
+		previewOnly?: boolean;
+		onClose?: () => void;
 	} = $props();
 
 	let submissionErrors = $state<string[]>([]);
@@ -29,6 +25,9 @@
 		open = false;
 		currentMisconception = emptyMisconception();
 		submissionErrors = [];
+		if (onClose) {
+			onClose();
+		}
 	}
 
 	function validateAndSubmit() {
@@ -58,26 +57,41 @@
 	}
 </script>
 
-<Modal {open} size="lg" onClose={closeModal} title="Add a Misconception">
+<Modal
+	{open}
+	size="lg"
+	onClose={closeModal}
+	title={previewOnly ? 'Preview Misconception' : 'Add a Misconception'}
+>
 	{#snippet main()}
 		<form class="flex h-full min-h-64 w-full flex-col gap-2">
+			<Label for="misconceptionName" class="text-sm font-bold">Misconception Name</Label>
 			<Input
 				id="misconceptionName"
 				required
 				type="text"
 				bind:value={currentMisconception.name}
 				placeholder="Misconception Name"
+				disabled={previewOnly}
 			/>
+			<Label for="misconceptionAiDefinition" class="text-sm font-bold"
+				>Misconception AI Definition</Label
+			>
 			<Textarea
 				id="misconceptionAiDefinition"
 				required
 				bind:value={currentMisconception.aiDefinition}
 				placeholder="Misconception Description"
+				disabled={previewOnly}
 			/>
+			<Label for="misconceptionAiFeedback" class="text-sm font-bold"
+				>Misconception AI Feedback</Label
+			>
 			<Textarea
 				id="misconceptionAiFeedback"
 				bind:value={currentMisconception.aiFeedback}
 				placeholder="Misconception AI Feedback"
+				disabled={previewOnly}
 			/>
 			{#if submissionErrors.length > 0}
 				<div class="bg-danger-600 text-primary-600 mb-2 w-full rounded-lg border-2 p-2">
@@ -100,8 +114,9 @@
 						open = false;
 					}
 				}}
+				disabled={previewOnly}
 			>
-				{currentMisconception.id ? 'Update Concept' : 'Add Concept'}
+				{currentMisconception.id ? 'Update Misconception' : 'Add Misconception'}
 			</Button>
 		</div>
 	{/snippet}

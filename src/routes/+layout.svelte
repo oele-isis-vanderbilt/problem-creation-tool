@@ -12,7 +12,8 @@
 	import { logout } from '$lib/services/knowLearningStore.svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
 	import { prependBaseUrl } from '$lib/utils';
-	import { A, Button } from 'flowbite-svelte';
+	import { A } from 'flowbite-svelte';
+	import { page } from '$app/state';
 
 	let { data, children }: LayoutProps = $props();
 	let env = $state<AgentEnvironment | null>(data.env);
@@ -23,6 +24,12 @@
 			goto(prependBaseUrl('/login'));
 		}
 	});
+
+	const isActive = (url: string) => {
+		const currentPath = page.url.pathname;
+		console.log('Current Path:', currentPath, currentPath.startsWith(url + '/'), url);
+		return currentPath === url || currentPath.startsWith(url + '/');
+	};
 
 	async function handleLogout() {
 		await logout();
@@ -38,6 +45,27 @@
 			<A class="dark:text-secondary-200 text-lg font-bold" href={prependBaseUrl('/')}
 				>Betty's Brain Mathematics</A
 			>
+		</div>
+		<div class="flex items-center justify-center gap-4 text-center">
+			<A
+				href="/"
+				class={[
+					'dark:text-primary-600 font-bold',
+					isActive('/') && 'text-primary-800 dark:text-secondary-100 font-bold',
+					isActive('/modules') && 'text-primary-800 dark:text-secondary-100 font-bold'
+				]}
+			>
+				Modules
+			</A>
+			<A
+				href="/concepts"
+				class={[
+					'dark:text-primary-600 font-bold',
+					isActive('/concepts') && 'text-primary-800 dark:text-secondary-100 text-lg font-bold'
+				]}
+			>
+				Concepts and Misconceptions
+			</A>
 		</div>
 		<div class="flex items-center justify-end gap-2">
 			{#if env}
