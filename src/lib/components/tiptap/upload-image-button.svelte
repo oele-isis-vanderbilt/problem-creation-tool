@@ -13,12 +13,12 @@
 		let image = target.files[0];
 		const reader = new FileReader();
 
-        reader.readAsDataURL(image);
-        reader.onload = () => {
-            editor.commands.setImage({ src: reader.result as string, alt: image.name });
-    		editor.commands.focus('end');
-    		fileInput!.value = '';
-        }
+		reader.readAsDataURL(image);
+		reader.onload = () => {
+			editor.commands.setImage({ src: reader.result as string, alt: image.name });
+			editor.commands.focus('end');
+			fileInput!.value = '';
+		};
 	};
 
 	const onClick = () => {
