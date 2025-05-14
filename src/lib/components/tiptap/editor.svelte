@@ -40,7 +40,8 @@
 				TipTapImage.configure({
 					HTMLAttributes: {
 						class: 'mx-auto object-contain px-10 click:border-2 border-primary-500'
-					}
+					},
+					allowBase64: true
 				}),
 				TextAlign.configure({
 					types: ['heading', 'paragraph']
