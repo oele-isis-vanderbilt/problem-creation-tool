@@ -8,6 +8,8 @@
 	import TopMenu from './top-menu.svelte';
 	import { Image as TipTapImage } from '@tiptap/extension-image';
 	import TextAlign from '@tiptap/extension-text-align';
+	import 'katex/dist/katex.min.css';
+	import MathExtension from '@aarkue/tiptap-math-extension';
 
 	let {
 		content,
@@ -45,6 +47,10 @@
 				}),
 				TextAlign.configure({
 					types: ['heading', 'paragraph']
+				}),
+				MathExtension.configure({
+					delimeters: 'dollar',
+					addInlineMath: true
 				})
 			],
 			content: content,
