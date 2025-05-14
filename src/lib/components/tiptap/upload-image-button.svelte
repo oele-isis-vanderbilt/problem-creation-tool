@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { Editor } from 'svelte-tiptap';
 	import ImageIcon from 'virtual:icons/ic/baseline-image';
-	import { store } from '$lib/services/knowLearningStore.svelte';
 
 	let { editor = $bindable() }: { editor: Editor } = $props();
-	const { uploadImage, getImageUrl } = store!;
 
 	let fileInput: HTMLInputElement | null = $state(null);
 	const onFileSelected = async (e: Event) => {
@@ -13,11 +11,14 @@
 			return;
 		}
 		let image = target.files[0];
-		let uuid = await uploadImage(image);
-		let imageUrl = await getImageUrl(uuid);
-		editor.commands.setImage({ src: imageUrl });
-		editor.commands.focus('end');
-		fileInput!.value = '';
+		const reader = new FileReader();
+
+        reader.readAsDataURL(image);
+        reader.onload = () => {
+            editor.commands.setImage({ src: reader.result as string, alt: image.name });
+    		editor.commands.focus('end');
+    		fileInput!.value = '';
+        }
 	};
 
 	const onClick = () => {
