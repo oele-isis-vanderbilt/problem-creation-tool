@@ -2,6 +2,7 @@
 	import {
 		ProblemKind,
 		type MultipleChoiceProblem,
+		type NDigitOperation,
 		type Problem,
 		type WordProblem
 	} from '$lib/services/models';
@@ -17,6 +18,7 @@
 	import Editor from '$lib/components/tiptap/editor.svelte';
 	import AnswerBlocksAdder from './answer-blocks-adder.svelte';
 	import AnswerBlockComponent from './answer-block.svelte';
+	import NDigitOperationBlock from './n-digit-operation-block.svelte';
 
 	let {
 		problem = $bindable(),
@@ -46,6 +48,14 @@
 	$effect(() => {
 		if (problemState.kind === ProblemKind.MULTIPLE_CHOICE) {
 			problemState.options;
+		}
+		if (problemState.kind === ProblemKind.WORD_PROBLEM) {
+			problemState.answerBlocks;
+		}
+		if (problemState.kind === ProblemKind.N_DIGIT_OPERATION) {
+			problemState.operand1;
+			problemState.operand2;
+			problemState.operator;
 		}
 		if (!isEqual(problemState, problem)) {
 			onProblemUpdated(problemState);
@@ -81,8 +91,9 @@
 					<McqOptionAdder bind:options={state.options} />
 				{:else if problem.kind === ProblemKind.WORD_PROBLEM}
 					{@const state = problemState as WordProblem}
-					<!-- <Input type="text" placeholder="Answer" bind:value={state.answer} class="mb-2" /> -->
 					<AnswerBlocksAdder bind:answerBlocks={state.answerBlocks} />
+				{:else if problem.kind === ProblemKind.N_DIGIT_OPERATION}
+					<NDigitOperationBlock bind:problem={problemState as NDigitOperation} />
 				{/if}
 
 				{#if errors.length > 0}
@@ -114,6 +125,10 @@
 					{#each state.answerBlocks as block}
 						<AnswerBlockComponent mode="preview" answerBlock={block} />
 					{/each}
+				</div>
+			{:else if problem.kind === ProblemKind.N_DIGIT_OPERATION}
+				<div class="flex w-full flex-row items-center justify-center">
+					<NDigitOperationBlock problem={problemState as NDigitOperation} mode="preview" />
 				</div>
 			{/if}
 		{/snippet}

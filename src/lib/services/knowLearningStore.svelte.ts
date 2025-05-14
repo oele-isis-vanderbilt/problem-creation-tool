@@ -1,11 +1,13 @@
 import Agent from '@knowlearning/agents/browser.js';
 import {
+	Operator,
 	ProblemDifficulty,
 	ProblemKind,
 	type Concept,
 	type Misconception,
 	type Module,
 	type MultipleChoiceProblem,
+	type NDigitOperation,
 	type Problem,
 	type StateModule,
 	type WordProblem
@@ -217,6 +219,28 @@ async function initializeStore() {
 					_problemsState.problems[wordProblem.id] = wordProblem;
 					module.problems = [...module.problems, wordProblem.id];
 					break;
+				case ProblemKind.N_DIGIT_OPERATION:
+					let nDigitProblem = {} as NDigitOperation;
+					nDigitProblem = {
+						...nDigitProblem,
+						id: uuid,
+						kind: ProblemKind.N_DIGIT_OPERATION,
+						title: '',
+						description: '',
+						difficulty: ProblemDifficulty.EASY,
+						aiPrompt: '',
+						concepts: [],
+						createdAt: new Date().toISOString(),
+						updatedAt: new Date().toISOString(),
+						createdBy: userId,
+						operand1: '200',
+						operand2: '100',
+						operator: Operator.PLUS,
+						includeCarryAndBorrow: false
+					};
+					_problemsState.problems[nDigitProblem.id] = nDigitProblem;
+					module.problems = [...module.problems, nDigitProblem.id];
+					break;
 			}
 		},
 		deleteProblem: (problemId: string, moduleId: string) => {
@@ -263,6 +287,13 @@ async function initializeStore() {
 				let wordProblem = problem as WordProblem;
 				let existingWordProblem = existingProblem as WordProblem;
 				existingWordProblem.answerBlocks = [...wordProblem.answerBlocks];
+			} else if (problem.kind === ProblemKind.N_DIGIT_OPERATION) {
+				let nDigitProblem = problem as NDigitOperation;
+				let existingNDigitProblem = existingProblem as NDigitOperation;
+				existingNDigitProblem.operand1 = nDigitProblem.operand1;
+				existingNDigitProblem.operand2 = nDigitProblem.operand2;
+				existingNDigitProblem.operator = nDigitProblem.operator;
+				existingNDigitProblem.includeCarryAndBorrow = nDigitProblem.includeCarryAndBorrow;
 			}
 
 			state = composeStore(_modulesState.modules, _problemsState.problems);
