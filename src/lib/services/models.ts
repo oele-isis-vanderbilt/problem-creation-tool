@@ -37,7 +37,8 @@ export interface StateModule extends Omit<Module, 'problems'> {
 
 export enum ProblemKind {
 	MULTIPLE_CHOICE = 'multiple_choice',
-	WORD_PROBLEM = 'word_problem'
+	WORD_PROBLEM = 'word_problem',
+	N_DIGIT_OPERATION = 'n_digit_operation'
 }
 
 export enum ProblemDifficulty {
@@ -111,4 +112,18 @@ export interface WordProblem extends BaseProblem {
 	answerBlocks: AnswerBlock[];
 }
 
-export type Problem = MultipleChoiceProblem | WordProblem;
+export enum Operator {
+	PLUS = '+',
+	MINUS = '-',
+	MULTIPLY = '*'
+}
+
+export interface NDigitOperation extends BaseProblem {
+	kind: ProblemKind.N_DIGIT_OPERATION;
+	operand1: string;
+	operand2: string;
+	operator: Operator;
+	includeCarryAndBorrow: boolean;
+}
+
+export type Problem = MultipleChoiceProblem | WordProblem | NDigitOperation;

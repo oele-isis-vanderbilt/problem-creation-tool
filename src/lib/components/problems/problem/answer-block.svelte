@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { AnswerBlock } from '$lib/services/models';
-	import { Button, Input } from 'flowbite-svelte';
-	import { on } from 'svelte/events';
+	import { Input } from 'flowbite-svelte';
 	import HeroIconsTrash from 'virtual:icons/heroicons-solid/trash';
 
 	let {
