@@ -3,6 +3,7 @@ import {
 	Operator,
 	ProblemDifficulty,
 	ProblemKind,
+	type Assessment,
 	type Concept,
 	type Misconception,
 	type Module,
@@ -28,6 +29,7 @@ export let store: {
 	addNewProblem: (moduleId: string, kind: ProblemKind, userId: string) => Promise<void>;
 	deleteProblem: (problemId: string, moduleId: string) => void;
 	updateProblem: (moduleId: string, problem: Problem) => void;
+	getProblem: (id: string) => Problem | undefined;
 
 	addConcept: (concept: Concept) => Promise<void>;
 	updateConcept: (concept: Concept) => void;
@@ -38,6 +40,12 @@ export let store: {
 	addMisconception: (misconception: Misconception) => Promise<void>;
 	getMisconception: (id: string) => Misconception;
 	updateMisconception: (misconception: Misconception) => void;
+
+	getAssessmentsFn: () => () => Record<string, Assessment>;
+	getAssessment: (id: string) => Assessment | undefined;
+	createAssessment: (assessment: Assessment) => Promise<void>;
+	updateAssessment: (assessment: Assessment) => Promise<void>;
+	deleteAssessment: (assessmentId: string) => Promise<void>;
 } | null = null;
 
 export async function initialize() {
@@ -75,6 +83,18 @@ function composeStore(
 	return Object.fromEntries(map);
 }
 
+async function composeAssessmentStore(asessments: string[]) {
+	const assessments = Object.fromEntries(
+		await Promise.all(
+			asessments.map(async (assessmentId) => {
+				const assessment = (await Agent.state(assessmentId)) as Assessment;
+				return [assessment.id, assessment];
+			})
+		)
+	);
+	return assessments;
+}
+
 async function initializeStore() {
 	const _modulesState = (await Agent.state('mathModules')) as { modules: Record<string, Module> };
 	const _problemsState = (await Agent.state('mathProblems')) as {
@@ -82,6 +102,10 @@ async function initializeStore() {
 	};
 	const _conceptsState = (await Agent.state('mathConcepts')) as {
 		concepts: Record<string, Concept>;
+	};
+
+	const _assessmentsState = (await Agent.state('mathAssessments')) as {
+		asessments: string[];
 	};
 
 	const _misconceptionsState = (await Agent.state('mathMisconceptions')) as {
@@ -104,12 +128,20 @@ async function initializeStore() {
 		_misconceptionsState.misconceptions = {};
 	}
 
+	if (!_assessmentsState.asessments) {
+		_assessmentsState.asessments = [];
+	}
+
 	let state = $state<Record<string, StateModule>>(
 		composeStore(_modulesState.modules, _problemsState.problems)
 	);
 
 	let concepts = $state<Record<string, Concept>>(_conceptsState.concepts);
 	let misconceptions = $state<Record<string, Misconception>>(_misconceptionsState.misconceptions);
+
+	let assessments = $state<Record<string, Assessment>>(
+		await composeAssessmentStore(_assessmentsState.asessments)
+	);
 
 	const modulesCallback = (update: { state: object }) => {
 		const _state = update.state as { modules: Record<string, Module> };
@@ -126,9 +158,17 @@ async function initializeStore() {
 		misconceptions = _state.misconceptions;
 	};
 
+	const assessmentsCallback = (update: { state: object }) => {
+		const _state = update.state as { asessments: string[] };
+		composeAssessmentStore(_state.asessments).then((asss) => {
+			assessments = asss;
+		});
+	};
+
 	Agent.watch('mathModules', modulesCallback);
 	Agent.watch('mathConcepts', conceptsCallback);
 	Agent.watch('mathMisconceptions', misconceptionsCallback);
+	Agent.watch('mathAssessments', assessmentsCallback);
 
 	return {
 		getFn: () => state,
@@ -243,6 +283,9 @@ async function initializeStore() {
 					break;
 			}
 		},
+		getProblem: (id: string) => {
+			return _problemsState.problems[id];
+		},
 		deleteProblem: (problemId: string, moduleId: string) => {
 			const module = _modulesState.modules[moduleId];
 			if (!module) {
@@ -345,6 +388,45 @@ async function initializeStore() {
 			existingMisconception.name = misconception.name;
 			existingMisconception.aiDefinition = misconception.aiDefinition;
 			existingMisconception.aiFeedback = misconception.aiFeedback;
+		},
+		getAssessmentsFn: () => {
+			return () => assessments;
+		},
+		getAssessment: (id: string) => {
+			return _assessmentsState.asessments[id];
+		},
+		createAssessment: async (assessment: Assessment) => {
+			const assessmentState = (await Agent.state(assessment.id)) as Assessment;
+			Object.assign(assessmentState, assessment);
+			_assessmentsState.asessments.push(assessmentState.id);
+			_assessmentsState.asessments = [..._assessmentsState.asessments];
+		},
+		updateAssessment: async (assessment: Assessment) => {
+			const assessmentState = (await Agent.state(assessment.id)) as Assessment;
+			if (!assessmentState) {
+				throw new Error(`Assessment with id ${assessment.id} not found`);
+			}
+
+			if (_assessmentsState.asessments.indexOf(assessmentState.id) === -1) {
+				throw new Error(`Assessment with id ${assessment.id} not found in assessments`);
+			}
+
+			Object.assign(assessmentState, assessment);
+			_assessmentsState.asessments.splice(
+				_assessmentsState.asessments.indexOf(assessmentState.id),
+				1,
+				assessmentState.id
+			);
+		},
+		deleteAssessment: async (assessmentId: string) => {
+			const assessmentState = (await Agent.state(assessmentId)) as Assessment;
+			if (!assessmentState) {
+				throw new Error(`Assessment with id ${assessmentId} not found`);
+			}
+			const index = _assessmentsState.asessments.indexOf(assessmentState.id);
+			if (index > -1) {
+				_assessmentsState.asessments.splice(index, 1);
+			}
 		}
 	};
 }

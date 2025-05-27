@@ -127,3 +127,19 @@ export interface NDigitOperation extends BaseProblem {
 }
 
 export type Problem = MultipleChoiceProblem | WordProblem | NDigitOperation;
+
+export interface Assessment {
+	id: string;
+	title: string;
+	problemIds: string[];
+	moduleId: string;
+	description: string;
+	coverImageUUID?: string;
+	createdAt: string;
+	updatedAt: string;
+	createdBy: string;
+}
+
+export interface StateAssessment extends Omit<Assessment, 'problemIds'> {
+	problems: Problem[];
+}
