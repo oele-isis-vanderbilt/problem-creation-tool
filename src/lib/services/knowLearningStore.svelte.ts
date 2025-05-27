@@ -10,6 +10,7 @@ import {
 	type MultipleChoiceProblem,
 	type NDigitOperation,
 	type Problem,
+	type StateAssessment,
 	type StateModule,
 	type WordProblem
 } from './models';
@@ -41,8 +42,10 @@ export let store: {
 	getMisconception: (id: string) => Misconception;
 	updateMisconception: (misconception: Misconception) => void;
 
-	getAssessmentsFn: () => () => Record<string, Assessment>;
-	getAssessment: (id: string) => Assessment | undefined;
+	getAssessmentsFn: () => () => Record<string, StateAssessment>;
+	assessmentExists: (id: string) => boolean;
+	updateAssessmentTitleDescription: (id: string, title: string, description: string) => void;
+	getAssessment: (id: string) => StateAssessment | undefined;
 	createAssessment: (assessment: Assessment) => Promise<void>;
 	updateAssessment: (assessment: Assessment) => Promise<void>;
 	deleteAssessment: (assessmentId: string) => Promise<void>;
@@ -83,12 +86,31 @@ function composeStore(
 	return Object.fromEntries(map);
 }
 
+async function loadProblems(problemIds: string[]): Promise<Problem[]> {
+	const { problems: allProblems } = (await Agent.state('mathProblems')) as Record<string, Problem>;
+
+	const problems = problemIds.map((problemId) => {
+		console.log('problems', Object.keys(allProblems), problemId);
+		const problem = allProblems[problemId];
+		if (!problem) {
+			throw new Error(`Problem with id ${problemId} not found`);
+		}
+		return problem;
+	});
+
+	return problems;
+}
+
 async function composeAssessmentStore(asessments: string[]) {
 	const assessments = Object.fromEntries(
 		await Promise.all(
 			asessments.map(async (assessmentId) => {
 				const assessment = (await Agent.state(assessmentId)) as Assessment;
-				return [assessment.id, assessment];
+				const stateAssessment = {
+					...assessment,
+					problems: await loadProblems(assessment.problemIds)
+				} as StateAssessment;
+				return [assessment.id, stateAssessment];
 			})
 		)
 	);
@@ -139,7 +161,7 @@ async function initializeStore() {
 	let concepts = $state<Record<string, Concept>>(_conceptsState.concepts);
 	let misconceptions = $state<Record<string, Misconception>>(_misconceptionsState.misconceptions);
 
-	let assessments = $state<Record<string, Assessment>>(
+	let assessments = $state<Record<string, StateAssessment>>(
 		await composeAssessmentStore(_assessmentsState.asessments)
 	);
 
@@ -392,8 +414,31 @@ async function initializeStore() {
 		getAssessmentsFn: () => {
 			return () => assessments;
 		},
+		assessmentExists: (id: string) => {
+			return !!_assessmentsState.asessments.find((assessmentId) => assessmentId === id);
+		},
 		getAssessment: (id: string) => {
-			return _assessmentsState.asessments[id];
+			if (!_assessmentsState.asessments.includes(id)) {
+				throw new Error(`Assessment with id ${id} not found`);
+			}
+			return assessments[id];
+		},
+		updateAssessmentTitleDescription: async (id: string, title: string, description: string) => {
+			const assessment = _assessmentsState.asessments.find((assessmentId) => assessmentId === id);
+			if (!assessment) {
+				throw new Error(`Assessment with id ${id} not found`);
+			}
+			const assessmentState = (await Agent.state(id)) as Assessment;
+			if (!assessmentState) {
+				throw new Error(`Assessment with id ${id} not found in state`);
+			}
+			assessmentState.title = title;
+			assessmentState.description = description;
+			_assessmentsState.asessments.splice(
+				_assessmentsState.asessments.indexOf(assessmentState.id),
+				1,
+				assessmentState.id
+			);
 		},
 		createAssessment: async (assessment: Assessment) => {
 			const assessmentState = (await Agent.state(assessment.id)) as Assessment;

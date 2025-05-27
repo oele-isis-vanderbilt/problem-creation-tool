@@ -8,14 +8,18 @@
 		kind,
 		noTitlePlaceHolder = 'Click to add title...',
 		hasErrors = false,
-		onProblemDeleted
+		hasDeleteButton = true,
+		onProblemDeleted = () => {
+			/* Default no-op */
+		}
 	}: {
 		title: string;
 		lastUpdated: string;
 		hasErrors?: boolean;
+		hasDeleteButton?: boolean;
 		noTitlePlaceHolder?: string;
 		kind: ProblemKind;
-		onProblemDeleted: () => void;
+		onProblemDeleted?: () => void;
 	} = $props();
 </script>
 
@@ -23,17 +27,19 @@
 	<h2 class="flex-1 text-lg">
 		{title || noTitlePlaceHolder}
 	</h2>
-	<div class="flex items-center justify-between">
+	<div class="mr-2 flex items-center justify-between">
 		<span class="text-sm text-gray-500 dark:text-gray-400">
 			<span class="text-red-800 dark:text-red-500">{hasErrors ? '(Needs Review)' : ''} </span>
 			{kind} | Last Updated: {lastUpdated}
 		</span>
-		<HeroIconsTrash
-			class="m-2 hover:text-red-500"
-			onclick={(event: Event) => {
-				event.stopPropagation();
-				onProblemDeleted();
-			}}
-		></HeroIconsTrash>
+		{#if hasDeleteButton}
+			<HeroIconsTrash
+				class="m-2 hover:text-red-500"
+				onclick={(event: Event) => {
+					event.stopPropagation();
+					onProblemDeleted();
+				}}
+			></HeroIconsTrash>
+		{/if}
 	</div>
 </div>

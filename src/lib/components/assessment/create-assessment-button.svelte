@@ -81,7 +81,7 @@
 		currentAssessment.createdBy = env.auth.user;
 		currentAssessment.createdAt = new Date().toISOString();
 		currentAssessment.updatedAt = new Date().toISOString();
-
+		console.log('Creating assessment:', currentAssessment);
 		await createAssessment(currentAssessment);
 
 		return true;

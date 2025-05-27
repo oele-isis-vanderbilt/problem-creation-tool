@@ -17,10 +17,6 @@
 			return prependBaseUrl('/default-module.png');
 		}
 	}
-
-	$effect(() => {
-		console.log(getAssessmentsFn()());
-	});
 </script>
 
 <div class="container mx-auto flex h-full w-full flex-col">
