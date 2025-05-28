@@ -1,51 +1,44 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	import { store } from '$lib/services/knowLearningStore.svelte';
-	import type { Assessment, Problem, StateAssessment } from '$lib/services/models';
+	import type { StateAssessment } from '$lib/services/models';
 	import { Timer } from './timer.svelte';
 	import SequenceHeader from './sequence-header.svelte';
 	import { AssessmentState } from './models';
 	import { Button, Review } from 'flowbite-svelte';
-	const TIME_LIMIT = 30 * 60 * 60; // 30 minutes
 	import HeroIconsPlayCircle16Solid from 'virtual:icons/heroicons-solid/play';
 
 	let assessmentState = $state<AssessmentState>(AssessmentState.Starting);
+	const ATTEMPT_TIME_LIMIT = 30 * 60 * 60; // 30 minutes
+	const REVIEW_TIME_LIMIT = 10 * 60; // 10 minutes
 
 	let {
-		assessment,
-		timeLimit = TIME_LIMIT
+		assessment
 	}: {
 		assessment: StateAssessment;
-		timeLimit?: number;
-		title: string;
 	} = $props();
 
-	let timer = new Timer(timeLimit);
-	let formattedTime = $state<string>('00:00');
+	let attemptTimer = new Timer(assessment.attemptTimeLimit || ATTEMPT_TIME_LIMIT);
+	let reviewTimer = new Timer(assessment.reviewTimeLimit || REVIEW_TIME_LIMIT);
+	let formattedTime = $state<string>('00:00:00');
 
 	onMount(async () => {
-		// // const problems = problemIds.map((id) => getProblem(id));
-		// timer.start();
-
-		timer.subscribe((elapsed) => {
-			let remainingTime = timeLimit - elapsed;
+		attemptTimer.subscribe((elapsed) => {
+			let remainingTime = assessment.attemptTimeLimit - elapsed;
 			if (remainingTime <= 0) {
-				formattedTime = '00:00';
-				timer.stop();
+				formattedTime = '00:00:00';
+				attemptTimer.stop();
 				return;
 			}
-			const remainingMinutes = Math.floor(remainingTime / (60 * 60));
+			console.log('Remaining Time(seconds):', remainingTime);
+			const remainingHours = Math.floor(remainingTime / 3600);
+			const remainingMinutes = Math.floor((remainingTime % 3600) / 60);
 			const remainingSeconds = remainingTime % 60;
-
-			const minutes = String(remainingMinutes).padStart(2, '0');
-			const seconds = String(remainingSeconds).padStart(2, '0');
-
-			formattedTime = `${minutes}:${seconds}`;
+			formattedTime = `${String(remainingHours).padStart(2, '0')}:${String(remainingMinutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 		});
 	});
 
 	onDestroy(() => {
-		timer.stop();
+		attemptTimer.stop();
 	});
 </script>
 
@@ -55,15 +48,15 @@
 			Welcome to the {state.title}
 		</h2>
 		<h3 class="mt-4 text-2xl font-semibold">
-			There are {state.problems.length} problems in this assessment and You have {Math.floor(
-				timeLimit / (60 * 60)
+			There are {state.problems.length} problems in this assessment and you have {Math.floor(
+				assessment.attemptTimeLimit / 60
 			)} minutes to complete this assessment.
 		</h3>
 		<p class="mt-2 text-lg">
 			Please click the "Start" button below to begin. You can request help at any time by clicking
 			the help button in the header above.
 		</p>
-		<Button class="mt-6 gap-2 text-2xl font-bold">
+		<Button class="mt-6 gap-2 text-2xl font-bold" onclick="{startAssessment}}">
 			Start Assessment
 			<HeroIconsPlayCircle16Solid class="text-2xl" />
 		</Button>
@@ -88,8 +81,8 @@
 			{@render progress(assessment)}
 		{:else if assessmentState === AssessmentState.Reviewing}{:else if assessmentState === AssessmentState.Completed}{/if}
 	</div>
-	<div class="bg-primary-400 dark:bg-secondary-950 flex items-center justify-between p-10">
+	<div class="bg-primary-400 dark:bg-secondary-950 flex items-center justify-between p-5">
+		<h2 class="text-2xl font-bold">{String(assessmentState).toUpperCase()}</h2>
 		<p class="text-lg font-bold">Time Remaining: {formattedTime}</p>
-		<button class="btn btn-primary" onclick={() => timer.start()}>Start</button>
 	</div>
 </div>

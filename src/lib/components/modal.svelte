@@ -19,7 +19,7 @@
 	} = $props();
 </script>
 
-<Modal {size} bind:open {title} onclose={onClose}>
+<Modal {size} bind:open {title} onclose={onClose} autoclose outsideclose={false}>
 	{@render main()}
 	{#snippet footer()}
 		{@render modalFooter()}

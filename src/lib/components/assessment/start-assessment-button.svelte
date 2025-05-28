@@ -20,10 +20,6 @@
 
 {#if started}
 	<div class="bg-primary-200 dark:bg-secondary-800 absolute inset-20">
-		<SequenceWrapper
-			{assessment}
-			timeLimit={assessment.timeLimit || 30 * 60 * 60}
-			title={assessment.title}
-		/>
+		<SequenceWrapper {assessment} />
 	</div>
 {/if}

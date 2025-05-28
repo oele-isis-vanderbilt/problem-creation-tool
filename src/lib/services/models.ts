@@ -128,6 +128,11 @@ export interface NDigitOperation extends BaseProblem {
 
 export type Problem = MultipleChoiceProblem | WordProblem | NDigitOperation;
 
+export enum AssessmentGroup {
+	CONTROL = 'control',
+	TREATMENT = 'treatment'
+}
+
 export interface Assessment {
 	id: string;
 	title: string;
@@ -138,8 +143,24 @@ export interface Assessment {
 	createdAt: string;
 	updatedAt: string;
 	createdBy: string;
+	attemptTimeLimit: number;
+	reviewTimeLimit: number;
+	maxAttemptsPerQuestion: number;
+	group: AssessmentGroup;
 }
 
 export interface StateAssessment extends Omit<Assessment, 'problemIds'> {
 	problems: Problem[];
 }
+
+export interface AssessmentAttempt {
+	id: string;
+	assessmentId: string;
+	userId: string;
+	startedAt: string;
+	reviewStageEnteredAt?: string;
+	completedAt?: string;
+	problemAttempts: ProblemAttempt[];
+}
+
+export interface ProblemAttempt {}

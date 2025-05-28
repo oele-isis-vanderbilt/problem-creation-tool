@@ -1,6 +1,6 @@
 <script lang="ts">
 	import AssessmentCard from '$lib/components/assessment/assessment-card.svelte';
-	import CreateAssessmentButton from '$lib/components/assessment/create-assessment-button.svelte';
+	import CreateAssessmentButton from '$lib/components/assessment/create-edit-assessment.svelte';
 	import { store } from '$lib/services/knowLearningStore.svelte';
 	import { prependBaseUrl } from '$lib/utils';
 

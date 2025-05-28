@@ -11,7 +11,7 @@
 	import { debounce, friendlyDateTime } from '$lib/utils';
 	import { store } from '$lib/services/knowLearningStore.svelte';
 	import SequenceWrapper from '$lib/components/assessment/sequence-wrapper.svelte';
-	import CreateAssessmentButton from '$lib/components/assessment/create-assessment-button.svelte';
+	import CreateAssessmentButton from '$lib/components/assessment/create-edit-assessment.svelte';
 
 	const appEnv = getContext<AgentEnvironment>('appEnv');
 	let { data }: PageProps = $props();

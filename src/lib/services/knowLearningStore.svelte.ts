@@ -46,6 +46,7 @@ export let store: {
 	assessmentExists: (id: string) => boolean;
 	updateAssessmentTitleDescription: (id: string, title: string, description: string) => void;
 	getAssessment: (id: string) => StateAssessment | undefined;
+	getAssessmentKL: (id: string) => Promise<Assessment>;
 	createAssessment: (assessment: Assessment) => Promise<void>;
 	updateAssessment: (assessment: Assessment) => Promise<void>;
 	deleteAssessment: (assessmentId: string) => Promise<void>;
@@ -423,6 +424,13 @@ async function initializeStore() {
 			}
 			return assessments[id];
 		},
+		getAssessmentKL: async (id: string) => {
+			if (!_assessmentsState.asessments.includes(id)) {
+				throw new Error(`Assessment with id ${id} not found`);
+			}
+			const assessment = (await Agent.state(id)) as Assessment;
+			return assessment;
+		},
 		updateAssessmentTitleDescription: async (id: string, title: string, description: string) => {
 			const assessment = _assessmentsState.asessments.find((assessmentId) => assessmentId === id);
 			if (!assessment) {
@@ -462,6 +470,7 @@ async function initializeStore() {
 				1,
 				assessmentState.id
 			);
+			_assessmentsState.asessments = [..._assessmentsState.asessments];
 		},
 		deleteAssessment: async (assessmentId: string) => {
 			const assessmentState = (await Agent.state(assessmentId)) as Assessment;
