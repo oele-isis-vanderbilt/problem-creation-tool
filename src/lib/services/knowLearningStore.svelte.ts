@@ -87,11 +87,11 @@ function composeStore(
 }
 
 async function loadProblems(problemIds: string[]): Promise<Problem[]> {
-	const { problems: allProblems } = (await Agent.state('mathProblems')) as Record<string, Problem>;
-
+	const { problems: allProblems } = (await Agent.state('mathProblems')) as {
+		problems: Record<string, Problem>;
+	};
 	const problems = problemIds.map((problemId) => {
-		console.log('problems', Object.keys(allProblems), problemId);
-		const problem = allProblems[problemId];
+		const problem = allProblems[problemId] as Problem | undefined;
 		if (!problem) {
 			throw new Error(`Problem with id ${problemId} not found`);
 		}

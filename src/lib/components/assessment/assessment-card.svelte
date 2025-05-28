@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Assessment, StateModule } from '$lib/services/models';
+	import type { StateAssessment } from '$lib/services/models';
 	import { Circle2 } from 'svelte-loading-spinners';
 	import HeroIconsTrash from 'virtual:icons/heroicons-solid/trash';
 	import { prependBaseUrl } from '$lib/utils';
@@ -10,7 +10,7 @@
 		onAssessmentDelete,
 		coverImageUrl
 	}: {
-		assessment: Assessment;
+		assessment: StateAssessment;
 		onAssessmentDelete: (uuid: string) => void;
 		coverImageUrl: Promise<string>;
 	} = $props();

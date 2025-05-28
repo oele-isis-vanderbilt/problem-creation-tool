@@ -1,28 +1,34 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { store } from '$lib/services/knowLearningStore.svelte';
-	import type { Problem } from '$lib/services/models';
+	import type { Assessment, Problem, StateAssessment } from '$lib/services/models';
 	import { Timer } from './timer.svelte';
+	import SequenceHeader from './sequence-header.svelte';
+	import { AssessmentState } from './models';
+	import { Button, Review } from 'flowbite-svelte';
 	const TIME_LIMIT = 30 * 60 * 60; // 30 minutes
+	import HeroIconsPlayCircle16Solid from 'virtual:icons/heroicons-solid/play';
 
-	let { getProblem } = store!;
+	let assessmentState = $state<AssessmentState>(AssessmentState.Starting);
 
 	let {
-		problemIds
+		assessment,
+		timeLimit = TIME_LIMIT
 	}: {
-		problemIds: string[];
+		assessment: StateAssessment;
+		timeLimit?: number;
 		title: string;
 	} = $props();
 
-	let timer = new Timer(TIME_LIMIT);
+	let timer = new Timer(timeLimit);
 	let formattedTime = $state<string>('00:00');
 
 	onMount(async () => {
-		const problems = problemIds.map((id) => getProblem(id));
-		timer.start();
+		// // const problems = problemIds.map((id) => getProblem(id));
+		// timer.start();
 
 		timer.subscribe((elapsed) => {
-			let remainingTime = TIME_LIMIT - elapsed;
+			let remainingTime = timeLimit - elapsed;
 			if (remainingTime <= 0) {
 				formattedTime = '00:00';
 				timer.stop();
@@ -43,8 +49,47 @@
 	});
 </script>
 
-<div class="flex h-full w-full flex-col items-center justify-center">
-	<div class="flex flex-col items-center justify-center">
-		<p class="mb-2 text-lg">Time Remaining: {formattedTime}</p>
+{#snippet start(state: StateAssessment)}
+	<div class="flex h-full w-full flex-col items-center justify-center">
+		<h2 class="text-3xl font-bold">
+			Welcome to the {state.title}
+		</h2>
+		<h3 class="mt-4 text-2xl font-semibold">
+			There are {state.problems.length} problems in this assessment and You have {Math.floor(
+				timeLimit / (60 * 60)
+			)} minutes to complete this assessment.
+		</h3>
+		<p class="mt-2 text-lg">
+			Please click the "Start" button below to begin. You can request help at any time by clicking
+			the help button in the header above.
+		</p>
+		<Button class="mt-6 gap-2 text-2xl font-bold">
+			Start Assessment
+			<HeroIconsPlayCircle16Solid class="text-2xl" />
+		</Button>
+	</div>
+{/snippet}
+
+{#snippet progress(state: StateAssessment)}
+	<div class="flex h-full w-full flex-col items-center justify-center"></div>
+{/snippet}
+
+<div class="flex h-full w-full flex-col justify-between gap-2">
+	<SequenceHeader
+		title={assessment.title}
+		onClickHelpButton={() => {
+			alert('Help button clicked!'); // Replace with actual help logic
+		}}
+	></SequenceHeader>
+	<div class="flex-1">
+		{#if assessmentState === AssessmentState.Starting}
+			{@render start(assessment)}
+		{:else if assessmentState === AssessmentState.InProgress}
+			{@render progress(assessment)}
+		{:else if assessmentState === AssessmentState.Reviewing}{:else if assessmentState === AssessmentState.Completed}{/if}
+	</div>
+	<div class="bg-primary-400 dark:bg-secondary-950 flex items-center justify-between p-10">
+		<p class="text-lg font-bold">Time Remaining: {formattedTime}</p>
+		<button class="btn btn-primary" onclick={() => timer.start()}>Start</button>
 	</div>
 </div>
