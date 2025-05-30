@@ -1,7 +1,7 @@
 <script lang="ts">
 	import AssessmentCard from '$lib/components/assessment/assessment-card.svelte';
 	import CreateAssessmentButton from '$lib/components/assessment/create-edit-assessment.svelte';
-	import { store } from '$lib/services/knowLearningStore.svelte';
+	import { store } from '$lib/services/modules-store.svelte';
 	import { prependBaseUrl } from '$lib/utils';
 
 	const { getAssessmentsFn, deleteAssessment, getImageUrl } = store!;

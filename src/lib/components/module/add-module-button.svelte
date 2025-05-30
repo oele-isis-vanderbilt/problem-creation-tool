@@ -5,7 +5,7 @@
 	import { onMount } from 'svelte';
 	import { getContext } from 'svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
-	import { store } from '$lib/services/knowLearningStore.svelte';
+	import { store } from '$lib/services/modules-store.svelte';
 	import { Button } from 'flowbite-svelte';
 	// import { uploadImage, uuid } from '$lib/services/knowLearing.svelte';
 

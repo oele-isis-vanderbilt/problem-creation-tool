@@ -2,7 +2,7 @@
 	import { Button, MultiSelect, type SelectOptionType } from 'flowbite-svelte';
 	import AddConcept from '$lib/components/concept/add-edit-concept.svelte';
 
-	import { store } from '$lib/services/knowLearningStore.svelte';
+	import { store } from '$lib/services/modules-store.svelte';
 
 	const { getConceptsFn } = store!;
 

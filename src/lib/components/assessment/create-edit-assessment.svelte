@@ -14,7 +14,7 @@
 	import Modal from '../modal.svelte';
 	import { onMount } from 'svelte';
 
-	import { store } from '$lib/services/knowLearningStore.svelte';
+	import { store } from '$lib/services/modules-store.svelte';
 	import { getContext } from 'svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
 

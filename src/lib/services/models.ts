@@ -1,3 +1,5 @@
+import type { W } from 'vitest/dist/chunks/worker.d.CHGSOG0s.js';
+
 export interface AppUser {
 	id: string;
 	name: string;
@@ -163,4 +165,34 @@ export interface AssessmentAttempt {
 	problemAttempts: ProblemAttempt[];
 }
 
-export interface ProblemAttempt {}
+export interface BaseProblemAttempt {
+	problemId: string;
+	assessmentAttemptId: string;
+	attemptedAt: string;
+	attemtptNumber: number;
+}
+
+// export
+
+export interface MultipleChoiceProblemAttempt extends BaseProblemAttempt {
+	kind: ProblemKind.MULTIPLE_CHOICE;
+	selectedOptionId: string[];
+}
+
+export interface WordProblemAttempt extends BaseProblemAttempt {
+	kind: ProblemKind.WORD_PROBLEM;
+	answerBlocks: Record<string, string>;
+}
+
+export interface NDigitOperationAttempt extends BaseProblemAttempt {
+	kind: ProblemKind.N_DIGIT_OPERATION;
+	operand1: string;
+	operand2: string;
+	operator: Operator;
+	answer: string;
+}
+
+export type ProblemAttempt =
+	| WordProblemAttempt
+	| MultipleChoiceProblemAttempt
+	| NDigitOperationAttempt;

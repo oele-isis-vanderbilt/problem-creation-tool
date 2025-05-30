@@ -56,7 +56,7 @@
 			Please click the "Start" button below to begin. You can request help at any time by clicking
 			the help button in the header above.
 		</p>
-		<Button class="mt-6 gap-2 text-2xl font-bold" onclick="{startAssessment}}">
+		<Button class="mt-6 gap-2 text-2xl font-bold" onclick="{start}}">
 			Start Assessment
 			<HeroIconsPlayCircle16Solid class="text-2xl" />
 		</Button>

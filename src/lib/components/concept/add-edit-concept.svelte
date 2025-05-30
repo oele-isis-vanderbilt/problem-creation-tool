@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Modal from '$lib/components/modal.svelte';
-	import { store } from '$lib/services/knowLearningStore.svelte';
+	import { store } from '$lib/services/modules-store.svelte';
 	import type { Concept } from '$lib/services/models';
 	import {
 		Button,

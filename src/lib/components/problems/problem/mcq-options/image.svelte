@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { MultipleChoiceOptionImage } from '$lib/services/models';
 	import { Fileupload, Img, Spinner } from 'flowbite-svelte';
-	import { store } from '$lib/services/knowLearningStore.svelte';
+	import { store } from '$lib/services/modules-store.svelte';
 
 	const { uploadImage, getImageUrl } = store!;
 

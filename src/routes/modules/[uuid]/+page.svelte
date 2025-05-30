@@ -9,7 +9,7 @@
 	import { Accordion, AccordionItem } from 'flowbite-svelte';
 	import ProblemHeader from '$lib/components/problems/problem-header.svelte';
 	import { debounce, friendlyDateTime } from '$lib/utils';
-	import { store } from '$lib/services/knowLearningStore.svelte';
+	import { store } from '$lib/services/modules-store.svelte';
 	import SequenceWrapper from '$lib/components/assessment/sequence-wrapper.svelte';
 	import CreateAssessmentButton from '$lib/components/assessment/create-edit-assessment.svelte';
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { store } from '$lib/services/knowLearningStore.svelte';
+	import { store } from '$lib/services/modules-store.svelte';
 	import { Button, Select, type SelectOptionType } from 'flowbite-svelte';
 
 	let { selectedMisconceptionId = $bindable() }: { selectedMisconceptionId: string } = $props();

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import AddModuleButton from '$lib/components/module/add-module-button.svelte';
 	import ModuleCard from '$lib/components/module/module-card.svelte';
-	import { store } from '$lib/services/knowLearningStore.svelte';
+	import { store } from '$lib/services/modules-store.svelte';
 	import { prependBaseUrl } from '$lib/utils';
 
 	const { getFn, deleteModule, getImageUrl } = store!;

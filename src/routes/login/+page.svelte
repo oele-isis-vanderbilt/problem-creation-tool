@@ -5,7 +5,7 @@
 	import { isAnonUser } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { getContext } from 'svelte';
-	import { login } from '$lib/services/knowLearningStore.svelte';
+	import { login } from '$lib/services/modules-store.svelte';
 	import { prependBaseUrl } from '$lib/utils';
 
 	async function handleLogin(provider: 'google' | 'microsoft') {

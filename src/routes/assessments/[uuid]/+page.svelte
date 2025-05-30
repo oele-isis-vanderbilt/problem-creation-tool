@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
-	import { store } from '$lib/services/knowLearningStore.svelte';
+	import { store } from '$lib/services/modules-store.svelte';
 	import NameDescriptionEditor from '$lib/components/module/name-description-editor.svelte';
 	import ProblemComponent from '$lib/components/problems/problem/problem.svelte';
 	import { Accordion, AccordionItem } from 'flowbite-svelte';

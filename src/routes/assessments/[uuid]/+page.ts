@@ -3,7 +3,7 @@ import { error } from '@sveltejs/kit';
 export const prerender = false;
 
 export const load: PageLoad = async ({ params }) => {
-	const { store } = await import('$lib/services/knowLearningStore.svelte');
+	const { store } = await import('$lib/services/modules-store.svelte');
 
 	const assessment = store!.assessmentExists(params.uuid);
 

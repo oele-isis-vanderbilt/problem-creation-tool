@@ -9,7 +9,7 @@
 	import Option from './option.svelte';
 	import { ChevronDownOutline } from 'flowbite-svelte-icons';
 	import { MCQOptionKind } from '$lib/services/models';
-	import { store } from '$lib/services/knowLearningStore.svelte';
+	import { store } from '$lib/services/modules-store.svelte';
 
 	const { uuid } = store!;
 	let {

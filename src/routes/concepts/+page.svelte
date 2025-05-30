@@ -2,7 +2,7 @@
 	import AddEditConcept from '$lib/components/concept/add-edit-concept.svelte';
 	import AddEditMisconception from '$lib/components/concept/add-edit-misconception.svelte';
 	import ConceptHeader from '$lib/components/concept/concept-misconception-header.svelte';
-	import { store } from '$lib/services/knowLearningStore.svelte';
+	import { store } from '$lib/services/modules-store.svelte';
 	import type { Concept, Misconception } from '$lib/services/models';
 	import { paginate } from '$lib/utils';
 	import { Button, Listgroup, ListgroupItem, Pagination } from 'flowbite-svelte';

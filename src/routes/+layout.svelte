@@ -9,7 +9,7 @@
 
 	import type { LayoutProps } from './$types';
 	import DarkModeToggle from '$lib/components/dark-mode-toggle.svelte';
-	import { logout } from '$lib/services/knowLearningStore.svelte';
+	import { logout } from '$lib/services/modules-store.svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
 	import { prependBaseUrl } from '$lib/utils';
 	import { A } from 'flowbite-svelte';
