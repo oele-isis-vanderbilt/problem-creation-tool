@@ -2,13 +2,15 @@
 	import {
 		ProblemKind,
 		type MultipleChoiceProblem,
+		type MultipleChoiceProblemAttempt,
 		type NDigitOperation,
 		type Problem,
+		type ProblemAttempt,
 		type WordProblem
 	} from '$lib/services/models';
-	import { Input } from 'flowbite-svelte';
+	import { Input, P } from 'flowbite-svelte';
 	import FlipEditPreview from '$lib/components/problems/flip-edit-preview.svelte';
-	import { isEqual } from 'underscore';
+	import { bind, bindAll, isEqual } from 'underscore';
 	import DifficultyButtons from '$lib/components/problems/difficulty-buttons.svelte';
 	import AiPrompt from '../ai-prompt.svelte';
 	import SelectConcept from '$lib/components/concept/select-concept.svelte';
@@ -17,24 +19,35 @@
 	import McqOptionPreview from './mcq-option-preview.svelte';
 	import Editor from '$lib/components/tiptap/editor.svelte';
 	import AnswerBlocksAdder from './answer-blocks-adder.svelte';
-	import AnswerBlockComponent from './answer-block.svelte';
 	import NDigitOperationBlock from './n-digit-operation-block.svelte';
+	import AnswerBlockPreview from './answer-block-preview.svelte';
+	import { onMount } from 'svelte';
 
 	let {
 		problem = $bindable(),
 		onProblemUpdated,
-		previewOnly = false
+		previewOnly = false,
+		canGradeProblem = $bindable(false),
+		showGradingFeedbackErrors = false,
+		problemAttempt = $bindable<ProblemAttempt | null>(null),
 	}: {
 		problem: Problem;
 		onProblemUpdated?: (problem: Problem) => void;
 		previewOnly?: boolean;
+		canGradeProblem?: boolean;
+		showGradingFeedbackErrors?: boolean;
+		problemAttempt?: ProblemAttempt | null;
 	} = $props();
 
 	let problemState = $state<Problem>({ ...problem });
-
 	let errors = $derived.by(() => {
 		const validationErrors = validateProblem(problemState);
 		return validationErrors;
+	});
+
+	onMount(() => {
+		canGradeProblem = false;
+		problemAttempt = null;
 	});
 
 	function getEditorContent(content: string) {
@@ -45,7 +58,20 @@
 		}
 	}
 
-	console.log('Problem Component Initialized', problemState);
+	function onMultipleChoiceGradingStageChange(state: {
+		can: boolean;
+		errors: string[];
+		selectedOptionId: string | null;
+	}): void {
+		if (state.can) {
+			canGradeProblem = true;
+			problemAttempt = {
+				selectedOptionId: state.selectedOptionId!
+			} as MultipleChoiceProblemAttempt;
+		} else {
+			canGradeProblem = false;
+		}
+	}
 
 	$effect(() => {
 		if (problemState.kind === ProblemKind.MULTIPLE_CHOICE) {
@@ -78,14 +104,14 @@
 	/>
 	{#if problem.kind === ProblemKind.MULTIPLE_CHOICE}
 		{@const state = problemState as MultipleChoiceProblem}
-		<McqOptionPreview options={state.options} />
+		<McqOptionPreview
+			options={state.options}
+			{showGradingFeedbackErrors}
+			onGradingStateChange={onMultipleChoiceGradingStageChange}
+		/>
 	{:else if problem.kind === ProblemKind.WORD_PROBLEM}
 		{@const state = problemState as WordProblem}
-		<div class="flex w-full flex-row items-center justify-center">
-			{#each state.answerBlocks as block}
-				<AnswerBlockComponent mode="preview" answerBlock={block} />
-			{/each}
-		</div>
+		<AnswerBlockPreview answerBlocks={state.answerBlocks} />
 	{:else if problem.kind === ProblemKind.N_DIGIT_OPERATION}
 		<div class="flex w-full flex-row items-center justify-center">
 			<NDigitOperationBlock problem={problemState as NDigitOperation} mode="preview" />

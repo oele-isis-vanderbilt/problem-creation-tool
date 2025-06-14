@@ -6,12 +6,29 @@
 	let {
 		answerBlock = $bindable(),
 		mode = 'edit',
-		onDeleteBlock = () => {}
+		onDeleteBlock = () => {},
+		blockValue = $bindable<string>('')
 	}: {
 		mode?: 'preview' | 'edit';
 		answerBlock: AnswerBlock;
 		onDeleteBlock?: () => void;
+		blockValue?: string;
 	} = $props();
+
+	export function canGradeProblem() {
+		const errors: string[] = [];
+		if (blockValue.trim() === '') {
+			errors.push('Answer block value cannot be empty');
+		}
+		return { can: errors.length === 0, errors };
+	}
+
+	export function getAnswerBlockValue(): string | null {
+		if (blockValue.trim() === '') {
+			return null;
+		}
+		return blockValue.trim();
+	}
 </script>
 
 {#if mode === 'preview'}
@@ -21,7 +38,7 @@
 				<span class="text-gray-900 dark:text-white">{' '}{answerBlock.label} {' '}</span>
 			</div>
 		{/if}
-		<Input type="text" placeholder="Enter Answer" />
+		<Input type="text" placeholder="Enter Answer" bind:value={blockValue} />
 	</div>
 {:else}
 	<div class="flex flex-row gap-2">

@@ -14,7 +14,6 @@
 	const { getAssessmentsFn, updateAssessmentTitleDescription, getAssessmentKL } = store!;
 
 	let assessment = $derived.by(() => {
-		console.log('Assessment data');
 		return getAssessmentsFn()()[data.assessment.id];
 	});
 

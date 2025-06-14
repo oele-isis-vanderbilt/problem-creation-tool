@@ -1,5 +1,3 @@
-import type { W } from 'vitest/dist/chunks/worker.d.CHGSOG0s.js';
-
 export interface AppUser {
 	id: string;
 	name: string;
@@ -33,6 +31,14 @@ export interface Module {
 	problems: string[];
 }
 
+export interface ProblemMetadata {
+	id: string;
+	createdAt: string;
+	updateAt: string;
+	createdBy: string;
+	moduleId: string;
+}
+
 export interface StateModule extends Omit<Module, 'problems'> {
 	problems: Problem[];
 }
@@ -50,15 +56,11 @@ export enum ProblemDifficulty {
 }
 
 interface BaseProblem {
-	id: string;
 	title: string;
 	description: string;
 	difficulty: ProblemDifficulty;
 	concepts: string[];
 	aiPrompt: string;
-	createdAt?: string;
-	updatedAt?: string;
-	createdBy?: string;
 }
 
 export enum MCQOptionKind {
@@ -103,6 +105,8 @@ export interface MultipleChoiceProblem extends BaseProblem {
 	options: MultipleChoiceOption[];
 }
 
+
+
 export interface AnswerBlock {
 	label?: string;
 	value: string;
@@ -127,6 +131,8 @@ export interface NDigitOperation extends BaseProblem {
 	operator: Operator;
 	includeCarryAndBorrow: boolean;
 }
+
+export type StateProblem = MultipleChoiceProblem & ProblemMetadata | WordProblem & ProblemMetadata | NDigitOperation & ProblemMetadata;
 
 export type Problem = MultipleChoiceProblem | WordProblem | NDigitOperation;
 
@@ -176,19 +182,17 @@ export interface BaseProblemAttempt {
 
 export interface MultipleChoiceProblemAttempt extends BaseProblemAttempt {
 	kind: ProblemKind.MULTIPLE_CHOICE;
-	selectedOptionId: string[];
+	selectedOptionId: string;
+	isCorrect: boolean;
 }
 
 export interface WordProblemAttempt extends BaseProblemAttempt {
 	kind: ProblemKind.WORD_PROBLEM;
-	answerBlocks: Record<string, string>;
+	answerBlocks: string[];
 }
 
 export interface NDigitOperationAttempt extends BaseProblemAttempt {
 	kind: ProblemKind.N_DIGIT_OPERATION;
-	operand1: string;
-	operand2: string;
-	operator: Operator;
 	answer: string;
 }
 
@@ -196,3 +200,5 @@ export type ProblemAttempt =
 	| WordProblemAttempt
 	| MultipleChoiceProblemAttempt
 	| NDigitOperationAttempt;
+
+export type ProblemRunState = any;

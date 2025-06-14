@@ -74,6 +74,12 @@
 			$editor.destroy();
 		}
 	});
+
+	export function setContent(content: JSONContent) {
+		if (editor && readOnly) {
+			$editor.commands.setContent(content);
+		}
+	}
 </script>
 
 <div class="mb-3 flex h-full w-full flex-col rounded-lg">

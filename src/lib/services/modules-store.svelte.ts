@@ -10,8 +10,10 @@ import {
 	type MultipleChoiceProblem,
 	type NDigitOperation,
 	type Problem,
+	type ProblemMetadata,
 	type StateAssessment,
 	type StateModule,
+	type StateProblem,
 	type WordProblem
 } from './models';
 import { clone } from 'underscore';
@@ -50,6 +52,7 @@ export let store: {
 	createAssessment: (assessment: Assessment) => Promise<void>;
 	updateAssessment: (assessment: Assessment) => Promise<void>;
 	deleteAssessment: (assessmentId: string) => Promise<void>;
+	getRunState: (uuid: string) => Promise<any>;
 } | null = null;
 
 export async function initialize() {
@@ -87,17 +90,21 @@ function composeStore(
 	return Object.fromEntries(map);
 }
 
-async function loadProblems(problemIds: string[]): Promise<Problem[]> {
-	const { problems: allProblems } = (await Agent.state('mathProblems')) as {
-		problems: Record<string, Problem>;
+async function loadProblems(problemIds: string[]): Promise<StateProblem[]> {
+	const { problems: problemsMetadata } = (await Agent.state('MATH-RCT-PROBLEMS')) as {
+		problems: Record<string, ProblemMetadata>;
 	};
-	const problems = problemIds.map((problemId) => {
-		const problem = allProblems[problemId] as Problem | undefined;
-		if (!problem) {
+	const problems = await Promise.all(problemIds.map(async (problemId) => {
+		const problemMeta = problemsMetadata[problemId] as ProblemMetadata | undefined;
+		if (!problemMeta) {
 			throw new Error(`Problem with id ${problemId} not found`);
 		}
-		return problem;
-	});
+		const problemState = (await Agent.state(problemMeta.id)) as Problem;
+		return {
+			...problemState,
+			...problemMeta
+		};
+	}));
 
 	return problems;
 }
@@ -203,6 +210,9 @@ async function initializeStore() {
 				problems: module.problems.map((problem) => problem.id) // This is redundant because its usually empty
 			};
 			_modulesState.modules[module.id] = moduleState;
+		},
+		async getRunState(uuid: string) {
+			return await Agent.state(`runstate-${uuid}`);
 		},
 		deleteModule: (id: string) => {
 			const toDeleteModule = _modulesState.modules[id];

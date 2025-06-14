@@ -35,8 +35,8 @@
 			numberOfMediumProblems: getProblemsCount(ProblemDifficulty.MEDIUM),
 			numberOfHardProblems: getProblemsCount(ProblemDifficulty.HARD),
 			group: assessment.group,
-			attemptTimeLimit: Math.floor(assessment.attemptTimeLimit / (60 * 60)), // Convert seconds to minutes
-			reviewTimeLimit: Math.floor(assessment.reviewTimeLimit / (60 * 60)), // Convert seconds to minutes
+			attemptTimeLimit: Math.floor(assessment.attemptTimeLimit / 60), // Convert seconds to minutes
+			reviewTimeLimit: Math.floor(assessment.reviewTimeLimit / 60), // Convert seconds to minutes
 			lastUpdated: friendlyDateTime(assessment.updatedAt)
 		};
 	});
