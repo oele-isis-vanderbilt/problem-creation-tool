@@ -59,6 +59,7 @@
 			<AccordionItem>
 				{#snippet header()}
 					<ProblemHeader
+						id={problem.id}
 						title={problem.title}
 						lastUpdated={friendlyDateTime(problem.updatedAt!)}
 						kind={problem.kind}
