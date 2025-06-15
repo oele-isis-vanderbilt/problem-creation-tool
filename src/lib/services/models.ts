@@ -47,17 +47,22 @@ export enum ProblemDifficulty {
 	HARD = 'hard'
 }
 
-interface BaseProblem {
+export interface ProblemMetadata {
 	id: string;
+	createdAt: string;
+	updatedAt: string;
+	createdBy: string;
+}
+
+interface KLBaseProblem {
 	title: string;
 	description: string;
 	difficulty: ProblemDifficulty;
 	concepts: string[];
 	aiPrompt: string;
-	createdAt?: string;
-	updatedAt?: string;
-	createdBy?: string;
 }
+
+type BaseProblem = KLBaseProblem & ProblemMetadata;
 
 export enum MCQOptionKind {
 	TEXT = 'text',
@@ -127,3 +132,14 @@ export interface NDigitOperation extends BaseProblem {
 }
 
 export type Problem = MultipleChoiceProblem | WordProblem | NDigitOperation;
+
+export type KLMultipleChoiceProblem = Omit<
+	MultipleChoiceProblem,
+	'id' | 'createdAt' | 'updatedAt' | 'createdBy'
+>;
+export type KLWordProblem = Omit<WordProblem, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'>;
+export type KLNDigitOperation = Omit<
+	NDigitOperation,
+	'id' | 'createdAt' | 'updatedAt' | 'createdBy'
+>;
+export type KLProblem = KLMultipleChoiceProblem | KLWordProblem | KLNDigitOperation;

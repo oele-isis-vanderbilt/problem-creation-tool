@@ -65,10 +65,7 @@
 						onProblemDeleted={() => onDeleteProblem(problem.id)}
 					/>
 				{/snippet}
-				<ProblemComponent
-					bind:problem={module.problems[index]}
-					onProblemUpdated={onUpdateProblem}
-				/>
+				<ProblemComponent problem={module.problems[index]} onProblemUpdated={onUpdateProblem} />
 			</AccordionItem>
 		{/each}
 	</Accordion>
