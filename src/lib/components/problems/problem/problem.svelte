@@ -26,7 +26,7 @@
 		onProblemUpdated,
 		previewOnly = false,
 		canGradeProblem = $bindable(false),
-		showGradingFeedbackErrors = false,
+		showGradingFeedbackErrors = false
 	}: {
 		problem: Problem;
 		onProblemUpdated?: (problem: Problem) => void;

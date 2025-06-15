@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ProblemKind } from '$lib/services/models';
 	import HeroIconsTrash from 'virtual:icons/heroicons-solid/trash';
-	import { Clipboard } from "flowbite-svelte";
+	import { Clipboard } from 'flowbite-svelte';
 	import { CheckOutline, ClipboardCleanSolid } from 'flowbite-svelte-icons';
 	import { prependBaseUrl } from '$lib/utils';
 
@@ -39,25 +39,31 @@
 			<span class="text-red-800 dark:text-red-500">{hasErrors ? '(Needs Review)' : ''} </span>
 			{kind} | Last Updated: {lastUpdated}
 		</span>
-		<div class="flex flex-row items-center justify-center gap-2 mr-2">
-					{#if hasDeleteButton}
-			<HeroIconsTrash
-				class="m-2 hover:text-red-500"
-				onclick={(event: Event) => {
-					event.stopPropagation();
-					onProblemDeleted();
-				}}
-			></HeroIconsTrash>
-		{/if}
-		<Clipboard size="xs" color="alternative" onclick={(event) => event.stopPropagation() } value={getProblemUrl()} class="-mr-1 w-20 focus:ring-0">
-        {#snippet children(success)}
-          {#if success}
-            <CheckOutline class="h-3 w-3" />
-          {:else}
-            <ClipboardCleanSolid class="h-3 w-3" /> 
-          {/if}
-        {/snippet}
-      </Clipboard>
+		<div class="mr-2 flex flex-row items-center justify-center gap-2">
+			{#if hasDeleteButton}
+				<HeroIconsTrash
+					class="m-2 hover:text-red-500"
+					onclick={(event: Event) => {
+						event.stopPropagation();
+						onProblemDeleted();
+					}}
+				></HeroIconsTrash>
+			{/if}
+			<Clipboard
+				size="xs"
+				color="alternative"
+				onclick={(event) => event.stopPropagation()}
+				value={getProblemUrl()}
+				class="-mr-1 w-20 focus:ring-0"
+			>
+				{#snippet children(success)}
+					{#if success}
+						<CheckOutline class="h-3 w-3" />
+					{:else}
+						<ClipboardCleanSolid class="h-3 w-3" />
+					{/if}
+				{/snippet}
+			</Clipboard>
 		</div>
 	</div>
 </div>

@@ -4,6 +4,6 @@
 	const { data }: PageProps = $props();
 </script>
 
-<div class="h-full w-full bg-primary-300 shadow-lg rounded-lg p-20">
+<div class="bg-primary-300 h-full w-full rounded-lg p-20 shadow-lg">
 	<ProblemComponent problem={data.problem} onProblemUpdated={() => {}} previewOnly={true} />
 </div>
