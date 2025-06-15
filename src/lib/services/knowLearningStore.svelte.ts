@@ -4,6 +4,7 @@ import {
 	ProblemDifficulty,
 	ProblemKind,
 	type Concept,
+	type KLProblem,
 	type Misconception,
 	type Module,
 	type MultipleChoiceProblem,
@@ -13,6 +14,10 @@ import {
 	type WordProblem
 } from './models';
 import { clone } from 'underscore';
+import type { ProblemStore } from './problem-store.svelte';
+const NAMED_MODULES_STATE = 'oecd.math-rct.modules';
+const NAMED_CONCEPTS_STATE = 'oecd.math-rct.concepts';
+const NAMED_MISCONCEPTIONS_STATE = 'oecd.math-rct.misconceptions';
 
 export let store: {
 	getFn: () => Record<string, StateModule>;
@@ -40,8 +45,8 @@ export let store: {
 	updateMisconception: (misconception: Misconception) => void;
 } | null = null;
 
-export async function initialize() {
-	store = await initializeStore();
+export async function initialize(problemsStore: ProblemStore) {
+	store = await initializeStore(problemsStore);
 }
 
 export async function getEnvironment() {
@@ -59,7 +64,7 @@ export async function logout() {
 
 function composeStore(
 	modules: Record<string, Module>,
-	problems: Record<string, Problem>
+	problems: ProblemStore
 ): Record<string, StateModule> {
 	const map = Object.entries(modules).map(([id, module]) => {
 		return [
@@ -67,7 +72,7 @@ function composeStore(
 			{
 				...module,
 				problems: module.problems.map((problemId) => {
-					return { ...problems[problemId] };
+					return problems.getProblem(problemId);
 				})
 			}
 		];
@@ -75,25 +80,19 @@ function composeStore(
 	return Object.fromEntries(map);
 }
 
-async function initializeStore() {
-	const _modulesState = (await Agent.state('mathModules')) as { modules: Record<string, Module> };
-	const _problemsState = (await Agent.state('mathProblems')) as {
-		problems: Record<string, Problem>;
+async function initializeStore(problemsStore: ProblemStore) {
+	const _modulesState = (await Agent.state(NAMED_MODULES_STATE)) as {
+		modules: Record<string, Module>;
 	};
-	const _conceptsState = (await Agent.state('mathConcepts')) as {
+	const _conceptsState = (await Agent.state(NAMED_CONCEPTS_STATE)) as {
 		concepts: Record<string, Concept>;
 	};
-
-	const _misconceptionsState = (await Agent.state('mathMisconceptions')) as {
+	const _misconceptionsState = (await Agent.state(NAMED_CONCEPTS_STATE)) as {
 		misconceptions: Record<string, Misconception>;
 	};
 
 	if (!_modulesState.modules) {
 		_modulesState.modules = {};
-	}
-
-	if (!_problemsState.problems) {
-		_problemsState.problems = {};
 	}
 
 	if (!_conceptsState.concepts) {
@@ -105,7 +104,7 @@ async function initializeStore() {
 	}
 
 	let state = $state<Record<string, StateModule>>(
-		composeStore(_modulesState.modules, _problemsState.problems)
+		composeStore(_modulesState.modules, problemsStore)
 	);
 
 	let concepts = $state<Record<string, Concept>>(_conceptsState.concepts);
@@ -113,7 +112,7 @@ async function initializeStore() {
 
 	const modulesCallback = (update: { state: object }) => {
 		const _state = update.state as { modules: Record<string, Module> };
-		state = composeStore(_state.modules, _problemsState.problems);
+		state = composeStore(_state.modules, problemsStore);
 	};
 
 	const conceptsCallback = (update: { state: object }) => {
@@ -126,9 +125,9 @@ async function initializeStore() {
 		misconceptions = _state.misconceptions;
 	};
 
-	Agent.watch('mathModules', modulesCallback);
-	Agent.watch('mathConcepts', conceptsCallback);
-	Agent.watch('mathMisconceptions', misconceptionsCallback);
+	Agent.watch(NAMED_MODULES_STATE, modulesCallback);
+	Agent.watch(NAMED_CONCEPTS_STATE, conceptsCallback);
+	Agent.watch(NAMED_CONCEPTS_STATE, misconceptionsCallback);
 
 	return {
 		getFn: () => state,
@@ -197,7 +196,7 @@ async function initializeStore() {
 						updatedAt: new Date().toISOString(),
 						createdBy: userId
 					};
-					_problemsState.problems[mcqProblem.id] = mcqProblem;
+					await problemsStore.addEmptyProblem(mcqProblem);
 					module.problems = [...module.problems, mcqProblem.id];
 					break;
 				case ProblemKind.WORD_PROBLEM:
@@ -216,7 +215,7 @@ async function initializeStore() {
 						updatedAt: new Date().toISOString(),
 						createdBy: userId
 					};
-					_problemsState.problems[wordProblem.id] = wordProblem;
+					await problemsStore.addEmptyProblem(wordProblem);
 					module.problems = [...module.problems, wordProblem.id];
 					break;
 				case ProblemKind.N_DIGIT_OPERATION:
@@ -238,7 +237,7 @@ async function initializeStore() {
 						operator: Operator.PLUS,
 						includeCarryAndBorrow: false
 					};
-					_problemsState.problems[nDigitProblem.id] = nDigitProblem;
+					await problemsStore.addEmptyProblem(nDigitProblem);
 					module.problems = [...module.problems, nDigitProblem.id];
 					break;
 			}
@@ -256,7 +255,7 @@ async function initializeStore() {
 				module.problems.splice(index, 1);
 				module.problems = [...module.problems];
 			}
-			delete _problemsState.problems[problemId];
+			problemsStore.deleteProblem(problemId);
 		},
 		getImageUrl: async (uuid: string) => {
 			const downloadUrl = (await Agent.download(uuid)).url;
@@ -272,31 +271,9 @@ async function initializeStore() {
 			if (existingProblemIndex === -1) {
 				throw new Error(`Problem with id ${problem.id} not found in module ${moduleId}`);
 			}
-			let existingProblem = _problemsState.problems[problem.id];
-			existingProblem.title = problem.title;
-			existingProblem.description = problem.description;
-			existingProblem.concepts = [...problem.concepts];
-			existingProblem.difficulty = problem.difficulty;
-			existingProblem.updatedAt = new Date().toISOString();
-			existingProblem.kind = problem.kind;
-			if (problem.kind === ProblemKind.MULTIPLE_CHOICE) {
-				let mcqProblem = problem as MultipleChoiceProblem;
-				let existingMCQProblem = existingProblem as MultipleChoiceProblem;
-				existingMCQProblem.options = mcqProblem.options.map((option) => clone(option));
-			} else if (problem.kind === ProblemKind.WORD_PROBLEM) {
-				let wordProblem = problem as WordProblem;
-				let existingWordProblem = existingProblem as WordProblem;
-				existingWordProblem.answerBlocks = [...wordProblem.answerBlocks];
-			} else if (problem.kind === ProblemKind.N_DIGIT_OPERATION) {
-				let nDigitProblem = problem as NDigitOperation;
-				let existingNDigitProblem = existingProblem as NDigitOperation;
-				existingNDigitProblem.operand1 = nDigitProblem.operand1;
-				existingNDigitProblem.operand2 = nDigitProblem.operand2;
-				existingNDigitProblem.operator = nDigitProblem.operator;
-				existingNDigitProblem.includeCarryAndBorrow = nDigitProblem.includeCarryAndBorrow;
-			}
 
-			state = composeStore(_modulesState.modules, _problemsState.problems);
+			await problemsStore.updateProblem(problem);
+			_modulesState.modules[moduleId].problems[existingProblemIndex] = problem.id;
 		},
 		addConcept: async (concept: Concept) => {
 			let newConcept = (await Agent.state(concept.id)) as Concept;
