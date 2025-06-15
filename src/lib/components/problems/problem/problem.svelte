@@ -6,9 +6,9 @@
 		type Problem,
 		type WordProblem
 	} from '$lib/services/models';
-	import { Input } from 'flowbite-svelte';
+	import { Input, P } from 'flowbite-svelte';
 	import FlipEditPreview from '$lib/components/problems/flip-edit-preview.svelte';
-	import { isEqual } from 'underscore';
+	import { bind, bindAll, isEqual } from 'underscore';
 	import DifficultyButtons from '$lib/components/problems/difficulty-buttons.svelte';
 	import AiPrompt from '../ai-prompt.svelte';
 	import SelectConcept from '$lib/components/concept/select-concept.svelte';
@@ -17,24 +17,32 @@
 	import McqOptionPreview from './mcq-option-preview.svelte';
 	import Editor from '$lib/components/tiptap/editor.svelte';
 	import AnswerBlocksAdder from './answer-blocks-adder.svelte';
-	import AnswerBlockComponent from './answer-block.svelte';
 	import NDigitOperationBlock from './n-digit-operation-block.svelte';
+	import AnswerBlockPreview from './answer-block-preview.svelte';
+	import { onMount } from 'svelte';
 
 	let {
 		problem = $bindable(),
 		onProblemUpdated,
-		previewOnly = false
+		previewOnly = false,
+		canGradeProblem = $bindable(false),
+		showGradingFeedbackErrors = false
 	}: {
 		problem: Problem;
-		onProblemUpdated: (problem: Problem) => void;
+		onProblemUpdated?: (problem: Problem) => void;
 		previewOnly?: boolean;
+		canGradeProblem?: boolean;
+		showGradingFeedbackErrors?: boolean;
 	} = $props();
 
 	let problemState = $state<Problem>({ ...problem });
-
 	let errors = $derived.by(() => {
 		const validationErrors = validateProblem(problemState);
 		return validationErrors;
+	});
+
+	onMount(() => {
+		canGradeProblem = false;
 	});
 
 	function getEditorContent(content: string) {
@@ -58,19 +66,45 @@
 			problemState.operator;
 		}
 		if (!isEqual(problemState, problem)) {
-			onProblemUpdated(problemState);
+			if (onProblemUpdated) {
+				onProblemUpdated(problemState);
+			}
 		}
 	});
 </script>
 
+{#snippet previewProblem(problem: Problem)}
+	<h2 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">
+		{problem.title}
+	</h2>
+	<Editor
+		placeholder="Problem Description"
+		readOnly
+		content={getEditorContent(problem.description)}
+	/>
+	{#if problem.kind === ProblemKind.MULTIPLE_CHOICE}
+		{@const state = problemState as MultipleChoiceProblem}
+		<McqOptionPreview
+			options={state.options}
+			{showGradingFeedbackErrors}
+			onGradingStateChange={onMultipleChoiceGradingStageChange}
+		/>
+	{:else if problem.kind === ProblemKind.WORD_PROBLEM}
+		{@const state = problemState as WordProblem}
+		<AnswerBlockPreview answerBlocks={state.answerBlocks} />
+	{:else if problem.kind === ProblemKind.N_DIGIT_OPERATION}
+		<div class="flex w-full flex-row items-center justify-center">
+			<NDigitOperationBlock problem={problemState as NDigitOperation} mode="preview" />
+		</div>
+	{/if}
+{/snippet}
+
 <div class="mb-20 h-full w-full">
-	<FlipEditPreview>
-		{#snippet edit()}
-			{#if previewOnly}
-				<div class="flex h-full w-full items-center justify-center">
-					<p class="text-gray-500 dark:text-gray-400">Can't Edit in Preview Only mode</p>
-				</div>
-			{:else}
+	{#if previewOnly}
+		{@render previewProblem(problemState)}
+	{:else}
+		<FlipEditPreview>
+			{#snippet edit()}
 				<Input type="text" placeholder="Title" bind:value={problemState.title} class="mb-2" />
 				<Editor
 					content={getEditorContent(problemState.description)}
@@ -105,32 +139,10 @@
 						{/each}
 					</div>
 				{/if}
-			{/if}
-		{/snippet}
-		{#snippet preview()}
-			<h2 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">
-				{problem.title}
-			</h2>
-			<Editor
-				placeholder="Problem Description"
-				readOnly
-				content={getEditorContent(problem.description)}
-			/>
-			{#if problem.kind === ProblemKind.MULTIPLE_CHOICE}
-				{@const state = problemState as MultipleChoiceProblem}
-				<McqOptionPreview options={state.options} />
-			{:else if problem.kind === ProblemKind.WORD_PROBLEM}
-				{@const state = problemState as WordProblem}
-				<div class="flex w-full flex-row items-center justify-center">
-					{#each state.answerBlocks as block}
-						<AnswerBlockComponent mode="preview" answerBlock={block} />
-					{/each}
-				</div>
-			{:else if problem.kind === ProblemKind.N_DIGIT_OPERATION}
-				<div class="flex w-full flex-row items-center justify-center">
-					<NDigitOperationBlock problem={problemState as NDigitOperation} mode="preview" />
-				</div>
-			{/if}
-		{/snippet}
-	</FlipEditPreview>
+			{/snippet}
+			{#snippet preview()}
+				{@render previewProblem(problemState)}
+			{/snippet}
+		</FlipEditPreview>
+	{/if}
 </div>
