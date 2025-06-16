@@ -31,7 +31,9 @@
 		{#if displayMode === 'build'}
 			<McqOptionAdder bind:options={editedProblem.options} />
 		{:else if displayMode === 'assess'}
-			<McqOptionPreview options={editedProblem.options} />
+			<div class="flex w-full items-center justify-center">
+				<McqOptionPreview options={editedProblem.options} />
+			</div>
 		{/if}
 	{/snippet}
 </BaseProblem>
