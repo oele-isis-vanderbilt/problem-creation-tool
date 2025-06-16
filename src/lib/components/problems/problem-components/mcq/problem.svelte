@@ -12,10 +12,11 @@
 		onProblemUpdated = () => {}
 	}: Omit<BaseProblemProps, 'problem'> & { problem: MultipleChoiceProblem } = $props();
 
-	let editedProblem = $state(JSON.parse(JSON.stringify(problem)));
+	let editedProblem = $state<MultipleChoiceProblem>(JSON.parse(JSON.stringify(problem)));
 
 	$effect(() => {
 		editedProblem.options;
+		editedProblem.options.forEach((option) => [option.isCorrect, option.misconception]);
 		onProblemUpdated(editedProblem);
 	});
 </script>

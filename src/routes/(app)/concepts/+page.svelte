@@ -3,14 +3,16 @@
 	import AddEditMisconception from '$lib/components/concept/add-edit-misconception.svelte';
 	import ConceptHeader from '$lib/components/concept/concept-misconception-header.svelte';
 	import { store } from '$lib/services/knowLearningStore.svelte';
-	import type { Concept, Misconception } from '$lib/services/models';
-	import { paginate } from '$lib/utils';
+	import type { Concept, Misconception, Tag } from '$lib/services/models';
+	import { emptyTag, paginate } from '$lib/utils';
 	import { Button, Listgroup, ListgroupItem, Pagination } from 'flowbite-svelte';
 	import { emptyConcept, emptyMisconception } from '$lib/utils';
+	import AddEditTag from '$lib/components/tag/add-edit-tag.svelte';
 
 	const MisconceptionHeader = ConceptHeader;
+	const TagHeader = ConceptHeader;
 
-	const { getConceptsFn, getMisconceptionsFn } = store!;
+	const { getConceptsFn, getMisconceptionsFn, getTagsFn } = store!;
 
 	const PAGE_SIZE = 5;
 
@@ -24,16 +26,25 @@
 		return paginate(Object.values(misconceptions), PAGE_SIZE);
 	});
 
+	const pagedTags = $derived.by(() => {
+		const tags = getTagsFn()();
+		return paginate(Object.values(tags), PAGE_SIZE);
+	});
+
 	let currentConceptPageNo = $state(0);
 	let currentMisconceptionPageNo = $state(0);
+	let currentTagPageNo = $state(0);
 
 	let isConceptAdderOpen = $state(false);
 	let isMisconceptionAdderOpen = $state(false);
+	let isTagAdderOpen = $state(false);
 	let conceptAdderPreviewOnly = $state(false);
 	let misconceptionAdderPreviewOnly = $state(false);
+	let tagAdderPreviewOnly = $state(false);
 
 	let currentConcept = $state<Concept>(emptyConcept());
 	let currentMisconception = $state<Misconception>(emptyMisconception());
+	let currentTag = $state<Tag>(emptyTag());
 
 	function nextConceptPage() {
 		if (currentConceptPageNo < pagedConcepts.length - 1) {
@@ -75,34 +86,57 @@
 		}
 	}
 
-	const { flowBiteConceptPageItems, flowBiteMisConceptionItems } = $derived.by(() => {
-		currentConceptPageNo;
-		currentMisconceptionPageNo;
+	function nextTagPage() {
+		if (currentTagPageNo < pagedTags.length - 1) {
+			currentTagPageNo += 1;
+		}
+	}
 
-		const getPagesItems = (pagedItems, currentPageNo) => {
-			const pagesToShow = 5;
-			if (pagedItems.length <= pagesToShow) {
-				return Array.from({ length: pagedItems.length }, (_, i) => ({
-					name: i + 1,
-					active: i === currentPageNo
+	function prevTagPage() {
+		if (currentTagPageNo > 0) {
+			currentTagPageNo -= 1;
+		}
+	}
+
+	function onTagPageChange(event: Event) {
+		let page = 1;
+		page = parseInt((event.target as HTMLElement).innerText);
+		if (!Number.isNaN(page)) {
+			currentTagPageNo = page - 1;
+		}
+	}
+
+	const { flowBiteConceptPageItems, flowBiteMisConceptionItems, flowbiteTagItems } = $derived.by(
+		() => {
+			currentConceptPageNo;
+			currentMisconceptionPageNo;
+
+			const getPagesItems = (pagedItems, currentPageNo) => {
+				const pagesToShow = 5;
+				if (pagedItems.length <= pagesToShow) {
+					return Array.from({ length: pagedItems.length }, (_, i) => ({
+						name: i + 1,
+						active: i === currentPageNo
+					}));
+				}
+
+				const start = Math.max(0, currentPageNo - Math.floor(pagesToShow / 2));
+				const end = Math.min(pagedItems.length, start + pagesToShow);
+				return Array.from({ length: end - start }, (_, i) => ({
+					name: start + i + 1,
+					active: start + i === currentPageNo
 				}));
-			}
+			};
 
-			const start = Math.max(0, currentPageNo - Math.floor(pagesToShow / 2));
-			const end = Math.min(pagedItems.length, start + pagesToShow);
-			return Array.from({ length: end - start }, (_, i) => ({
-				name: start + i + 1,
-				active: start + i === currentPageNo
-			}));
-		};
+			const pages = {
+				flowBiteConceptPageItems: getPagesItems(pagedConcepts, currentConceptPageNo),
+				flowBiteMisConceptionItems: getPagesItems(pagedMisconceptions, currentMisconceptionPageNo),
+				flowbiteTagItems: getPagesItems(pagedTags, currentTagPageNo)
+			};
 
-		const pages = {
-			flowBiteConceptPageItems: getPagesItems(pagedConcepts, currentConceptPageNo),
-			flowBiteMisConceptionItems: getPagesItems(pagedMisconceptions, currentMisconceptionPageNo)
-		};
-
-		return pages;
-	});
+			return pages;
+		}
+	);
 </script>
 
 <div class="container mx-auto mt-2 flex h-full w-full flex-col">
@@ -189,6 +223,48 @@
 			/>
 		</div>
 	{/if}
+
+	<div class="mb-3 flex w-full items-center justify-between py-2">
+		<h2 class="text-2xl font-bold text-gray-900 dark:text-white">Tags</h2>
+		<Button
+			onclick={() => {
+				isTagAdderOpen = !isTagAdderOpen;
+			}}
+		>
+			Add new tag
+		</Button>
+	</div>
+
+	<Listgroup class="mb-5 w-full">
+		{#each pagedTags[currentTagPageNo] as tag}
+			<ListgroupItem class="py-2">
+				<TagHeader
+					name={tag.tagName}
+					onEdit={() => {
+						currentTag = tag;
+						isTagAdderOpen = true;
+						tagAdderPreviewOnly = false;
+					}}
+					onInfo={() => {
+						currentTag = tag;
+						isTagAdderOpen = true;
+						tagAdderPreviewOnly = true;
+					}}
+				/>
+			</ListgroupItem>
+		{/each}
+	</Listgroup>
+	{#if pagedTags.length > 1}
+		<div class="flex w-full items-center justify-center">
+			<Pagination
+				class="mb-5"
+				pages={flowbiteTagItems}
+				next={nextTagPage}
+				previous={prevTagPage}
+				onclick={(p) => onTagPageChange(p)}
+			/>
+		</div>
+	{/if}
 </div>
 
 <AddEditMisconception
@@ -209,5 +285,16 @@
 		isConceptAdderOpen = false;
 		conceptAdderPreviewOnly = false;
 		currentConcept = emptyConcept();
+	}}
+/>
+
+<AddEditTag
+	open={isTagAdderOpen}
+	previewOnly={tagAdderPreviewOnly}
+	bind:currentTag={currentTag!}
+	onClose={() => {
+		isTagAdderOpen = false;
+		tagAdderPreviewOnly = false;
+		currentTag = emptyTag();
 	}}
 />

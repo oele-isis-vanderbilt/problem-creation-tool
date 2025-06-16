@@ -11,6 +11,7 @@ import {
 	type NDigitOperation,
 	type Problem,
 	type StateModule,
+	type Tag,
 	type WordProblem
 } from './models';
 import { clone } from 'underscore';
@@ -18,6 +19,7 @@ import type { ProblemStore } from './problem-store.svelte';
 const NAMED_MODULES_STATE = 'oecd.math-rct.modules';
 const NAMED_CONCEPTS_STATE = 'oecd.math-rct.concepts';
 const NAMED_MISCONCEPTIONS_STATE = 'oecd.math-rct.misconceptions';
+const NAMED_TAGS_STATE = 'oecd.math-rct.tags';
 
 export let store: {
 	getFn: () => Record<string, StateModule>;
@@ -43,6 +45,11 @@ export let store: {
 	addMisconception: (misconception: Misconception) => Promise<void>;
 	getMisconception: (id: string) => Misconception;
 	updateMisconception: (misconception: Misconception) => void;
+
+	getTagsFn: () => () => Record<string, Tag>;
+	addTag: (tag: Tag) => Promise<void>;
+	getTag: (id: string) => Tag;
+	updateTag: (tag: Tag) => void;
 } | null = null;
 
 export async function initialize(problemsStore: ProblemStore) {
@@ -91,6 +98,10 @@ async function initializeStore(problemsStore: ProblemStore) {
 		misconceptions: Record<string, Misconception>;
 	};
 
+	const _tagsState = (await Agent.state(NAMED_TAGS_STATE)) as {
+		tags: Record<string, Tag>;
+	};
+
 	if (!_modulesState.modules) {
 		_modulesState.modules = {};
 	}
@@ -103,12 +114,17 @@ async function initializeStore(problemsStore: ProblemStore) {
 		_misconceptionsState.misconceptions = {};
 	}
 
+	if (!_tagsState.tags) {
+		_tagsState.tags = {};
+	}
+
 	let state = $state<Record<string, StateModule>>(
 		composeStore(_modulesState.modules, problemsStore)
 	);
 
 	let concepts = $state<Record<string, Concept>>(_conceptsState.concepts);
 	let misconceptions = $state<Record<string, Misconception>>(_misconceptionsState.misconceptions);
+	let tags = $state<Record<string, Tag>>(_tagsState.tags);
 
 	const modulesCallback = (update: { state: object }) => {
 		const _state = update.state as { modules: Record<string, Module> };
@@ -125,9 +141,15 @@ async function initializeStore(problemsStore: ProblemStore) {
 		misconceptions = _state.misconceptions;
 	};
 
+	const tagsCallback = (update: { state: object }) => {
+		const _state = update.state as { tags: Record<string, Tag> };
+		tags = _state.tags;
+	};
+
 	Agent.watch(NAMED_MODULES_STATE, modulesCallback);
 	Agent.watch(NAMED_CONCEPTS_STATE, conceptsCallback);
 	Agent.watch(NAMED_MISCONCEPTIONS_STATE, misconceptionsCallback);
+	Agent.watch(NAMED_TAGS_STATE, tagsCallback);
 
 	return {
 		getFn: () => state,
@@ -190,6 +212,8 @@ async function initializeStore(problemsStore: ProblemStore) {
 						description: '',
 						difficulty: ProblemDifficulty.EASY,
 						concepts: [],
+						tags: [],
+						misconceptions: [],
 						options: [],
 						aiPrompt: '',
 						createdAt: new Date().toISOString(),
@@ -211,6 +235,8 @@ async function initializeStore(problemsStore: ProblemStore) {
 						answerBlocks: [],
 						aiPrompt: '',
 						concepts: [],
+						tags: [],
+						misconceptions: [],
 						createdAt: new Date().toISOString(),
 						updatedAt: new Date().toISOString(),
 						createdBy: userId
@@ -229,6 +255,8 @@ async function initializeStore(problemsStore: ProblemStore) {
 						difficulty: ProblemDifficulty.EASY,
 						aiPrompt: '',
 						concepts: [],
+						tags: [],
+						misconceptions: [],
 						createdAt: new Date().toISOString(),
 						updatedAt: new Date().toISOString(),
 						createdBy: userId,
@@ -322,6 +350,26 @@ async function initializeStore(problemsStore: ProblemStore) {
 			existingMisconception.name = misconception.name;
 			existingMisconception.aiDefinition = misconception.aiDefinition;
 			existingMisconception.aiFeedback = misconception.aiFeedback;
+		},
+		getTagsFn: () => {
+			return () => tags;
+		},
+		addTag: async (tag: Tag) => {
+			let newTag = (await Agent.state(tag.id)) as Tag;
+			Object.assign(newTag, tag);
+			_tagsState.tags[newTag.id] = newTag;
+		},
+		updateTag: (tag: Tag) => {
+			const existingTag = _tagsState.tags[tag.id];
+			if (!existingTag) {
+				throw new Error(`Tag with id ${tag.id} not found`);
+			}
+			existingTag.tagName = tag.tagName;
+			existingTag.description = tag.description;
+			existingTag.id = tag.id; // Ensure the id is updated
+		},
+		getTag: (id: string) => {
+			return _tagsState.tags[id];
 		}
 	};
 }

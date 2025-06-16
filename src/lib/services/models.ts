@@ -5,6 +5,12 @@ export interface AppUser {
 	provider: string;
 }
 
+export interface Tag {
+	id: string;
+	tagName: string;
+	description?: string;
+}
+
 export interface Concept {
 	id: string;
 	name: string;
@@ -60,6 +66,8 @@ interface KLBaseProblem {
 	difficulty: ProblemDifficulty;
 	concepts: string[];
 	aiPrompt: string;
+	misconceptions: string[];
+	tags: string[];
 }
 
 type BaseProblem = KLBaseProblem & ProblemMetadata;
