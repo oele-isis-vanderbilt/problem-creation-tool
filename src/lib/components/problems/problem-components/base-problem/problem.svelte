@@ -20,7 +20,7 @@
 	import ProblemError from './error.svelte';
 
 	let {
-		problem,
+		problem = $bindable(),
 		mode = 'build',
 		onProblemUpdated = () => {},
 		validators = [],
