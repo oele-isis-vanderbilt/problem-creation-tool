@@ -18,6 +18,8 @@
 	import DifficultyButtons from './difficulty-buttons.svelte';
 	import AiPrompt from './ai-prompt.svelte';
 	import ProblemError from './error.svelte';
+	import SelectTags from '$lib/components/tag/select-tags.svelte';
+	import SelectMisconception from '$lib/components/concept/select-misconception.svelte';
 
 	let {
 		problem,
@@ -67,6 +69,12 @@
 					</div>
 					<DifficultyButtons bind:difficulty={problem.difficulty} />
 					<AiPrompt bind:aiPrompt={problem.aiPrompt}></AiPrompt>
+				</div>
+				<div class="mb-4 flex flex-row items-center justify-between gap-2">
+					<SelectTags bind:selectedTagIds={problem.tags} />
+				</div>
+				<div class="mb-4 flex flex-row items-center justify-between gap-2">
+					<SelectMisconception bind:selectedMisconceptionId={problem.misconceptions} />
 				</div>
 				{@render body('build')}
 				<ProblemError {problem} {validators} />

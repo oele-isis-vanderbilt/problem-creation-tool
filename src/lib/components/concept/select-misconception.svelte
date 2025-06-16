@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { store } from '$lib/services/knowLearningStore.svelte';
-	import { Button, Select, type SelectOptionType } from 'flowbite-svelte';
+	import { Button, MultiSelect, Select, type SelectOptionType } from 'flowbite-svelte';
 
-	let { selectedMisconceptionId = $bindable() }: { selectedMisconceptionId: string } = $props();
+	let { selectedMisconceptionId = $bindable() }: { selectedMisconceptionId: string | string[] } =
+		$props();
 	import AddEditMisconception from './add-edit-misconception.svelte';
 
 	const { getMisconceptionsFn } = store!;
@@ -30,13 +31,23 @@
 </script>
 
 <div class="flex h-full w-full flex-row gap-2">
-	<Select
-		class="w-32 flex-1"
-		bind:value={selectedMisconceptionId}
-		items={misconceptionItems}
-		clearable
-		placeholder="Select misconception"
-	/>
+	{#if Array.isArray(selectedMisconceptionId)}
+		<MultiSelect
+			class="w-32 flex-1"
+			bind:value={selectedMisconceptionId}
+			items={misconceptionItems}
+			placeholder="Select misconception"
+		/>
+	{:else}
+		<Select
+			class="w-32 flex-1"
+			bind:value={selectedMisconceptionId}
+			items={misconceptionItems}
+			clearable
+			placeholder="Select misconception"
+		/>
+	{/if}
+
 	<Button
 		onclick={() => {
 			isMisconceptionAdderOpen = !isMisconceptionAdderOpen;

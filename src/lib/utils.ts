@@ -69,3 +69,11 @@ export function getMathJAXFraction(
 		: `\$\$\\frac{${numerator}}{${denominator}}\$\$`;
 	return wholeNumberPart;
 }
+
+export function emptyTag() {
+	return {
+		id: '',
+		tagName: '',
+		description: ''
+	};
+}
