@@ -87,7 +87,7 @@ async function initializeStore(problemsStore: ProblemStore) {
 	const _conceptsState = (await Agent.state(NAMED_CONCEPTS_STATE)) as {
 		concepts: Record<string, Concept>;
 	};
-	const _misconceptionsState = (await Agent.state(NAMED_CONCEPTS_STATE)) as {
+	const _misconceptionsState = (await Agent.state(NAMED_MISCONCEPTIONS_STATE)) as {
 		misconceptions: Record<string, Misconception>;
 	};
 
@@ -127,7 +127,7 @@ async function initializeStore(problemsStore: ProblemStore) {
 
 	Agent.watch(NAMED_MODULES_STATE, modulesCallback);
 	Agent.watch(NAMED_CONCEPTS_STATE, conceptsCallback);
-	Agent.watch(NAMED_CONCEPTS_STATE, misconceptionsCallback);
+	Agent.watch(NAMED_MISCONCEPTIONS_STATE, misconceptionsCallback);
 
 	return {
 		getFn: () => state,
