@@ -12,10 +12,11 @@
 		onProblemUpdated = () => {}
 	}: Omit<BaseProblemProps, 'problem'> & { problem: WordProblem } = $props();
 
-	let editedProblem = $state(JSON.parse(JSON.stringify(problem)));
+	let editedProblem = $state<WordProblem>(JSON.parse(JSON.stringify(problem)));
 
 	$effect(() => {
 		editedProblem.answerBlocks;
+		editedProblem.answerBlocks.forEach((block) => [block.value, block.label]);
 		onProblemUpdated(editedProblem);
 	});
 </script>

@@ -22,7 +22,7 @@
 	import SelectMisconception from '$lib/components/concept/select-misconception.svelte';
 
 	let {
-		problem,
+		problem = $bindable(),
 		mode = 'build',
 		onProblemUpdated = () => {},
 		validators = [],
