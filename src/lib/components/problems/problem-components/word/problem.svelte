@@ -11,19 +11,26 @@
 		mode = 'build',
 		onProblemUpdated = () => {}
 	}: Omit<BaseProblemProps, 'problem'> & { problem: WordProblem } = $props();
+
+	let editedProblem = $state(JSON.parse(JSON.stringify(problem)));
+
+	$effect(() => {
+		editedProblem.answerBlocks;
+		onProblemUpdated(editedProblem);
+	});
 </script>
 
 <BaseProblem
 	{mode}
-	bind:problem
+	bind:problem={editedProblem}
 	{onProblemUpdated}
 	validators={[(p) => validateProblem(p as WordProblem)]}
 >
 	{#snippet body(displayMode)}
 		{#if displayMode === 'build'}
-			<AnswerBlocksAdder bind:answerBlocks={problem.answerBlocks} />
+			<AnswerBlocksAdder bind:answerBlocks={editedProblem.answerBlocks} />
 		{:else if displayMode === 'assess'}
-			<AnswerBlockPreview answerBlocks={problem.answerBlocks} />
+			<AnswerBlockPreview answerBlocks={editedProblem.answerBlocks} />
 		{/if}
 	{/snippet}
 </BaseProblem>

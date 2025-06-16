@@ -1,5 +1,5 @@
 <script module lang="ts">
-	import { untrack, type Snippet } from 'svelte';
+	import { type Snippet } from 'svelte';
 	import type { Problem } from '$lib/services/models';
 
 	export interface BaseProblemProps {
@@ -18,7 +18,6 @@
 	import DifficultyButtons from './difficulty-buttons.svelte';
 	import AiPrompt from './ai-prompt.svelte';
 	import ProblemError from './error.svelte';
-	import { isEqual } from 'underscore';
 
 	let {
 		problem = $bindable(),
@@ -30,7 +29,6 @@
 		body: Snippet<['build' | 'assess']>;
 	} = $props();
 
-	let problemState = $state({ ...problem });
 	function getEditorContent(content: string) {
 		try {
 			return JSON.parse(content);
@@ -40,7 +38,12 @@
 	}
 
 	$effect(() => {
-		if (!isEqual($state.snapshot(problemState), $state.snapshot(problem))) {
+		problem?.title;
+		problem?.description;
+		problem?.concepts;
+		problem?.aiPrompt;
+		problem?.difficulty;
+		if (problem) {
 			onProblemUpdated(problem);
 		}
 	});
