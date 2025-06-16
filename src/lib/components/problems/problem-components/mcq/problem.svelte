@@ -7,23 +7,30 @@
 	import validateProblem from './validator';
 
 	let {
-		problem = $bindable(),
+		problem,
 		mode = 'build',
 		onProblemUpdated = () => {}
 	}: Omit<BaseProblemProps, 'problem'> & { problem: MultipleChoiceProblem } = $props();
+
+	let editedProblem = $state(JSON.parse(JSON.stringify(problem)));
+
+	$effect(() => {
+		editedProblem.options;
+		onProblemUpdated(editedProblem);
+	});
 </script>
 
 <BaseProblem
 	{mode}
-	bind:problem
+	bind:problem={editedProblem}
 	{onProblemUpdated}
 	validators={[(p) => validateProblem(p as MultipleChoiceProblem)]}
 >
 	{#snippet body(displayMode)}
 		{#if displayMode === 'build'}
-			<McqOptionAdder bind:options={problem.options} />
+			<McqOptionAdder bind:options={editedProblem.options} />
 		{:else if displayMode === 'assess'}
-			<McqOptionPreview options={problem.options} />
+			<McqOptionPreview options={editedProblem.options} />
 		{/if}
 	{/snippet}
 </BaseProblem>

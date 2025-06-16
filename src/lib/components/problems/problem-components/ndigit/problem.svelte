@@ -6,21 +6,31 @@
 	import validateProblem from './validator';
 
 	let {
-		problem = $bindable(),
+		problem,
 		mode = 'build',
 		onProblemUpdated = () => {}
 	}: Omit<BaseProblemProps, 'problem'> & { problem: NDigitOperation } = $props();
+
+	let editedProblem = $state(JSON.parse(JSON.stringify(problem)));
+
+	$effect(() => {
+		editedProblem.operand1;
+		editedProblem.operand2;
+		editedProblem.operator;
+		editedProblem.includeCarryAndBorrow;
+		onProblemUpdated(editedProblem);
+	});
 </script>
 
 <BaseProblem
 	{mode}
-	bind:problem
+	bind:problem={editedProblem}
 	{onProblemUpdated}
 	validators={[(p) => validateProblem(p as NDigitOperation)]}
 >
 	{#snippet body(displayMode)}
 		{#if displayMode === 'build'}
-			<NDigitOperationBlock bind:problem />
+			<NDigitOperationBlock bind:problem={editedProblem} />
 		{:else if displayMode === 'assess'}
 			<NDigitOperationBlock {problem} mode="preview" />
 		{/if}

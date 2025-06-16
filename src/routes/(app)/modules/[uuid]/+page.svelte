@@ -32,7 +32,7 @@
 
 	const delayedUpdateFn = debounce((problem: Problem) => {
 		updateProblem(module.id, problem);
-	}, 1000);
+	}, 500);
 
 	function onUpdateProblem(problem: Problem) {
 		delayedUpdateFn(problem);
@@ -68,10 +68,7 @@
 						onProblemDeleted={() => onDeleteProblem(problem.id)}
 					/>
 				{/snippet}
-				<ProblemComponent
-					bind:problem={module.problems[index]}
-					onProblemUpdated={onUpdateProblem}
-				/>
+				<ProblemComponent problem={module.problems[index]} onProblemUpdated={onUpdateProblem} />
 			</AccordionItem>
 		{/each}
 	</Accordion>
