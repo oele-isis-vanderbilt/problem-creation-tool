@@ -10,9 +10,7 @@
 	import ProblemHeader from '$lib/components/problems/problem-header.svelte';
 	import { debounce, friendlyDateTime } from '$lib/utils';
 	import { store } from '$lib/services/knowLearningStore.svelte';
-	import Mcq from '$lib/components/problems/problem-components/mcq/problem.svelte';
-	import Word from '$lib/components/problems/problem-components/word/problem.svelte';
-	import NDigit from '$lib/components/problems/problem-components/ndigit/problem.svelte';
+	import { getProblemComponent } from '$lib/components/problems/problem-components/utils';
 
 	const appEnv = getContext<AgentEnvironment>('appEnv');
 	let { data }: PageProps = $props();
@@ -42,17 +40,6 @@
 
 	function onNameDescriptionChage(name: string, description: string) {
 		updateModuleNameDescription(module.id, name, description);
-	}
-
-	function getProblemComponent(kind: ProblemKind) {
-		switch (kind) {
-			case ProblemKind.MULTIPLE_CHOICE:
-				return Mcq;
-			case ProblemKind.WORD_PROBLEM:
-				return Word;
-			case ProblemKind.N_DIGIT_OPERATION:
-				return NDigit;
-		}
 	}
 </script>
 
