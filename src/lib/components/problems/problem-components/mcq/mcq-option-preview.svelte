@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { MCQOptionKind, type MultipleChoiceOption } from '$lib/services/models';
 	import { Radio } from 'flowbite-svelte';
-	import Text from '$lib/components/problems/problem/mcq-options/text.svelte';
-	import Image from '$lib/components/problems/problem/mcq-options/image.svelte';
-	import Fraction from '$lib/components/problems/problem/mcq-options/fraction.svelte';
+	import Text from './mcq-options/text.svelte';
+	import Image from './mcq-options/image.svelte';
+	import Fraction from './mcq-options/fraction.svelte';
 
 	let {
 		options

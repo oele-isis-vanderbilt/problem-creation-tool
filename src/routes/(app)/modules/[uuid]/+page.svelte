@@ -2,14 +2,15 @@
 	import AddProblemsButton from '$lib/components/problems/add-problems-button.svelte';
 	import type { PageProps } from './$types';
 	import HeadingDescriptionEditor from '$lib/components/module/name-description-editor.svelte';
-	import { ProblemKind, type MultipleChoiceProblem, type Problem } from '$lib/services/models';
+	import { ProblemKind, type Problem } from '$lib/services/models';
 	import { getContext } from 'svelte';
 	import type { AgentEnvironment } from '@knowlearning/agents/browser';
-	import ProblemComponent from '$lib/components/problems/problem/problem.svelte';
+
 	import { Accordion, AccordionItem } from 'flowbite-svelte';
 	import ProblemHeader from '$lib/components/problems/problem-header.svelte';
 	import { debounce, friendlyDateTime } from '$lib/utils';
 	import { store } from '$lib/services/knowLearningStore.svelte';
+	import { getProblemComponent } from '$lib/components/problems/problem-components/utils';
 
 	const appEnv = getContext<AgentEnvironment>('appEnv');
 	let { data }: PageProps = $props();
@@ -29,12 +30,12 @@
 		deleteProblem(problemId, module.id);
 	}
 
-	function onUpdateProblem(problem: Problem) {
-		const delayedFn = debounce(() => {
-			updateProblem(module.id, problem);
-		}, 500);
+	const delayedUpdateFn = debounce((problem: Problem) => {
+		updateProblem(module.id, problem);
+	}, 1000);
 
-		delayedFn();
+	function onUpdateProblem(problem: Problem) {
+		delayedUpdateFn(problem);
 	}
 
 	function onNameDescriptionChage(name: string, description: string) {
@@ -55,7 +56,8 @@
 		</div>
 	</div>
 	<Accordion class="mb-20">
-		{#each module?.problems as problem, index}
+		{#each module?.problems as problem, index (problem.id)}
+			{@const ProblemComponent = getProblemComponent(problem.kind)}
 			<AccordionItem>
 				{#snippet header()}
 					<ProblemHeader
@@ -66,7 +68,10 @@
 						onProblemDeleted={() => onDeleteProblem(problem.id)}
 					/>
 				{/snippet}
-				<ProblemComponent problem={module.problems[index]} onProblemUpdated={onUpdateProblem} />
+				<ProblemComponent
+					bind:problem={module.problems[index]}
+					onProblemUpdated={onUpdateProblem}
+				/>
 			</AccordionItem>
 		{/each}
 	</Accordion>

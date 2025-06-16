@@ -2,7 +2,6 @@
 	import type { NDigitOperation } from '$lib/services/models';
 	import { Operator } from '$lib/services/models';
 	import { Input, Select, Toggle, type SelectOptionType } from 'flowbite-svelte';
-	import Mathjax from '../Mathjax.svelte';
 
 	let {
 		problem = $bindable(),
