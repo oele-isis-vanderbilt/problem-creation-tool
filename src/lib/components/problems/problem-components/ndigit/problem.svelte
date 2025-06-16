@@ -6,7 +6,7 @@
 	import validateProblem from './validator';
 
 	let {
-		problem = $bindable(),
+		problem,
 		mode = 'build',
 		onProblemUpdated = () => {}
 	}: Omit<BaseProblemProps, 'problem'> & { problem: NDigitOperation } = $props();
