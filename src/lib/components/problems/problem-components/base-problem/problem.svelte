@@ -45,6 +45,8 @@
 		problem?.concepts;
 		problem?.aiPrompt;
 		problem?.difficulty;
+		problem?.tags;
+		problem?.misconceptions;
 		if (problem) {
 			onProblemUpdated(problem);
 		}

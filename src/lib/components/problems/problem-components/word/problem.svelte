@@ -23,7 +23,7 @@
 
 <BaseProblem
 	{mode}
-	problem={editedProblem}
+	bind:problem={editedProblem}
 	{onProblemUpdated}
 	validators={[(p) => validateProblem(p as WordProblem)]}
 >
