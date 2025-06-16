@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { MCQOptionKind, type MultipleChoiceOption } from '$lib/services/models';
-	import { Radio } from 'flowbite-svelte';
+	import { Button, Radio } from 'flowbite-svelte';
 	import Text from './mcq-options/text.svelte';
 	import Image from './mcq-options/image.svelte';
 	import Fraction from './mcq-options/fraction.svelte';
@@ -12,20 +12,20 @@
 	} = $props();
 </script>
 
-{#each options as option}
-	<div class="mb-2 flex flex-row items-center justify-center gap-2">
+<div class="mb-2 grid w-full grid-cols-1 justify-between gap-4 lg:grid-cols-2">
+	{#each options as option}
 		{#if option.kind === MCQOptionKind.TEXT}
-			<Radio name="option" value={option.id} class="text-lg">
+			<Button class="text-lg" outline color="gray" size="lg">
 				<Text mode="preview" {option} />
-			</Radio>
+			</Button>
 		{:else if option.kind === MCQOptionKind.FRACTION}
-			<Radio name="option" value={option.id} class="text-lg">
+			<Button class="text-lg" outline color="gray" size="lg">
 				<Fraction mode="preview" {option} />
-			</Radio>
+			</Button>
 		{:else if option.kind === MCQOptionKind.IMAGE}
-			<Radio name="option" value={option.id} class="text-lg">
+			<Button class="text-lg" outline color="gray" size="lg">
 				<Image mode="preview" {option} />
-			</Radio>
+			</Button>
 		{/if}
-	</div>
-{/each}
+	{/each}
+</div>
