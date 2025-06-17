@@ -24,7 +24,10 @@ export const load: PageLoad = async ({ params }) => {
 		});
 	}
 
+	let runState = await problemStore.getProblemRunState(uuid);
+
 	return {
-		problem
+		problem,
+		runState
 	};
 };

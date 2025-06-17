@@ -1,6 +1,4 @@
 <script lang="ts">
-	import baseValidator from './validator';
-
 	let {
 		validators = [],
 		problem
@@ -10,7 +8,7 @@
 	} = $props();
 
 	let errors = $derived.by(() => {
-		return [baseValidator, ...validators].flatMap((validator) => {
+		return validators.flatMap((validator) => {
 			return validator(problem);
 		});
 	});

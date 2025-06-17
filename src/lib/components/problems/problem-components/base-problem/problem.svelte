@@ -20,6 +20,7 @@
 	import ProblemError from './error.svelte';
 	import SelectTags from '$lib/components/tag/select-tags.svelte';
 	import SelectMisconception from '$lib/components/concept/select-misconception.svelte';
+	import baseValidator from './validator';
 
 	let {
 		problem = $bindable(),
@@ -79,7 +80,7 @@
 					<SelectMisconception bind:selectedMisconceptionId={problem.misconceptions} />
 				</div>
 				{@render body('build')}
-				<ProblemError {problem} {validators} />
+				<ProblemError {problem} validators={[baseValidator, ...validators]} />
 			{/snippet}
 			{#snippet preview()}
 				<h2 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">
