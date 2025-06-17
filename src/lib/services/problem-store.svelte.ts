@@ -2,9 +2,11 @@ import { omit, pick } from 'underscore';
 import type { KLProblem, KLProblemRunState, Problem, ProblemMetadata } from './models';
 import Agent from '@knowlearning/agents/browser.js';
 
-const NAMED_PROBLEM_STATE = 'oecd.match-rct.problems';
+const NAMED_PROBLEM_STATE = 'oecd.math-rct.problems';
+const OLD_NAMED_PROBLEM_STATE = 'oecd.match-rct.problems';
 const OLD_NAMED_STATE = 'mathProblems';
 const RUN_STATE_PREFIX = 'oecd.math-rct.problems.run-state';
+const MIGRATION_NAMED_STATE = 'oecd.math-rct.problems.migration';
 
 type WatchCallBackType = (update: { state: Record<string, Problem> }) => void;
 
@@ -28,33 +30,15 @@ export async function initProblemStore() {
 }
 
 export async function migrateProblems() {
-	const _problemsState = (await Agent.state(OLD_NAMED_STATE)) as {
-		problems: Record<string, Problem>;
-	};
-
-	const newProblemsState = (await Agent.state(NAMED_PROBLEM_STATE)) as Record<
+	const oldProblems = (await Agent.state(OLD_NAMED_PROBLEM_STATE)) as Record<
 		string,
 		ProblemMetadata
 	>;
-
-	const problemMetadataArray = await Promise.all(
-		Object.entries(_problemsState.problems || {}).map(async ([id, problem]) => {
-			const metadata: ProblemMetadata = {
-				id,
-				createdAt: problem.createdAt || new Date().toISOString(),
-				updatedAt: problem.updatedAt || new Date().toISOString(),
-				createdBy: problem.createdBy || 'unknown'
-			};
-			const problemState = await Agent.state(metadata.id);
-			const klProblem: KLProblem = omit(problem, Object.keys(metadata)) as KLProblem;
-
-			await Agent.state(metadata.id);
-			Object.assign(problemState, JSON.parse(JSON.stringify(klProblem)));
-			return metadata;
-		})
-	);
-
-	problemMetadataArray.forEach((metadata) => (newProblemsState[metadata.id] = metadata));
+	const newProblems = (await Agent.state(NAMED_PROBLEM_STATE)) as Record<string, ProblemMetadata>;
+	for (const [id, metadata] of Object.entries(oldProblems)) {
+		const newMetadata = JSON.parse(JSON.stringify(metadata));
+		newProblems[metadata.id] = newMetadata;
+	}
 }
 
 async function composeProblemsState(_problemsState: Record<string, ProblemMetadata>) {
@@ -73,6 +57,22 @@ async function composeProblemsState(_problemsState: Record<string, ProblemMetada
 }
 
 async function initializeProblemStore(namedState: string) {
+	const migrationState = (await Agent.state(MIGRATION_NAMED_STATE)) as {
+		migrations: string[];
+	};
+
+	if (!migrationState.migrations) {
+		migrationState.migrations = [];
+	}
+
+	if (!migrationState.migrations.includes(namedState)) {
+		await migrateProblems();
+		migrationState.migrations.push(namedState);
+		console.log(`Migrated problems to ${namedState}`);
+	} else {
+		console.log(`Problems already migrated to ${namedState}`);
+	}
+
 	const _problemsState = (await Agent.state(namedState)) as Record<string, ProblemMetadata>;
 	const problemsState = await composeProblemsState(_problemsState);
 	let readableState: Record<string, Problem> = $state(problemsState);
