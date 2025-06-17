@@ -1,5 +1,3 @@
-import type { K } from 'vitest/dist/chunks/reporters.d.DG9VKi4m.js';
-
 export interface AppUser {
 	id: string;
 	name: string;
