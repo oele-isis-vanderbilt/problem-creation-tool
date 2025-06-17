@@ -3,22 +3,24 @@ import {
 	Operator,
 	ProblemDifficulty,
 	ProblemKind,
+	type Assessment,
 	type Concept,
-	type KLProblem,
 	type Misconception,
 	type Module,
 	type MultipleChoiceProblem,
 	type NDigitOperation,
 	type Problem,
+	type StateAssessment,
 	type StateModule,
 	type Tag,
 	type WordProblem
 } from './models';
-import { clone } from 'underscore';
+import { clone, omit } from 'underscore';
 import type { ProblemStore } from './problem-store.svelte';
 const NAMED_MODULES_STATE = 'oecd.math-rct.modules';
 const NAMED_CONCEPTS_STATE = 'oecd.math-rct.concepts';
 const NAMED_MISCONCEPTIONS_STATE = 'oecd.math-rct.misconceptions';
+const NAMED_ASSESSMENTS_STATE = 'oecd.math-rct.assessments';
 const NAMED_TAGS_STATE = 'oecd.math-rct.tags';
 
 export let store: {
@@ -50,6 +52,15 @@ export let store: {
 	addTag: (tag: Tag) => Promise<void>;
 	getTag: (id: string) => Tag;
 	updateTag: (tag: Tag) => void;
+
+	getAssessmentsFn: () => () => Record<string, StateAssessment>;
+	assessmentExists: (id: string) => boolean;
+	updateAssessmentTitleDescription: (id: string, title: string, description: string) => void;
+	getAssessment: (id: string) => StateAssessment | undefined;
+	getAssessmentKL: (id: string) => Promise<Assessment>;
+	createAssessment: (assessment: Assessment) => void;
+	updateAssessment: (assessment: Assessment) => void;
+	deleteAssessment: (assessmentId: string) => void;
 } | null = null;
 
 export async function initialize(problemsStore: ProblemStore) {
@@ -87,6 +98,25 @@ function composeStore(
 	return Object.fromEntries(map);
 }
 
+function composeAssessmentStore(
+	asessments: Record<string, Assessment>,
+	problems: ProblemStore
+): Record<string, StateAssessment> {
+	const displayProblems = problems.getFn()();
+	const map = Object.entries(asessments).map(([id, assessment]) => {
+		return [
+			id,
+			{
+				...omit(assessment, ['problems']),
+				problems: assessment.problemIds
+					.map((id) => displayProblems[id])
+					.filter((problem) => problem !== undefined)
+			}
+		];
+	});
+	return Object.fromEntries(map);
+}
+
 async function initializeStore(problemsStore: ProblemStore) {
 	const _modulesState = (await Agent.state(NAMED_MODULES_STATE)) as {
 		modules: Record<string, Module>;
@@ -96,6 +126,10 @@ async function initializeStore(problemsStore: ProblemStore) {
 	};
 	const _misconceptionsState = (await Agent.state(NAMED_MISCONCEPTIONS_STATE)) as {
 		misconceptions: Record<string, Misconception>;
+	};
+
+	const _assessmentsState = (await Agent.state(NAMED_ASSESSMENTS_STATE)) as {
+		assessments: Record<string, Assessment>;
 	};
 
 	const _tagsState = (await Agent.state(NAMED_TAGS_STATE)) as {
@@ -118,6 +152,10 @@ async function initializeStore(problemsStore: ProblemStore) {
 		_tagsState.tags = {};
 	}
 
+	if (!_assessmentsState.assessments) {
+		_assessmentsState.assessments = {};
+	}
+
 	let state = $state<Record<string, StateModule>>(
 		composeStore(_modulesState.modules, problemsStore)
 	);
@@ -125,6 +163,9 @@ async function initializeStore(problemsStore: ProblemStore) {
 	let concepts = $state<Record<string, Concept>>(_conceptsState.concepts);
 	let misconceptions = $state<Record<string, Misconception>>(_misconceptionsState.misconceptions);
 	let tags = $state<Record<string, Tag>>(_tagsState.tags);
+	let assessments = $state<Record<string, StateAssessment>>(
+		composeAssessmentStore(_assessmentsState.assessments, problemsStore)
+	);
 
 	const modulesCallback = (update: { state: object }) => {
 		const _state = update.state as { modules: Record<string, Module> };
@@ -146,10 +187,16 @@ async function initializeStore(problemsStore: ProblemStore) {
 		tags = _state.tags;
 	};
 
+	const assessmentsCallback = (update: { state: object }) => {
+		const _state = update.state as { assessments: Record<string, Assessment> };
+		assessments = composeAssessmentStore(_state.assessments || {}, problemsStore);
+	};
+
 	Agent.watch(NAMED_MODULES_STATE, modulesCallback);
 	Agent.watch(NAMED_CONCEPTS_STATE, conceptsCallback);
 	Agent.watch(NAMED_MISCONCEPTIONS_STATE, misconceptionsCallback);
 	Agent.watch(NAMED_TAGS_STATE, tagsCallback);
+	Agent.watch(NAMED_ASSESSMENTS_STATE, assessmentsCallback);
 
 	return {
 		getFn: () => state,
@@ -370,6 +417,46 @@ async function initializeStore(problemsStore: ProblemStore) {
 		},
 		getTag: (id: string) => {
 			return _tagsState.tags[id];
+		},
+		getAssessmentsFn: () => {
+			return () => assessments;
+		},
+		assessmentExists: (id: string) => {
+			return !!_assessmentsState.assessments[id];
+		},
+		getAssessment: (id: string) => {
+			return assessments[id];
+		},
+		updateAssessmentTitleDescription: (id: string, title: string, description: string) => {
+			const assessment = _assessmentsState.assessments[id];
+			if (!assessment) {
+				throw new Error(`Assessment with id ${id} not found`);
+			}
+			assessment.title = title;
+			assessment.description = description;
+		},
+		getAssessmentKL: async (id: string) => {
+			const assessment = _assessmentsState.assessments[id];
+			if (!assessment) {
+				throw new Error(`Assessment with id ${id} not found`);
+			}
+			return assessment;
+		},
+		createAssessment: (assessment: Assessment) => {
+			_assessmentsState.assessments[assessment.id] = Object.assign({}, assessment);
+		},
+		updateAssessment: (assessment: Assessment) => {
+			const existingAssessment = _assessmentsState.assessments[assessment.id];
+			if (!existingAssessment) {
+				throw new Error(`Assessment with id ${assessment.id} not found`);
+			}
+			Object.assign(existingAssessment, assessment);
+		},
+		deleteAssessment: async (assessmentId: string) => {
+			if (!_assessmentsState.assessments[assessmentId]) {
+				throw new Error(`Assessment with id ${assessmentId} not found`);
+			}
+			delete _assessmentsState.assessments[assessmentId];
 		}
 	};
 }

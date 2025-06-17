@@ -65,6 +65,15 @@
 			>
 				Concepts and Misconceptions
 			</A>
+			<A
+				href={prependBaseUrl('/assessments')}
+				class={[
+					'dark:text-primary-600 font-bold',
+					isActive('/assessments') && 'text-primary-800 dark:text-secondary-100 text-lg font-bold'
+				]}
+			>
+				Assessments
+			</A>
 		</div>
 		<div class="flex items-center justify-end gap-2">
 			{#if env}
