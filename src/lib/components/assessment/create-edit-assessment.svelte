@@ -203,7 +203,6 @@
 					value={currentAssessment.attemptTimeLimit / 60}
 					onchange={(e: Event) => {
 						const target = e.target as HTMLInputElement;
-						console.log('Range changed:', target.value);
 						currentAssessment.attemptTimeLimit = parseInt(target.value) * 60;
 					}}
 				/>
@@ -243,7 +242,6 @@
 		<Button
 			onclick={async () => {
 				let success = await validateAndSubmit();
-				console.log('Assessment submission success:', success);
 				if (success) {
 					// Reset the form
 					currentAssessment = assessment || emptyAssessment();
