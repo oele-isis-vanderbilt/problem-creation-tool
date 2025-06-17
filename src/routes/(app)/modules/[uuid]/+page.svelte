@@ -11,6 +11,7 @@
 	import { debounce, friendlyDateTime } from '$lib/utils';
 	import { store } from '$lib/services/knowLearningStore.svelte';
 	import { getProblemComponent } from '$lib/components/problems/problem-components/utils';
+	import CreateAssessmentButton from '$lib/components/assessment/create-edit-assessment.svelte';
 
 	const appEnv = getContext<AgentEnvironment>('appEnv');
 	let { data }: PageProps = $props();
@@ -44,11 +45,16 @@
 </script>
 
 <div class="container mx-auto mt-2 flex h-full w-full flex-col">
-	<HeadingDescriptionEditor
-		name={module.name}
-		description={module.description}
-		onChange={onNameDescriptionChage}
-	/>
+	<div class="flex w-full items-center justify-between gap-2">
+		<HeadingDescriptionEditor
+			name={module.name}
+			description={module.description}
+			onChange={onNameDescriptionChage}
+		/>
+		<div>
+			<CreateAssessmentButton {module} />
+		</div>
+	</div>
 	<div class="flex h-full flex-col items-start justify-center gap-4 md:flex-row">
 		<div class="flex w-full items-center justify-between py-2">
 			<h2 class="text-lg font-bold md:text-2xl">Problems</h2>

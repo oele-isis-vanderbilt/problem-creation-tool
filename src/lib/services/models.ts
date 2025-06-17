@@ -185,3 +185,28 @@ export type KLProblemRunState =
 	| KLMCQProblemRunState
 	| KLWordProblemRunState
 	| KLNDigitOperationRunState;
+
+export enum AssessmentGroup {
+	CONTROL = 'control',
+	TREATMENT = 'treatment'
+}
+
+export interface Assessment {
+	id: string;
+	title: string;
+	problemIds: string[];
+	moduleId: string;
+	description: string;
+	coverImageUUID?: string;
+	createdAt: string;
+	updatedAt: string;
+	createdBy: string;
+	attemptTimeLimit: number;
+	reviewTimeLimit: number;
+	maxAttemptsPerQuestion: number;
+	group: AssessmentGroup;
+}
+
+export interface StateAssessment extends Omit<Assessment, 'problemIds'> {
+	problems: Problem[];
+}

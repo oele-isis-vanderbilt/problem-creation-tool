@@ -11,7 +11,7 @@ const MIGRATION_NAMED_STATE = 'oecd.math-rct.problems.migration';
 type WatchCallBackType = (update: { state: Record<string, Problem> }) => void;
 
 export type ProblemStore = {
-	getFn: () => Record<string, Problem>;
+	getFn: () => () => Record<string, Problem>;
 	getProblemMetadata: (id: string) => Promise<ProblemMetadata>;
 	getProblem: (id: string) => Problem;
 	addEmptyProblem: (problem: Problem) => Promise<void>;
@@ -87,7 +87,7 @@ async function initializeProblemStore(namedState: string) {
 	});
 
 	return {
-		getFn: () => readableState,
+		getFn: () => () => readableState,
 		getProblemMetadata: async (id: string) => {
 			const metadata = _problemsState[id];
 			if (!metadata) {
