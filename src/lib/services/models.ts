@@ -151,3 +151,37 @@ export type KLNDigitOperation = Omit<
 	'id' | 'createdAt' | 'updatedAt' | 'createdBy'
 >;
 export type KLProblem = KLMultipleChoiceProblem | KLWordProblem | KLNDigitOperation;
+
+export interface BaseProblemRunState {
+	problem: Problem;
+	isCorrect: boolean;
+	canGrade: boolean;
+	canGradeFeedback: string[];
+}
+
+export interface MCQProblemRunState extends BaseProblemRunState {
+	kind: ProblemKind.MULTIPLE_CHOICE;
+	selectedOptionId: string | null;
+}
+
+export interface WordProblemRunState extends BaseProblemRunState {
+	kind: ProblemKind.WORD_PROBLEM;
+	answerBlockValues: String[];
+}
+
+export interface NDigitOperationRunState extends BaseProblemRunState {
+	kind: ProblemKind.N_DIGIT_OPERATION;
+	carryAndBurrowBlocks: string[];
+	finalResult: string;
+}
+
+export type ProblemRunState = MCQProblemRunState | WordProblemRunState | NDigitOperationRunState;
+
+export type KLMCQProblemRunState = Omit<MCQProblemRunState, 'problem'>;
+export type KLWordProblemRunState = Omit<WordProblemRunState, 'problem'>;
+export type KLNDigitOperationRunState = Omit<NDigitOperationRunState, 'problem'>;
+
+export type KLProblemRunState =
+	| KLMCQProblemRunState
+	| KLWordProblemRunState
+	| KLNDigitOperationRunState;

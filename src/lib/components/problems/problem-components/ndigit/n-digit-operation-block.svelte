@@ -2,14 +2,24 @@
 	import type { NDigitOperation } from '$lib/services/models';
 	import { Operator } from '$lib/services/models';
 	import { Input, Select, Toggle, type SelectOptionType } from 'flowbite-svelte';
+	import { onMount } from 'svelte';
 
 	let {
 		problem = $bindable(),
-		mode = 'edit'
+		mode = 'edit',
+		resultBlockValues = $bindable([]),
+		carryBlockValues = $bindable([])
 	}: {
 		problem: NDigitOperation;
 		mode?: 'edit' | 'preview';
+		resultBlockValues?: string[];
+		carryBlockValues?: string[];
 	} = $props();
+
+	onMount(() => {
+		resultBlockValues = Array(getInputBlocks().length).fill('');
+		carryBlockValues = Array(getCarryBurrowBlocks(problem.operand1).length).fill('');
+	});
 
 	let selectItems = Object.values(Operator).map((operator) => {
 		return {
@@ -76,8 +86,8 @@
 	<div class="flex w-64 flex-col">
 		{#if problem.includeCarryAndBorrow}
 			<div class="mb-2 flex flex-1 flex-row justify-end gap-2">
-				{#each getCarryBurrowBlocks(problem.operand1) as _}
-					<Input type="text" class="w-10 text-xl" />
+				{#each getCarryBurrowBlocks(problem.operand1) as _block, index}
+					<Input type="text" class="w-10 text-xl" bind:value={carryBlockValues[index]} />
 				{/each}
 			</div>
 		{/if}
@@ -94,8 +104,8 @@
 		</div>
 		<hr class="m-2 w-64 self-center-safe" />
 		<div class="flex flex-row items-end justify-end gap-2">
-			{#each getInputBlocks() as _}
-				<Input type="text" class="w-10 text-xl" />
+			{#each getInputBlocks() as block, index}
+				<Input type="text" class="w-10 text-xl" bind:value={resultBlockValues[index]} />
 			{/each}
 		</div>
 	</div>

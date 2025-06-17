@@ -1,9 +1,10 @@
 import { omit, pick } from 'underscore';
-import type { KLProblem, Problem, ProblemMetadata } from './models';
+import type { KLProblem, KLProblemRunState, Problem, ProblemMetadata } from './models';
 import Agent from '@knowlearning/agents/browser.js';
 
 const NAMED_PROBLEM_STATE = 'oecd.match-rct.problems';
 const OLD_NAMED_STATE = 'mathProblems';
+const RUN_STATE_PREFIX = 'oecd.math-rct.problems.run-state';
 
 type WatchCallBackType = (update: { state: Record<string, Problem> }) => void;
 
@@ -16,6 +17,7 @@ export type ProblemStore = {
 	deleteProblem: (id: string) => void;
 	getProblems: () => Problem[];
 	watch: (cb: WatchCallBackType) => void;
+	getProblemRunState: (id: string) => Promise<KLProblemRunState>;
 };
 
 export let store: ProblemStore | null = null;
@@ -129,6 +131,10 @@ async function initializeProblemStore(namedState: string) {
 			// Also delete the state associated with the problem
 		},
 		getProblems: () => Object.values(readableState),
-		watch: (cb: WatchCallBackType) => watchers.push(cb)
+		watch: (cb: WatchCallBackType) => watchers.push(cb),
+		getProblemRunState: async (id: string): Promise<KLProblemRunState> => {
+			const runState = await Agent.state(`${RUN_STATE_PREFIX}-${id}`);
+			return runState as KLProblemRunState;
+		}
 	};
 }
