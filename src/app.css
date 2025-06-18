@@ -55,6 +55,8 @@
 	--color-danger-800: oklch(0.444 0.177 26.899);
 	--color-danger-900: oklch(0.396 0.141 25.723);
 	--color-danger-950: oklch(0.258 0.092 26.042);
+
+	--color-pila-primary: oklch(0.4389 0.2402 270.17);
 }
 
 @layer base {

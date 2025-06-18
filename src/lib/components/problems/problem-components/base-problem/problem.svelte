@@ -54,7 +54,7 @@
 	});
 </script>
 
-<div class="mb-20 h-full w-full">
+<div class="mb-20 w-full">
 	{#if mode === 'build'}
 		<FlipEditPreview>
 			{#snippet edit()}
