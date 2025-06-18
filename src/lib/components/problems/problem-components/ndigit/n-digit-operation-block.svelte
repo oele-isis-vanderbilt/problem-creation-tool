@@ -11,14 +11,18 @@
 		carryBlockValues = $bindable([])
 	}: {
 		problem: NDigitOperation;
-		mode?: 'edit' | 'preview';
+		mode?: 'edit' | 'preview' | 'frozen';
 		resultBlockValues?: string[];
 		carryBlockValues?: string[];
 	} = $props();
 
 	onMount(() => {
-		resultBlockValues = Array(getInputBlocks().length).fill('');
-		carryBlockValues = Array(getCarryBurrowBlocks(problem.operand1).length).fill('');
+		if (mode === 'preview') {
+			carryBlockValues = Array(getCarryBurrowBlocks(problem.operand1).length).fill('');
+			resultBlockValues = Array(getInputBlocks().length).fill('');
+		} else if (mode === 'frozen' && !carryBlockValues?.length) {
+			carryBlockValues = Array(getCarryBurrowBlocks(problem.operand1).length).fill('');
+		}
 	});
 
 	let selectItems = Object.values(Operator).map((operator) => {
@@ -80,14 +84,21 @@
 				};
 			});
 	}
+
+	let isFrozen = $derived(mode === 'frozen');
 </script>
 
-{#if mode === 'preview'}
+{#if mode === 'preview' || mode === 'frozen'}
 	<div class="flex w-64 flex-col">
 		{#if problem.includeCarryAndBorrow}
 			<div class="mb-2 flex flex-1 flex-row justify-end gap-2">
 				{#each getCarryBurrowBlocks(problem.operand1) as _block, index}
-					<Input type="text" class="w-10 text-xl" bind:value={carryBlockValues[index]} />
+					<Input
+						disabled={isFrozen}
+						type="text"
+						class="w-10 text-xl"
+						bind:value={carryBlockValues[index]}
+					/>
 				{/each}
 			</div>
 		{/if}
@@ -105,7 +116,11 @@
 		<hr class="m-2 w-64 self-center-safe" />
 		<div class="flex flex-row items-end justify-end gap-2">
 			{#each getInputBlocks() as block, index}
-				<Input type="text" class="w-10 text-xl" bind:value={resultBlockValues[index]} />
+				{#if isFrozen}
+					<Input type="text" class="w-10 text-xl" value={resultBlockValues[index]} disabled />
+				{:else}
+					<Input type="text" class="w-10 text-xl" bind:value={resultBlockValues[index]} />
+				{/if}
 			{/each}
 		</div>
 	</div>

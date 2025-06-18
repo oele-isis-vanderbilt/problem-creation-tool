@@ -1,10 +1,5 @@
 <script lang="ts">
-	import {
-		MCQOptionKind,
-		ProblemKind,
-		type MCQProblemRunState,
-		type MultipleChoiceOption
-	} from '$lib/services/models';
+	import { MCQOptionKind, type MultipleChoiceOption } from '$lib/services/models';
 	import { Button } from 'flowbite-svelte';
 	import Text from './mcq-options/text.svelte';
 	import Image from './mcq-options/image.svelte';

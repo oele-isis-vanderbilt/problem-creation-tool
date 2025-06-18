@@ -10,14 +10,17 @@
 	import type { BaseProblemProps } from '../base-problem/problem.svelte';
 	import validateProblem from './validator';
 	import Error from '../base-problem/error.svelte';
+	import McqOptionSnapshot from './mcq-option-snapshot.svelte';
 
 	let {
 		problem,
 		mode = 'build',
 		onProblemUpdated = () => {},
-		onRunStateChange = () => {}
-	}: Omit<BaseProblemProps, 'problem'> & {
+		onRunStateChange = () => {},
+		problemSnapshot = null
+	}: Omit<BaseProblemProps, 'problem' | 'problemSnapshot'> & {
 		problem: MultipleChoiceProblem;
+		problemSnapshot?: MCQProblemRunState | null;
 		onRunStateChange: (state: MCQProblemRunState) => void;
 	} = $props();
 
@@ -50,6 +53,7 @@
 	{mode}
 	bind:problem={editedProblem}
 	{onProblemUpdated}
+	{problemSnapshot}
 	validators={[(p) => validateProblem(p as MultipleChoiceProblem)]}
 >
 	{#snippet body(displayMode)}
@@ -58,6 +62,11 @@
 		{:else if displayMode === 'assess'}
 			<McqOptionPreview options={editedProblem.options} bind:selectedOptionId />
 			<Error validators={[validator]} />
+		{:else if displayMode === 'snapshot'}
+			<McqOptionSnapshot
+				options={editedProblem.options}
+				selectedOptionId={problemSnapshot?.selectedOptionId}
+			/>
 		{/if}
 	{/snippet}
 </BaseProblem>

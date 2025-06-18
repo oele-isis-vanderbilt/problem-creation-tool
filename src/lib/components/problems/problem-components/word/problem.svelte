@@ -6,14 +6,17 @@
 	import BaseProblem from '../base-problem/problem.svelte';
 	import validateProblem from './validator';
 	import Error from '../base-problem/error.svelte';
+	import AnswerBlockSnapshot from './answer-block-snapshot.svelte';
 
 	let {
 		problem = $bindable(),
 		mode = 'build',
 		onProblemUpdated = () => {},
-		onRunStateChange = () => {}
-	}: Omit<BaseProblemProps, 'problem'> & {
+		onRunStateChange = () => {},
+		problemSnapshot = null
+	}: Omit<BaseProblemProps, 'problem' | 'problemSnapshot'> & {
 		problem: WordProblem;
+		problemSnapshot?: WordProblemRunState | null;
 		onRunStateChange: (state: WordProblemRunState) => void;
 	} = $props();
 
@@ -66,6 +69,10 @@
 			<div class="flex flex-col gap-4">
 				<AnswerBlockPreview answerBlocks={editedProblem.answerBlocks} bind:blockValues />
 				<Error validators={[validator]} />
+			</div>
+		{:else if displayMode === 'snapshot'}
+			<div class="flex flex-col gap-4">
+				<AnswerBlockSnapshot answerBlocks={editedProblem.answerBlocks} snapshot={problemSnapshot} />
 			</div>
 		{/if}
 	{/snippet}
