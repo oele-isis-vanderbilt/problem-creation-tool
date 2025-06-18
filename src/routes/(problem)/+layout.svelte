@@ -4,6 +4,6 @@
 	let { children }: LayoutProps = $props();
 </script>
 
-<div class="mx-auto h-full w-full">
+<div class="mx-auto h-screen w-screen">
 	{@render children()}
 </div>
