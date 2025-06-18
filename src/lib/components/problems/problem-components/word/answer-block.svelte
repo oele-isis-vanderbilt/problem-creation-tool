@@ -9,7 +9,7 @@
 		onDeleteBlock = () => {},
 		blockValue = $bindable('')
 	}: {
-		mode?: 'preview' | 'edit';
+		mode?: 'preview' | 'edit' | 'frozen';
 		answerBlock: AnswerBlock;
 		onDeleteBlock?: () => void;
 		blockValue?: string;
@@ -24,6 +24,17 @@
 			</div>
 		{/if}
 		<Input type="text" placeholder="Enter Answer" bind:value={blockValue} />
+	</div>
+{:else if mode === 'frozen'}
+	<div class="flex w-full flex-row items-center justify-center gap-2">
+		{#if answerBlock.hasOwnProperty('label')}
+			<div class="font-bold">
+				<span class="text-gray-900 dark:text-white">{' '}{answerBlock.label} {' '}</span>
+			</div>
+		{/if}
+		<div class="text-gray-900 dark:text-white">
+			<Input type="text" placeholder="Enter Answer" value={blockValue} disabled />
+		</div>
 	</div>
 {:else}
 	<div class="flex flex-row gap-2">

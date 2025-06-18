@@ -1,12 +1,13 @@
 <script module lang="ts">
 	import { type Snippet } from 'svelte';
-	import type { Problem } from '$lib/services/models';
+	import type { Problem, ProblemRunState } from '$lib/services/models';
 
 	export interface BaseProblemProps {
 		problem: Problem;
-		mode: 'build' | 'assess';
+		mode: 'build' | 'assess' | 'snapshot';
 		onProblemUpdated?: (problem: Problem) => void;
 		validators?: ((problem: Problem) => string[])[];
+		problemSnapshot?: ProblemRunState | null;
 	}
 </script>
 
@@ -27,9 +28,10 @@
 		mode = 'build',
 		onProblemUpdated = () => {},
 		validators = [],
-		body
+		body,
+		problemSnapshot = null
 	}: BaseProblemProps & {
-		body: Snippet<['build' | 'assess']>;
+		body: Snippet<['build' | 'assess' | 'snapshot']>;
 	} = $props();
 
 	function getEditorContent(content: string) {
@@ -104,5 +106,15 @@
 			content={getEditorContent(problem.description)}
 		/>
 		{@render body('assess')}
+	{:else if mode === 'snapshot'}
+		<h2 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">
+			{problem.title}
+		</h2>
+		<Editor
+			placeholder="Problem Description"
+			readOnly
+			content={getEditorContent(problem.description)}
+		/>
+		{@render body('snapshot')}
 	{/if}
 </div>

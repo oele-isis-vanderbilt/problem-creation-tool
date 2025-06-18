@@ -10,13 +10,19 @@
 		problem,
 		mode = 'build',
 		onProblemUpdated = () => {},
-		onRunStateChange = () => {}
-	}: Omit<BaseProblemProps, 'problem'> & {
+		onRunStateChange = () => {},
+		problemSnapshot = null
+	}: Omit<BaseProblemProps, 'problem' | 'problemSnapshot'> & {
 		problem: NDigitOperation;
+		problemSnapshot?: NDigitOperationRunState | null;
 		onRunStateChange: (state: NDigitOperationRunState) => void;
 	} = $props();
 
 	let editedProblem = $state(JSON.parse(JSON.stringify(problem)));
+
+	let expectedResult: number | null = $state(
+		eval(`${problem.operand1} ${problem.operator} ${problem.operand2}`) as number
+	);
 
 	let carryBlockValues: string[] = $state([]);
 	let resultBlockValues: string[] = $state([]);
@@ -89,6 +95,43 @@
 					bind:resultBlockValues
 				/>
 				<Error validators={[validator]} />
+			</div>
+		{:else if displayMode === 'snapshot'}
+			<div class="flex w-full flex-col items-center gap-4">
+				{#if problemSnapshot}
+					<NDigitOperationBlock
+						mode="frozen"
+						{problem}
+						carryBlockValues={problemSnapshot.carryAndBurrowBlocks}
+						resultBlockValues={problemSnapshot.finalResult.split('')}
+					/>
+					{#if problemSnapshot.isCorrect}
+						<div class="w-full flex-col gap-2 rounded-lg bg-green-600 p-4 text-white">
+							<p class="text-lg font-semibold">Well Done!!</p>
+							<p class="text-sm">
+								This reuslt {problemSnapshot.finalResult} is correct for the problem, as you entered
+							</p>
+						</div>
+					{:else}
+						<div class="w-full flex-col gap-2 rounded-lg bg-red-600 p-4 text-white">
+							<p class="text-lg font-semibold">Incorrect Result!!</p>
+							<p class="text-sm">Your result {problemSnapshot.finalResult} is incorrect.</p>
+							<p class="text-sm">
+								The correct answer for this problem is {problemSnapshot.finalResult}.
+							</p>
+						</div>
+					{/if}
+				{:else}
+					<NDigitOperationBlock
+						mode="frozen"
+						{problem}
+						resultBlockValues={expectedResult.toString().split('')}
+					/>
+					<div class="w-full flex-col gap-2 rounded-lg bg-yellow-600 p-4 text-white">
+						<p class="text-lg font-semibold">No Input Provided</p>
+						<p class="text-sm">The correct result is {expectedResult}.</p>
+					</div>
+				{/if}
 			</div>
 		{/if}
 	{/snippet}
