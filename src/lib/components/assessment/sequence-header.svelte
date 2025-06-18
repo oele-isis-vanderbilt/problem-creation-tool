@@ -39,7 +39,6 @@
 		}
 
 		const end = Math.min(total, start + windowSize);
-		console.log(start, end);
 		return problems.slice(start, end);
 	});
 

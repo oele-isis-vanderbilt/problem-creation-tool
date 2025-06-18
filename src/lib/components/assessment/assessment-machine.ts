@@ -14,7 +14,7 @@ export const createAssessmentMachine = (
 		maxAttemptPerQuestion: assessment.maxAttemptsPerQuestion,
 		questionIdentifierFn: (problem) => problem.id,
 		responseLoggerFn: (problem, answer) => {
-			console.log(`Response for problem ${problem.id}:`, answer);
+			// logger.info(`Response for problem ${problem.id}:`);
 		},
 		graderFn: (problem, response) => {
 			return {

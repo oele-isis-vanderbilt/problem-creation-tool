@@ -120,10 +120,6 @@
 			isPopOverOpen = true;
 		}
 	});
-
-	$effect(() => {
-		console.log($events);
-	});
 </script>
 
 <div class="flex h-full w-full flex-col justify-between gap-2">
