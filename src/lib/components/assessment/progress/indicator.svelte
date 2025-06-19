@@ -1,6 +1,6 @@
 <script module>
-	export type IndicatorType = 'skipped' | 'correct' | 'incorrect' | 'notAttempted';
-	export type IndicatorProps = {
+	type IndicatorType = 'skipped' | 'correct' | 'incorrect' | 'notAttempted';
+	type IndicatorProps = {
 		type: IndicatorType;
 		onclick?: () => void;
 		withTooltip?: boolean;
