@@ -2,7 +2,8 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: 'main'
+    branches: 
+      - 'main'
 
 jobs:
   build_site:
@@ -32,25 +33,13 @@ jobs:
           git config --global url."https://github.com/".insteadOf git@github.com:
           git config --global url."https://".insteadOf git://
           pnpm build
-
-      - name: Upload Artifacts
-        uses: actions/upload-pages-artifact@v3
+      
+      - name: Copy artifact to server
+        uses: appleboy/scp-action@v1
         with:
-          path: 'build/'
-
-  deploy:
-    needs: build_site
-    runs-on: ubuntu-latest
-
-    permissions:
-      pages: write
-      id-token: write
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: dist/*
+          target: ${{secrets.EC2_TARGET_PATH}}
