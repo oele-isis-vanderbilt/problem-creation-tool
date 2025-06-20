@@ -25,24 +25,13 @@ export const load: PageLoad = async ({ params }) => {
 	} else if (!problem) {
 		const assessment = assessmentStore?.getAssessment(uuid);
 		if (!assessment) {
-			error(404, `Problem with id ${uuid} not found`);
+			error(404, `Assessment with id ${uuid} not found`);
 		}
 		return {
 			problem: null,
 			assessment: assessment
 		};
 	}
-
-	// let errors = validateProblem(problem);
-	// if (errors.length > 0) {
-	// 	error(400, {
-	// 		message: `Problem validation failed: ${errors.join(', ')}`,
-	// 		errors: errors,
-	// 		title: 'Problem Validation Error'
-	// 	});
-	// }
-
-	console.log(problem);
 
 	let runState = await problemStore.getProblemRunState(uuid);
 	return {
