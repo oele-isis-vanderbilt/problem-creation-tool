@@ -20,6 +20,7 @@ export type ProblemStore = {
 	getProblems: () => Problem[];
 	watch: (cb: WatchCallBackType) => void;
 	getProblemRunState: (id: string) => Promise<KLProblemRunState>;
+	loadProblem: (id: string) => Promise<Problem>;
 };
 
 export let store: ProblemStore | null = null;
@@ -135,6 +136,10 @@ async function initializeProblemStore(namedState: string) {
 		getProblemRunState: async (id: string): Promise<KLProblemRunState> => {
 			const runState = await Agent.state(`${RUN_STATE_PREFIX}-${id}`);
 			return runState as KLProblemRunState;
+		},
+		loadProblem: async (id: string): Promise<Problem> => {
+			const problem = await Agent.state(id) as Problem;
+			return problem;
 		}
 	};
 }
