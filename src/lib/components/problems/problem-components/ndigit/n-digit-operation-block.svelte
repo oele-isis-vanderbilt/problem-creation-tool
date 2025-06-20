@@ -3,6 +3,7 @@
 	import { Operator } from '$lib/services/models';
 	import { Input, Select, Toggle, type SelectOptionType } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
+	import { getExpectedResult } from './utils';
 
 	let {
 		problem = $bindable(),
@@ -46,7 +47,7 @@
 	}
 
 	function getInputBlocks() {
-		let result = eval(`${problem.operand1} ${problem.operator} ${problem.operand2}`) as number;
+		let result = getExpectedResult(problem);
 
 		let blocks = `${result}`.split('').map((digit) => {
 			return {
