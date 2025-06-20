@@ -138,7 +138,7 @@ async function initializeProblemStore(namedState: string) {
 			return runState as KLProblemRunState;
 		},
 		loadProblem: async (id: string): Promise<Problem> => {
-			const problem = await Agent.state(id) as Problem;
+			const problem = (await Agent.state(id)) as Problem;
 			return problem;
 		}
 	};

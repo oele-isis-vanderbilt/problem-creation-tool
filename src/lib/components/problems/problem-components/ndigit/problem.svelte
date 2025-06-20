@@ -2,9 +2,14 @@
 	import type { BaseProblemProps } from '../base-problem/problem.svelte';
 	import BaseProblem from '../base-problem/problem.svelte';
 	import NDigitOperationBlock from './n-digit-operation-block.svelte';
-	import type { NDigitOperation, NDigitOperationRunState } from '$lib/services/models';
+	import {
+		Operator,
+		type NDigitOperation,
+		type NDigitOperationRunState
+	} from '$lib/services/models';
 	import validateProblem from './validator';
 	import Error from '../base-problem/error.svelte';
+	import { getExpectedResult } from './utils';
 
 	let {
 		problem,
@@ -20,9 +25,7 @@
 
 	let editedProblem = $state(JSON.parse(JSON.stringify(problem)));
 
-	let expectedResult: number | null = $state(
-		eval(`${problem.operand1} ${problem.operator} ${problem.operand2}`) as number
-	);
+	let expectedResult: number = $state(getExpectedResult(problem));
 
 	let carryBlockValues: string[] = $state([]);
 	let resultBlockValues: string[] = $state([]);
@@ -35,9 +38,7 @@
 		if (!getCanGrade()) {
 			return false;
 		}
-		const expectedResult = eval(
-			`${editedProblem.operand1} ${editedProblem.operator} ${editedProblem.operand2}`
-		) as number;
+		const expectedResult = getExpectedResult(problem);
 		const result = resultBlockValues.join('');
 		return result === `${expectedResult}`;
 	}
