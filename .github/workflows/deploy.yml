@@ -4,7 +4,7 @@ on:
   push:
     branches: 
       - 'main'
-      - 83-copy-build-articats
+      - 83-copy-build-artifacts
 
 
 jobs:
@@ -45,5 +45,3 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           source: build/*
           target: ${{secrets.EC2_TARGET_PATH}}
-
-
