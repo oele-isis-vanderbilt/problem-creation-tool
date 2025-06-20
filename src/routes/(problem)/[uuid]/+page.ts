@@ -19,7 +19,7 @@ export const load: PageLoad = async ({ params }) => {
 	const problem = await Agent.state(uuid);
 	if (!problem && isEmbedded()) {
 		error(404, `Problem with id ${uuid} not found`);
-	} 
+	}
 
 	let runState = await Agent.state(`${RUN_STATE_PREFIX}-${uuid}`);
 	return {
