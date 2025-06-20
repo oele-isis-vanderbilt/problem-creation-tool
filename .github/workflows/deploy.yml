@@ -4,8 +4,6 @@ on:
   push:
     branches: 
       - 'main'
-      - 83-copy-build-artifacts
-
 
 jobs:
   build_site:
