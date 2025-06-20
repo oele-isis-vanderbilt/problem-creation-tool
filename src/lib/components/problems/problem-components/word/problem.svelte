@@ -54,6 +54,14 @@
 	let validator = $derived.by(() => {
 		return (p) => runState.canGradeFeedback;
 	});
+
+	$effect(() => {
+		editedProblem.answerBlocks.forEach((block) => {
+			block.value;
+			block.label;
+		});
+		onProblemUpdated(editedProblem);
+	});
 </script>
 
 <BaseProblem

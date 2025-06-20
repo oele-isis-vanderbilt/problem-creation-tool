@@ -1,7 +1,11 @@
 <script lang="ts">
 	import {
+		MCQOptionKind,
 		ProblemKind,
 		type MCQProblemRunState,
+		type MultipleChoiceOptionFraction,
+		type MultipleChoiceOptionImage,
+		type MultipleChoiceOptionText,
 		type MultipleChoiceProblem
 	} from '$lib/services/models';
 	import McqOptionAdder from './mcq-option-adder.svelte';
@@ -46,6 +50,31 @@
 
 	let validator = $derived.by(() => {
 		return (p) => runState.canGradeFeedback;
+	});
+
+	$effect(() => {
+		editedProblem.options.forEach((option) => {
+			option.isCorrect;
+			let opt;
+			switch (option.kind) {
+				case MCQOptionKind.TEXT:
+					opt = option as MultipleChoiceOptionText;
+					option.displayName;
+					option.value;
+				case MCQOptionKind.FRACTION:
+					opt = option as MultipleChoiceOptionFraction;
+					opt.numerator;
+					opt.denominator;
+					opt.wholeNumber;
+				case MCQOptionKind.IMAGE:
+					opt = option as MultipleChoiceOptionImage; // Assuming image options are handled similarly to text
+					opt.imageUUID;
+					opt.altText;
+			}
+			option.id;
+			option.misconception;
+		});
+		onProblemUpdated(editedProblem);
 	});
 </script>
 
