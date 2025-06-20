@@ -2,11 +2,7 @@
 	import type { BaseProblemProps } from '../base-problem/problem.svelte';
 	import BaseProblem from '../base-problem/problem.svelte';
 	import NDigitOperationBlock from './n-digit-operation-block.svelte';
-	import {
-		Operator,
-		type NDigitOperation,
-		type NDigitOperationRunState
-	} from '$lib/services/models';
+	import { type NDigitOperation, type NDigitOperationRunState } from '$lib/services/models';
 	import validateProblem from './validator';
 	import Error from '../base-problem/error.svelte';
 	import { getExpectedResult } from './utils';
