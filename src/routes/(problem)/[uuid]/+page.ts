@@ -19,7 +19,7 @@ export const load: PageLoad = async ({ params }) => {
 		error(500, 'Problem store is not initialized');
 	}
 
-	const problem = problemStore.getProblem(uuid);
+	const problem = await problemStore.loadProblem(uuid);
 	if (!problem && isEmbedded()) {
 		error(404, `Problem with id ${uuid} not found`);
 	} else if (!problem) {
@@ -33,14 +33,16 @@ export const load: PageLoad = async ({ params }) => {
 		};
 	}
 
-	let errors = validateProblem(problem);
-	if (errors.length > 0) {
-		error(400, {
-			message: `Problem validation failed: ${errors.join(', ')}`,
-			errors: errors,
-			title: 'Problem Validation Error'
-		});
-	}
+	// let errors = validateProblem(problem);
+	// if (errors.length > 0) {
+	// 	error(400, {
+	// 		message: `Problem validation failed: ${errors.join(', ')}`,
+	// 		errors: errors,
+	// 		title: 'Problem Validation Error'
+	// 	});
+	// }
+
+	console.log(problem);
 
 	let runState = await problemStore.getProblemRunState(uuid);
 	return {
