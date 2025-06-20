@@ -15,7 +15,7 @@ const config = {
 			pages: 'dist'
 		}),
 		paths: {
-			base: process.argv.includes('dev') ? '' : process.env.BASE_PATH
+			base: ''
 		}
 	}
 };
