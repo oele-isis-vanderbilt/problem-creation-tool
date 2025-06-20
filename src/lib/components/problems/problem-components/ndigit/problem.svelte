@@ -19,7 +19,7 @@
 		onRunStateChange: (state: NDigitOperationRunState) => void;
 	} = $props();
 
-	let editedProblem = $state(JSON.parse(JSON.stringify(problem)));
+	let editedProblem: NDigitOperation = $state(JSON.parse(JSON.stringify(problem)));
 
 	let expectedResult: number = $state(getExpectedResult(problem));
 

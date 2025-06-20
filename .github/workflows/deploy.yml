@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: 
+    branches:
       - 'main'
 
 jobs:
@@ -33,7 +33,7 @@ jobs:
           git config --global url."https://github.com/".insteadOf git@github.com:
           git config --global url."https://".insteadOf git://
           pnpm build
-      
+
       - name: Copy artifact to server
         uses: appleboy/scp-action@v1
         with:

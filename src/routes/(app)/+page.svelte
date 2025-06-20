@@ -6,6 +6,10 @@
 
 	const { getFn, deleteModule, getImageUrl } = store!;
 
+	let modules = $derived.by(() => {
+		return getFn();
+	});
+
 	async function getModuleImageUrl(uuid: string | undefined) {
 		if (!uuid) {
 			return prependBaseUrl('/default-module.png');
@@ -25,7 +29,7 @@
 		<AddModuleButton />
 	</div>
 	<div class="grid grid-cols-1 gap-5 md:grid-cols-4">
-		{#each Object.values(getFn()) as module}
+		{#each Object.values(modules) as module}
 			<ModuleCard
 				{module}
 				onModuleDelete={deleteModule}
