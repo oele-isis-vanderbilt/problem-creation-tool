@@ -114,7 +114,7 @@
 							<p class="text-lg font-semibold">Incorrect Result!!</p>
 							<p class="text-sm">Your result {problemSnapshot.finalResult} is incorrect.</p>
 							<p class="text-sm">
-								The correct answer for this problem is {problemSnapshot.finalResult}.
+								The correct answer for this problem is {getExpectedResult(problem)}.
 							</p>
 						</div>
 					{/if}
