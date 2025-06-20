@@ -1,5 +1,8 @@
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
+import Agent from '@knowlearning/agents/browser';
+
+const RUN_STATE_PREFIX = 'oecd.math-rct.problems.run-state';
 
 function isEmbedded() {
 	try {
@@ -10,30 +13,15 @@ function isEmbedded() {
 }
 
 export const load: PageLoad = async ({ params }) => {
-	const { store: problemStore } = await import('$lib/services/problem-store.svelte');
-	const { store: assessmentStore } = await import('$lib/services/knowLearningStore.svelte');
 	const { validateProblem } = await import('$lib/components/problems/problem-components/utils');
-
 	const uuid = params.uuid;
-	if (!problemStore) {
-		error(500, 'Problem store is not initialized');
-	}
 
-	const problem = await problemStore.loadProblem(uuid);
+	const problem = await Agent.state(uuid);
 	if (!problem && isEmbedded()) {
 		error(404, `Problem with id ${uuid} not found`);
-	} else if (!problem) {
-		const assessment = assessmentStore?.getAssessment(uuid);
-		if (!assessment) {
-			error(404, `Assessment with id ${uuid} not found`);
-		}
-		return {
-			problem: null,
-			assessment: assessment
-		};
-	}
+	} 
 
-	let runState = await problemStore.getProblemRunState(uuid);
+	let runState = await Agent.state(`${RUN_STATE_PREFIX}-${uuid}`);
 	return {
 		problem,
 		runState,
