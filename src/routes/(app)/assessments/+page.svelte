@@ -6,6 +6,10 @@
 
 	const { getAssessmentsFn, deleteAssessment, getImageUrl } = store!;
 
+	const assessments = $derived.by(() => {
+		return getAssessmentsFn();
+	});
+
 	async function getAssessmentImageUrl(uuid: string | undefined) {
 		if (!uuid) {
 			return prependBaseUrl('/default-module.png');
@@ -24,13 +28,13 @@
 		<h2 class="text-2xl font-bold text-gray-900 dark:text-white">Assessments</h2>
 		<CreateAssessmentButton />
 	</div>
-	{#if Object.keys(getAssessmentsFn()()).length === 0}
+	{#if Object.keys(assessments).length === 0}
 		<p class="text-gray-500 dark:text-gray-400">
 			No assessments available. Create one to get started!
 		</p>
 	{/if}
 	<div class="grid grid-cols-1 gap-5 md:grid-cols-4">
-		{#each Object.values(getAssessmentsFn()()) as assessment}
+		{#each Object.values(assessments) as assessment}
 			<AssessmentCard
 				{assessment}
 				onAssessmentDelete={deleteAssessment}
