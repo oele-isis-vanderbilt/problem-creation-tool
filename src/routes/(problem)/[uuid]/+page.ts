@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import Agent from '@knowlearning/agents/browser';
+import { isEmpty } from 'underscore';
 
 const RUN_STATE_PREFIX = 'oecd.math-rct.problems.run-state';
 
@@ -17,7 +18,7 @@ export const load: PageLoad = async ({ params }) => {
 	const uuid = params.uuid;
 
 	const problem = await Agent.state(uuid);
-	if (!problem && isEmbedded()) {
+	if (!problem || isEmpty(problem)) {
 		error(404, `Problem with id ${uuid} not found`);
 	}
 

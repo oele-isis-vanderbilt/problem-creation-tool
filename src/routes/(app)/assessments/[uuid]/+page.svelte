@@ -15,7 +15,7 @@
 	const { getAssessmentsFn, updateAssessmentTitleDescription, getAssessmentKL } = store!;
 
 	let assessment = $derived.by(() => {
-		return getAssessmentsFn()()[data.assessment.id];
+		return getAssessmentsFn()[data.assessment.id];
 	});
 
 	function onNameDescriptionChage(name: string, description: string) {

@@ -53,7 +53,7 @@ export let store: {
 	getTag: (id: string) => Tag;
 	updateTag: (tag: Tag) => void;
 
-	getAssessmentsFn: () => () => Record<string, StateAssessment>;
+	getAssessmentsFn: () => Record<string, StateAssessment>;
 	assessmentExists: (id: string) => boolean;
 	updateAssessmentTitleDescription: (id: string, title: string, description: string) => void;
 	getAssessment: (id: string) => StateAssessment | undefined;
@@ -419,7 +419,7 @@ async function initializeStore(problemsStore: ProblemStore) {
 			return _tagsState.tags[id];
 		},
 		getAssessmentsFn: () => {
-			return () => assessments;
+			return assessments;
 		},
 		assessmentExists: (id: string) => {
 			return !!_assessmentsState.assessments[id];
