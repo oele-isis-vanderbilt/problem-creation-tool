@@ -39,11 +39,9 @@
 		try {
 			await onImportModule(newModuleUuid, newModuleName);
 		} catch (error) {
-			console.error('Error importing module:', error);
-			alert('Failed to import module. Please try again later.\n' + JSON.stringify(error));
+			errors = [JSON.stringify(error)]
 		} finally {
 			importing = false;
-			closeModal();
 		}
 	}
 </script>

@@ -20,7 +20,6 @@
 			exportedUuid = uuid;
 		} catch (error) {
 			console.error('Error exporting module:', error);
-			alert('Failed to export module. Please try again later.\n' + JSON.stringify(error));
 		} finally {
 			exporting = false;
 		}
