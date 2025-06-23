@@ -210,3 +210,10 @@ export interface Assessment {
 export interface StateAssessment extends Omit<Assessment, 'problemIds'> {
 	problems: Problem[];
 }
+
+export interface ExportedModule
+	extends Omit<Module, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'> {
+	tags: Tag[];
+	concepts: Concept[];
+	misconceptions: Misconception[];
+}

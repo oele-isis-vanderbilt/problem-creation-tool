@@ -5,6 +5,7 @@ import {
 	ProblemKind,
 	type Assessment,
 	type Concept,
+	type ExportedModule,
 	type Misconception,
 	type Module,
 	type MultipleChoiceProblem,
@@ -15,7 +16,7 @@ import {
 	type Tag,
 	type WordProblem
 } from './models';
-import { clone, omit } from 'underscore';
+import { clone, isEmpty, omit } from 'underscore';
 import type { ProblemStore } from './problem-store.svelte';
 const NAMED_MODULES_STATE = 'oecd.math-rct.modules';
 const NAMED_CONCEPTS_STATE = 'oecd.math-rct.concepts';
@@ -31,6 +32,8 @@ export let store: {
 	uploadImage: (imageFile: File) => Promise<string>;
 	uuid: () => string;
 	getImageUrl: (uuid: string) => Promise<string>;
+	exportModule: (module: StateModule) => Promise<string>;
+	importModule: (uuid: string, newName: string) => Promise<void>;
 
 	updateModuleNameDescription: (id: string, name: string, description: string) => void;
 
@@ -240,6 +243,122 @@ async function initializeStore(problemsStore: ProblemStore) {
 				module.name = name;
 				module.description = description;
 			}
+		},
+		exportModule: async (module: StateModule) => {
+			const uuid = Agent.uuid();
+			const exportedModulesState = (await Agent.state(uuid)) as ExportedModule;
+			const exportedModule: ExportedModule = {
+				concepts: Object.values(_conceptsState.concepts),
+				misconceptions: Object.values(_misconceptionsState.misconceptions),
+				tags: Object.values(_tagsState.tags),
+				description: module.description,
+				name: module.name,
+				problems: module.problems.map((problem) => problem.id),
+				coverImageUUID: module.coverImageUUID
+			};
+			Object.assign(exportedModulesState, JSON.parse(JSON.stringify(exportedModule)));
+
+			return uuid;
+		},
+		importModule: async (uuid: string, newName: string) => {
+			const importedModule = (await Agent.state(uuid)) as ExportedModule;
+			if (isEmpty(importedModule)) {
+				throw new Error('Module is empty or invalid');
+			}
+			const allProblems = await Promise.all(
+				importedModule.problems.map(async (problemId) => {
+					return await problemsStore.loadProblem(problemId);
+				})
+			);
+
+			const storedProblems = problemsStore.getFn()();
+			const user = (await getEnvironment()).auth.user;
+			for (const problemId of importedModule.problems) {
+				if (!storedProblems[problemId]) {
+					problemsStore.addProblemMetadata(
+						{
+							id: problemId,
+							createdAt: new Date().toISOString(),
+							updatedAt: new Date().toISOString(),
+							createdBy: user
+						},
+						false
+					);
+				}
+			}
+
+			if (allProblems.some((problem) => isEmpty(problem))) {
+				throw new Error('One or more problems in the module are empty or invalid');
+			}
+
+			const problemConcepts = allProblems.map((problem) => problem.concepts).flat();
+			const problemMisconceptions = allProblems.map((problem) => problem.misconceptions).flat();
+			const problemTags = allProblems.map((problem) => problem.tags).flat();
+
+			problemConcepts.forEach((conceptId) => {
+				if (!_conceptsState.concepts[conceptId]) {
+					const concept = importedModule.concepts.find((c) => c.id === conceptId);
+					if (concept) {
+						_conceptsState.concepts[conceptId] = JSON.parse(
+							JSON.stringify({
+								id: concept.id,
+								name: concept.name,
+								description: concept.description,
+								relatedConcepts: concept.relatedConcepts || [],
+								aiPrompt: concept.aiPrompt || ''
+							})
+						);
+					}
+				}
+			});
+
+			problemMisconceptions.forEach((misconceptionId) => {
+				if (!_misconceptionsState.misconceptions[misconceptionId]) {
+					const misconception = importedModule.misconceptions.find((m) => m.id === misconceptionId);
+					if (misconception) {
+						_misconceptionsState.misconceptions[misconceptionId] = JSON.parse(
+							JSON.stringify({
+								id: misconception.id,
+								name: misconception.name,
+								aiDefinition: misconception.aiDefinition,
+								aiFeedback: misconception.aiFeedback
+							})
+						);
+					}
+				}
+			});
+
+			problemTags.forEach((tagId) => {
+				if (!_tagsState.tags[tagId]) {
+					const tag = importedModule.tags.find((t) => t.id === tagId);
+					if (tag) {
+						_tagsState.tags[tagId] = JSON.parse(
+							JSON.stringify({
+								id: tag.id,
+								tagName: tag.tagName,
+								description: tag.description || ''
+							})
+						);
+					}
+				}
+			});
+
+			const newModuleId = Agent.uuid();
+
+			const newModule: Module = {
+				id: newModuleId,
+				name: importedModule.name,
+				description: importedModule.description,
+				coverImageUUID: importedModule.coverImageUUID,
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+				createdBy: (await getEnvironment()).auth.user,
+				problems: importedModule.problems
+			};
+
+			newModule.name = newName || newModule.name;
+
+			_modulesState.modules[newModuleId] = JSON.parse(JSON.stringify(newModule));
 		},
 		addNewProblem: async (moduleId: string, kind: ProblemKind, userId: string) => {
 			const module = _modulesState.modules[moduleId];
