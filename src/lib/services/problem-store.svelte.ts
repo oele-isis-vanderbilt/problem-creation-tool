@@ -13,7 +13,7 @@ type WatchCallBackType = (update: { state: Record<string, Problem> }) => void;
 export type ProblemStore = {
 	getFn: () => () => Record<string, Problem>;
 	getProblemMetadata: (id: string) => Promise<ProblemMetadata>;
-	getProblem: (id: string) => Problem;
+	egetProblem: (id: string) => Problem;
 	addEmptyProblem: (problem: Problem) => Promise<void>;
 	updateProblem: (problem: Problem) => Promise<void>;
 	deleteProblem: (id: string) => void;
@@ -21,6 +21,7 @@ export type ProblemStore = {
 	watch: (cb: WatchCallBackType) => void;
 	getProblemRunState: (id: string) => Promise<KLProblemRunState>;
 	loadProblem: (id: string) => Promise<Problem>;
+	addProblemMetadata: (metadata: ProblemMetadata, overwrite?: boolean) => void;
 };
 
 export let store: ProblemStore | null = null;
@@ -140,6 +141,12 @@ async function initializeProblemStore(namedState: string) {
 		loadProblem: async (id: string): Promise<Problem> => {
 			const problem = (await Agent.state(id)) as Problem;
 			return problem;
+		},
+		addProblemMetadata: (metadata: ProblemMetadata, overwrite = true) => {
+			if (!overwrite && _problemsState[metadata.id]) {
+				throw new Error(`Problem with id ${metadata.id} already exists`);
+			}
+			_problemsState[metadata.id] = metadata;
 		}
 	};
 }

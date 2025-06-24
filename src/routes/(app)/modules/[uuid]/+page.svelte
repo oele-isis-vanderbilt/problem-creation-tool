@@ -12,12 +12,19 @@
 	import { store } from '$lib/services/knowLearningStore.svelte';
 	import { getProblemComponent } from '$lib/components/problems/problem-components/utils';
 	import CreateAssessmentButton from '$lib/components/assessment/create-edit-assessment.svelte';
+	import ExportModuleButton from '$lib/components/module/export-module-button.svelte';
 
 	const appEnv = getContext<AgentEnvironment>('appEnv');
 	let { data }: PageProps = $props();
 
-	const { getFn, updateModuleNameDescription, addNewProblem, deleteProblem, updateProblem } =
-		store!;
+	const {
+		getFn,
+		updateModuleNameDescription,
+		addNewProblem,
+		deleteProblem,
+		updateProblem,
+		exportModule
+	} = store!;
 
 	let module = $derived.by(() => {
 		return getFn()[data.module.id];
@@ -42,23 +49,31 @@
 	function onNameDescriptionChage(name: string, description: string) {
 		updateModuleNameDescription(module.id, name, description);
 	}
+
+	async function onExportModule() {
+		const uuid = await exportModule($state.snapshot(module));
+		return uuid;
+	}
 </script>
 
 <div class="container mx-auto mt-2 flex h-full w-full flex-col">
-	<div class="flex w-full items-center justify-between gap-2">
+	<div class="flex gap-2">
 		<HeadingDescriptionEditor
 			name={module.name}
 			description={module.description}
 			onChange={onNameDescriptionChage}
 		/>
-		<div>
+		<div class="flex items-center gap-2">
 			<CreateAssessmentButton {module} />
 		</div>
 	</div>
 	<div class="flex h-full flex-col items-start justify-center gap-4 md:flex-row">
 		<div class="flex w-full items-center justify-between py-2">
 			<h2 class="text-lg font-bold md:text-2xl">Problems</h2>
-			<AddProblemsButton onProblemKindSelected={onAddProblem} />
+			<div class="flex items-center gap-2">
+				<ExportModuleButton onExport={onExportModule}></ExportModuleButton>
+				<AddProblemsButton onProblemKindSelected={onAddProblem} />
+			</div>
 		</div>
 	</div>
 	<Accordion class="mb-20">
