@@ -39,7 +39,7 @@
 		try {
 			await onImportModule(newModuleUuid, newModuleName);
 		} catch (error) {
-			errors = [JSON.stringify(error)]
+			errors = [JSON.stringify(error)];
 		} finally {
 			importing = false;
 		}
