@@ -21,6 +21,7 @@
 	import Word from '../problems/problem-components/word/problem.svelte';
 	import NDigit from '../problems/problem-components/ndigit/problem.svelte';
 	import AssessmentReview from './assessment-review.svelte';
+	import AttemptSummary from './attempt-summary.svelte';
 
 	let {
 		assessment
@@ -51,6 +52,10 @@
 
 	function isInReview(): boolean {
 		return $snapshot.matches(AssessmentStates.REVIEWING);
+	}
+
+	function isCompleted(): boolean {
+		return $snapshot.matches(AssessmentStates.COMPLETED);
 	}
 
 	function isInProgress(): boolean {
@@ -185,6 +190,9 @@
 		{#if isInReview()}
 			<AssessmentReview {assessment} events={$events} />
 		{/if}
+		{#if isCompleted()}
+			<AttemptSummary {assessment} events={$events} />
+		{/if}
 	</div>
 	{#if wasLastAttemptCorrect()}
 		<div class="-mb-2 flex flex-row gap-2 bg-green-500 p-2 text-center dark:bg-green-900">
@@ -266,6 +274,11 @@
 						}}>Check Answer</Button
 					>
 				{/if}
+			{/if}
+			{#if isInReview()}
+				<Button color="green" onclick={() => send({ type: AssessmentCommands.COMPLETE_REVIEW })}>
+					Complete Review
+				</Button>
 			{/if}
 			{#if isInProgress() || isInReview()}
 				<div>

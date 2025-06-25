@@ -43,7 +43,7 @@ importers:
         version: 1.13.7
       xstate-quiz-machine:
         specifier: github:oele-isis-vanderbilt/xstate-quiz-machine
-        version: https://codeload.github.com/oele-isis-vanderbilt/xstate-quiz-machine/tar.gz/4f47a85854a67f131ce78246783af142c65a8853(svelte@5.34.7)
+        version: https://codeload.github.com/oele-isis-vanderbilt/xstate-quiz-machine/tar.gz/33e65d4ae832c9fcb7b79ce99908f140a68737a0(svelte@5.34.7)
     devDependencies:
       '@eslint/compat':
         specifier: ^1.2.5
@@ -2630,8 +2630,8 @@ packages:
   xmlchars@2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
 
-  xstate-quiz-machine@https://codeload.github.com/oele-isis-vanderbilt/xstate-quiz-machine/tar.gz/4f47a85854a67f131ce78246783af142c65a8853:
-    resolution: {tarball: https://codeload.github.com/oele-isis-vanderbilt/xstate-quiz-machine/tar.gz/4f47a85854a67f131ce78246783af142c65a8853}
+  xstate-quiz-machine@https://codeload.github.com/oele-isis-vanderbilt/xstate-quiz-machine/tar.gz/33e65d4ae832c9fcb7b79ce99908f140a68737a0:
+    resolution: {tarball: https://codeload.github.com/oele-isis-vanderbilt/xstate-quiz-machine/tar.gz/33e65d4ae832c9fcb7b79ce99908f140a68737a0}
     version: 0.0.1
     peerDependencies:
       svelte: ^5.0.0
@@ -4949,7 +4949,7 @@ snapshots:
 
   xmlchars@2.2.0: {}
 
-  xstate-quiz-machine@https://codeload.github.com/oele-isis-vanderbilt/xstate-quiz-machine/tar.gz/4f47a85854a67f131ce78246783af142c65a8853(svelte@5.34.7):
+  xstate-quiz-machine@https://codeload.github.com/oele-isis-vanderbilt/xstate-quiz-machine/tar.gz/33e65d4ae832c9fcb7b79ce99908f140a68737a0(svelte@5.34.7):
     dependencies:
       '@xstate/svelte': 4.0.5(svelte@5.34.7)(xstate@5.20.0)
       svelte: 5.34.7
