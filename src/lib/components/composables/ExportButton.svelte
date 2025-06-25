@@ -2,11 +2,13 @@
 	import { Button, Spinner } from 'flowbite-svelte';
 	import { ArchiveSolid } from 'flowbite-svelte-icons';
 	import Modal from '../modal.svelte';
-	import Clipboard from '../composables/Clipboard.svelte';
+	import Clipboard from './Clipboard.svelte';
 	let {
-		onExport
+		onExport,
+		title
 	}: {
 		onExport: () => Promise<string>;
+		title: string;
 	} = $props();
 
 	let exporting = $state(false);
@@ -31,12 +33,12 @@
 		<Spinner color="green" class="h-5 w-5" />
 	{/if}
 	<ArchiveSolid class="h-5 w-5" />
-	Export Module
+	{title}
 </Button>
 
 <Modal
 	open={exportedUuid !== null}
-	title="Module exported successfully"
+	title="Exported successfully"
 	onClose={() => {
 		exportedUuid = null;
 	}}

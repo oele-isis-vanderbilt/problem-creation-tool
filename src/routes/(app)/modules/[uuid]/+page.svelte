@@ -12,7 +12,7 @@
 	import { store } from '$lib/services/knowLearningStore.svelte';
 	import { getProblemComponent } from '$lib/components/problems/problem-components/utils';
 	import CreateAssessmentButton from '$lib/components/assessment/create-edit-assessment.svelte';
-	import ExportModuleButton from '$lib/components/module/export-module-button.svelte';
+	import ExportButton from '$lib/components/composables/ExportButton.svelte';
 
 	const appEnv = getContext<AgentEnvironment>('appEnv');
 	let { data }: PageProps = $props();
@@ -54,6 +54,8 @@
 		const uuid = await exportModule($state.snapshot(module));
 		return uuid;
 	}
+
+	$inspect(module.problems);
 </script>
 
 <div class="container mx-auto mt-2 flex h-full w-full flex-col">
@@ -71,7 +73,7 @@
 		<div class="flex w-full items-center justify-between py-2">
 			<h2 class="text-lg font-bold md:text-2xl">Problems</h2>
 			<div class="flex items-center gap-2">
-				<ExportModuleButton onExport={onExportModule}></ExportModuleButton>
+				<ExportButton onExport={onExportModule} title="Export Module"></ExportButton>
 				<AddProblemsButton onProblemKindSelected={onAddProblem} />
 			</div>
 		</div>
