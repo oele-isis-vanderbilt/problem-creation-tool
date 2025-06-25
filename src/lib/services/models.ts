@@ -217,3 +217,8 @@ export interface ExportedModule
 	concepts: Concept[];
 	misconceptions: Misconception[];
 }
+
+export interface ExportedAssessment
+	extends Omit<Assessment, 'id' | 'createdAt' | 'updatedAt' | 'createdBy' | 'moduleId'> {
+	kind: 'Assessment';
+}

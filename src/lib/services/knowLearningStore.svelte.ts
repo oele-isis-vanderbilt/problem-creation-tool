@@ -5,6 +5,7 @@ import {
 	ProblemKind,
 	type Assessment,
 	type Concept,
+	type ExportedAssessment,
 	type ExportedModule,
 	type Misconception,
 	type Module,
@@ -64,6 +65,7 @@ export let store: {
 	createAssessment: (assessment: Assessment) => void;
 	updateAssessment: (assessment: Assessment) => void;
 	deleteAssessment: (assessmentId: string) => void;
+	exportAssessment: (assessment: StateAssessment) => Promise<string>;
 } | null = null;
 
 export async function initialize(problemsStore: ProblemStore) {
@@ -587,6 +589,23 @@ async function initializeStore(problemsStore: ProblemStore) {
 				throw new Error(`Assessment with id ${assessmentId} not found`);
 			}
 			delete _assessmentsState.assessments[assessmentId];
+		},
+		exportAssessment: async (assessment: StateAssessment) => {
+			const uuid = Agent.uuid();
+			const exportedAssessment: ExportedAssessment = {
+				kind: 'Assessment',
+				attemptTimeLimit: assessment.attemptTimeLimit,
+				description: assessment.description,
+				group: assessment.group,
+				maxAttemptsPerQuestion: assessment.maxAttemptsPerQuestion,
+				reviewTimeLimit: assessment.reviewTimeLimit,
+				problemIds: assessment.problems.map((problem) => problem.id),
+				title: assessment.title,
+				coverImageUUID: assessment.coverImageUUID
+			};
+			const exportedAssessmentState = (await Agent.state(uuid)) as ExportedAssessment;
+			Object.assign(exportedAssessmentState, JSON.parse(JSON.stringify(exportedAssessment)));
+			return uuid;
 		}
 	};
 }

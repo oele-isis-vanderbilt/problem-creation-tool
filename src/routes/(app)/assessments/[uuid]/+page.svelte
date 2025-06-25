@@ -10,13 +10,20 @@
 	import AssessmentSummary from '$lib/components/assessment/assessment-summary.svelte';
 	import EditAssessmentButton from '$lib/components/assessment/create-edit-assessment.svelte';
 	import Clipboard from '$lib/components/composables/Clipboard.svelte';
+	import ExportButton from '$lib/components/composables/ExportButton.svelte';
 
 	let { data }: PageProps = $props();
-	const { getAssessmentsFn, updateAssessmentTitleDescription, getAssessmentKL } = store!;
+	const { getAssessmentsFn, updateAssessmentTitleDescription, getAssessmentKL, exportAssessment } =
+		store!;
 
 	let assessment = $derived.by(() => {
 		return getAssessmentsFn()[data.assessment.id];
 	});
+
+	async function onExportAssessment() {
+		const uuid = await exportAssessment($state.snapshot(assessment));
+		return uuid;
+	}
 
 	function onNameDescriptionChage(name: string, description: string) {
 		updateAssessmentTitleDescription(assessment.id, name, description);
@@ -42,6 +49,7 @@
 		{:catch error}
 			<p class="text-red-500 dark:text-red-400">Error loading assessment: {error.message}</p>
 		{/await}
+		<ExportButton onExport={onExportAssessment} title="Export" />
 		<StartAssessmentButton {assessment} />
 	</div>
 	<AssessmentSummary {assessment} />
