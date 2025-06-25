@@ -83,10 +83,19 @@ export async function logout() {
 	await Agent.logout();
 }
 
-function composeStore(
+async function composeStore(
 	modules: Record<string, Module>,
 	problems: ProblemStore
-): Record<string, StateModule> {
+): Promise<Record<string, StateModule>> {
+	const allProblemIds = Object.values(modules).flatMap((module) => module.problems);
+	const nonExistingProblems = allProblemIds.filter((id) => !problems.getProblem(id));
+
+	await Promise.all(
+		nonExistingProblems.map(async (problemId) => {
+			await problems.createProblemMetadata(problemId);
+		})
+	);
+
 	const map = Object.entries(modules).map(([id, module]) => {
 		return [
 			id,
@@ -160,7 +169,7 @@ async function initializeStore(problemsStore: ProblemStore) {
 	}
 
 	let state = $state<Record<string, StateModule>>(
-		composeStore(_modulesState.modules, problemsStore)
+		await composeStore(_modulesState.modules, problemsStore)
 	);
 
 	let concepts = $state<Record<string, Concept>>(_conceptsState.concepts);
@@ -172,7 +181,10 @@ async function initializeStore(problemsStore: ProblemStore) {
 
 	const modulesCallback = (update: { state: object }) => {
 		const _state = update.state as { modules: Record<string, Module> };
-		state = composeStore(_state.modules, problemsStore);
+		// state = composeStore(_state.modules, problemsStore);
+		composeStore(_state.modules, problemsStore).then((newState) => {
+			state = newState;
+		});
 	};
 
 	const conceptsCallback = (update: { state: object }) => {
@@ -215,9 +227,8 @@ async function initializeStore(problemsStore: ProblemStore) {
 		deleteModule: (id: string) => {
 			const toDeleteModule = _modulesState.modules[id];
 			if (toDeleteModule) {
-				toDeleteModule.problems.forEach((problemId) => store!.deleteProblem(problemId, id));
+				delete _modulesState.modules[id];
 			}
-			delete _modulesState.modules[id];
 		},
 		getModule: (id: string) => {
 			return state[id];
