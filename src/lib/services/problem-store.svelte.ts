@@ -13,7 +13,7 @@ type WatchCallBackType = (update: { state: Record<string, Problem> }) => void;
 export type ProblemStore = {
 	getFn: () => () => Record<string, Problem>;
 	getProblemMetadata: (id: string) => Promise<ProblemMetadata>;
-	egetProblem: (id: string) => Problem;
+	getProblem: (id: string) => Problem;
 	addEmptyProblem: (problem: Problem) => Promise<void>;
 	updateProblem: (problem: Problem) => Promise<void>;
 	deleteProblem: (id: string) => void;
@@ -22,6 +22,7 @@ export type ProblemStore = {
 	getProblemRunState: (id: string) => Promise<KLProblemRunState>;
 	loadProblem: (id: string) => Promise<Problem>;
 	addProblemMetadata: (metadata: ProblemMetadata, overwrite?: boolean) => void;
+	createProblemMetadata: (id: string) => Promise<void>;
 };
 
 export let store: ProblemStore | null = null;
@@ -96,6 +97,22 @@ async function initializeProblemStore(namedState: string) {
 				throw new Error('Problem not found');
 			}
 			return metadata;
+		},
+		createProblemMetadata: async (id: string) => {
+			const user = await (await Agent.environment()).auth.user;
+			if (!_problemsState[id]) {
+				_problemsState[id] = {
+					id,
+					createdAt: new Date().toISOString(),
+					updatedAt: new Date().toISOString(),
+					createdBy: user
+				};
+			}
+
+			composeProblemsState(_problemsState).then((problems) => {
+				readableState = problems;
+				watchers.forEach((cb) => cb({ state: readableState }));
+			});
 		},
 		getProblem: (id: string) => readableState[id],
 		addEmptyProblem: async (problem: Problem) => {
