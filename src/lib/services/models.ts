@@ -44,7 +44,8 @@ export interface StateModule extends Omit<Module, 'problems'> {
 export enum ProblemKind {
 	MULTIPLE_CHOICE = 'multiple_choice',
 	WORD_PROBLEM = 'word_problem',
-	N_DIGIT_OPERATION = 'n_digit_operation'
+	N_DIGIT_OPERATION = 'n_digit_operation',
+	DIGIT_TILE_PROBLEM = 'digit_tile_problem'
 }
 
 export enum ProblemDifficulty {
@@ -139,7 +140,32 @@ export interface NDigitOperation extends BaseProblem {
 	includeCarryAndBorrow: boolean;
 }
 
-export type Problem = MultipleChoiceProblem | WordProblem | NDigitOperation;
+export const TERM_ROLES = [
+	'minuend',
+	'subtrahend',
+	'addend',
+	'multiplicand',
+	'multiplier'
+] as const;
+
+export interface TermConfig {
+	role: (typeof TERM_ROLES)[number];
+	digitSlots: number;
+}
+
+export interface Objective {
+	direction: 'min' | 'max';
+}
+
+export interface DigitTileProblem extends BaseProblem {
+	kind: ProblemKind.DIGIT_TILE_PROBLEM;
+	operator: Operator;
+	tiles: number[];
+	terms: TermConfig[];
+	objective: Objective;
+}
+
+export type Problem = MultipleChoiceProblem | WordProblem | NDigitOperation | DigitTileProblem;
 
 export type KLMultipleChoiceProblem = Omit<
 	MultipleChoiceProblem,
@@ -148,6 +174,10 @@ export type KLMultipleChoiceProblem = Omit<
 export type KLWordProblem = Omit<WordProblem, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'>;
 export type KLNDigitOperation = Omit<
 	NDigitOperation,
+	'id' | 'createdAt' | 'updatedAt' | 'createdBy'
+>;
+export type KLDigitTileProblem = Omit<
+	DigitTileProblem,
 	'id' | 'createdAt' | 'updatedAt' | 'createdBy'
 >;
 export type KLProblem = KLMultipleChoiceProblem | KLWordProblem | KLNDigitOperation;
@@ -173,6 +203,10 @@ export interface NDigitOperationRunState extends BaseProblemRunState {
 	kind: ProblemKind.N_DIGIT_OPERATION;
 	carryAndBurrowBlocks: string[];
 	finalResult: string;
+}
+export interface DigitTileProblemRunState extends BaseProblemRunState {
+	kind: ProblemKind.DIGIT_TILE_PROBLEM;
+	// selectedTiles: TileValue[]
 }
 
 export type ProblemRunState = MCQProblemRunState | WordProblemRunState | NDigitOperationRunState;
