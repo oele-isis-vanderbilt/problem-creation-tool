@@ -150,19 +150,14 @@ export const TERM_ROLES = [
 
 export interface TermConfig {
 	role: (typeof TERM_ROLES)[number];
-	digitSlots: number;
-}
-
-export interface Objective {
-	direction: 'min' | 'max';
+	digits: number;
 }
 
 export interface DigitTileProblem extends BaseProblem {
 	kind: ProblemKind.DIGIT_TILE_PROBLEM;
 	operator: Operator;
-	tiles: number[];
 	terms: TermConfig[];
-	objective: Objective;
+	solution: number;
 }
 
 export type Problem = MultipleChoiceProblem | WordProblem | NDigitOperation | DigitTileProblem;
@@ -195,8 +190,6 @@ export interface BaseProblemRunState {
 	isCorrect: boolean;
 	canGrade: boolean;
 	canGradeFeedback: string[];
-	initialized: boolean;
-	xapi?: XAPIStatement;
 }
 
 export interface MCQProblemRunState extends BaseProblemRunState {
@@ -216,19 +209,41 @@ export interface NDigitOperationRunState extends BaseProblemRunState {
 }
 export interface DigitTileProblemRunState extends BaseProblemRunState {
 	kind: ProblemKind.DIGIT_TILE_PROBLEM;
-	// selectedTiles: TileValue[]
+	terms: {
+		slotIndex: number;
+		termIndex: number;
+		value: number | null;
+	}[];
 }
 
-export type ProblemRunState = MCQProblemRunState | WordProblemRunState | NDigitOperationRunState;
+export type ProblemRunState =
+	| MCQProblemRunState
+	| WordProblemRunState
+	| NDigitOperationRunState
+	| DigitTileProblemRunState;
 
-export type KLMCQProblemRunState = Omit<MCQProblemRunState, 'problem'>;
-export type KLWordProblemRunState = Omit<WordProblemRunState, 'problem'>;
-export type KLNDigitOperationRunState = Omit<NDigitOperationRunState, 'problem'>;
+export type KLMCQProblemRunState = Omit<MCQProblemRunState, 'problem'> & {
+	initialized: boolean;
+	xapi?: XAPIStatement;
+};
+export type KLWordProblemRunState = Omit<WordProblemRunState, 'problem'> & {
+	initialized: boolean;
+	xapi?: XAPIStatement;
+};
+export type KLNDigitOperationRunState = Omit<NDigitOperationRunState, 'problem'> & {
+	initialized: boolean;
+	xapi?: XAPIStatement;
+};
+export type KLDigitTileProblemRunState = Omit<DigitTileProblemRunState, 'problem'> & {
+	initialized: boolean;
+	xapi?: XAPIStatement;
+};
 
 export type KLProblemRunState =
 	| KLMCQProblemRunState
 	| KLWordProblemRunState
-	| KLNDigitOperationRunState;
+	| KLNDigitOperationRunState
+	| KLDigitTileProblemRunState;
 
 export enum AssessmentGroup {
 	CONTROL = 'control',

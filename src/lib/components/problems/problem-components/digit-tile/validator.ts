@@ -1,4 +1,4 @@
-import type { DigitTileProblem } from '$lib/services/models';
+import { Operator, type DigitTileProblem } from '$lib/services/models';
 
 export default function validateProblem(problem: DigitTileProblem) {
 	let errors: string[] = [];
@@ -6,18 +6,43 @@ export default function validateProblem(problem: DigitTileProblem) {
 		errors.push('Operator is required');
 	}
 
-	if (!problem.tiles || problem.tiles.length < 2) {
-		errors.push('At least two tiles are required');
-	} else if (problem.tiles.some((tile) => typeof tile !== 'number')) {
-		errors.push('All tiles must be numbers');
+	if (problem.operator === Operator.MINUS) {
+		let minuendCount = problem.terms.filter((term) => term.role === 'minuend').length;
+		let subtrahendCount = problem.terms.filter((term) => term.role === 'subtrahend').length;
+		if (minuendCount !== 1) {
+			errors.push('There must be exactly one minuend term for subtraction problems');
+		}
+		if (subtrahendCount < 1) {
+			errors.push('There must be at least one subtrahend term for subtraction problems');
+		}
 	}
 
-	let allTermsLength = problem.terms.reduce((sum, term) => sum + term.digitSlots, 0);
+	if (problem.operator === Operator.PLUS) {
+		let addendCount = problem.terms.filter((term) => term.role === 'addend').length;
+		if (addendCount < 1) {
+			errors.push('There must be at least one addend term for addition problems');
+		}
+	}
 
-	if (allTermsLength !== problem.tiles.length) {
-		errors.push(
-			`Total digit slots in terms (${allTermsLength}) must match the number of tiles (${problem.tiles.length})`
-		);
+	if (problem.operator === Operator.MULTIPLY) {
+		let multiplicandCount = problem.terms.filter((term) => term.role === 'multiplicand').length;
+		let multiplierCount = problem.terms.filter((term) => term.role === 'multiplier').length;
+		if (multiplicandCount !== 1) {
+			errors.push('There must be exactly one multiplicand term for multiplication problems');
+		}
+		if (multiplierCount < 1) {
+			errors.push('There must be at least one multiplier term for multiplication problems');
+		}
+	}
+
+	if (problem.terms.some((term) => !term.role || !term.digits)) {
+		errors.push('Each term must have a valid role and digit slots defined');
+	}
+
+	if (problem.solution === undefined || problem.solution === null) {
+		errors.push('Solution is required');
+	} else if (typeof problem.solution !== 'number') {
+		errors.push('Solution must be a number');
 	}
 
 	return errors;

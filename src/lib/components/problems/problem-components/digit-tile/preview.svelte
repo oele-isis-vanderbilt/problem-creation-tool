@@ -1,14 +1,25 @@
 <script lang="ts">
 	import { draggable, droppable, type DragDropState } from '@thisux/sveltednd';
-	import { Operator, type DigitTileProblem, type TermConfig } from '$lib/services/models';
+	import {
+		Operator,
+		ProblemKind,
+		type DigitTileProblem,
+		type DigitTileProblemRunState
+	} from '$lib/services/models';
 	import Mathjax from '../../Mathjax.svelte';
 	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
+	import { untrack } from 'svelte';
+	import Error from '../base-problem/error.svelte';
 
 	let {
-		problem
+		problem,
+		onRunStateChange = () => {},
+		problemSnapshot = null
 	}: {
 		problem: DigitTileProblem;
+		onRunStateChange: (state: DigitTileProblemRunState) => void;
+		problemSnapshot?: DigitTileProblemRunState | null;
 	} = $props();
 
 	interface TileItem {
@@ -28,15 +39,20 @@
 	}
 
 	let tiles = $state<TileItem[]>(
-		problem.tiles.map((tile, index) => ({
-			id: randomId(),
-			value: tile
-		}))
+		problem.terms.flatMap((term) =>
+			term.digits
+				.toString()
+				.split('')
+				.map((digit) => ({
+					id: randomId(),
+					value: Number(digit)
+				}))
+		)
 	);
 
 	let terms = $state<TermItem[][]>(
 		problem.terms.map((term) => {
-			return Array(term.digitSlots)
+			return Array(term.digits.toString().split('').length)
 				.fill(null)
 				.map((_, slotIndex) => ({
 					tileId: null,
@@ -45,6 +61,23 @@
 				}));
 		})
 	);
+
+	if (problemSnapshot && problemSnapshot.terms) {
+		problemSnapshot.terms.forEach((slot) => {
+			if (slot.value) {
+				const expectedTile = tiles.find((tile) => tile.value === slot.value);
+				if (expectedTile) {
+					terms[slot.termIndex][slot.slotIndex] = {
+						tileId: expectedTile.id,
+						termIndex: slot.termIndex,
+						slotIndex: slot.slotIndex,
+						value: slot.value
+					};
+					tiles = tiles.filter((tile) => tile.id !== expectedTile.id);
+				}
+			}
+		});
+	}
 
 	function getOperatorSymbol(op: Operator) {
 		switch (op) {
@@ -140,8 +173,7 @@
 			termIndex: targetTermIdx,
 			slotIndex: targetSlotIdx
 		};
-
-		terms = [...terms]; // Trigger reactivity
+		terms = [...terms];
 	}
 
 	function handleDropFromTileOrTerms(state: DragDropState<TileItem | TermItem>) {
@@ -154,10 +186,55 @@
 		}
 	}
 
-	const maxSlots = Math.max(...problem.terms.map((line) => line.digitSlots));
+	const maxSlots = Math.max(
+		...problem.terms.map((line) => line.digits.toString().split('').length)
+	);
 	const totalCols = maxSlots + 1;
 
-	$inspect(terms);
+	const isCorrect = (terms: TermItem[][], solution: number): boolean => {
+		let operands = terms
+			.map((line) => {
+				return line.map((term) => term.value || 0).join('');
+			})
+			.map((operand) => parseInt(operand, 10));
+		let result;
+		if (operands.length === 0) {
+			result = 0;
+		} else if (problem.operator === Operator.PLUS) {
+			result = operands.reduce((acc, curr) => acc + curr, 0);
+		} else if (problem.operator === Operator.MULTIPLY) {
+			result = operands.reduce((acc, curr) => acc * curr, 1);
+		} else if (problem.operator === Operator.MINUS) {
+			result = operands.slice(1).reduce((acc, curr) => acc - curr, operands[0]);
+		} else {
+			result = operands[0];
+		}
+		return result === solution;
+	};
+
+	let runState = $derived.by(() => {
+		const canGrade = terms.every((line) => line.every((term) => term.tileId && term.value));
+		const state: DigitTileProblemRunState = {
+			kind: ProblemKind.DIGIT_TILE_PROBLEM,
+			canGrade: canGrade,
+			canGradeFeedback: canGrade ? [] : ['All terms must be filled with tiles before grading.'],
+			terms: terms.flatMap((line, termIndex) =>
+				line.map((term, slotIndex) => ({
+					slotIndex,
+					termIndex,
+					value: term.value || null
+				}))
+			),
+			isCorrect: canGrade && isCorrect(terms, problem.solution),
+			problem: $state.snapshot(problem)
+		};
+		onRunStateChange(state);
+		return state;
+	});
+
+	let validator = $derived.by(() => {
+		return (p) => runState?.canGradeFeedback || [];
+	});
 </script>
 
 <div
@@ -235,6 +312,7 @@
 		{/each}
 	</div>
 </div>
+<Error validators={[validator]} />
 
 <style>
 	:global(.dragging) {

@@ -5,7 +5,8 @@
 		type MultipleChoiceProblem,
 		type ProblemRunState,
 		type StateAssessment,
-		type WordProblem
+		type WordProblem,
+		type DigitTileProblem
 	} from '$lib/services/models';
 	import { useActor, useSelector } from '@xstate/svelte';
 	import SequenceHeader from './sequence-header.svelte';
@@ -20,6 +21,7 @@
 	import MCQ from '../problems/problem-components/mcq/problem.svelte';
 	import Word from '../problems/problem-components/word/problem.svelte';
 	import NDigit from '../problems/problem-components/ndigit/problem.svelte';
+	import DigitTile from '../problems/problem-components/digit-tile/problem.svelte';
 	import AssessmentReview from './assessment-review.svelte';
 	import AttemptSummary from './attempt-summary.svelte';
 
@@ -30,10 +32,9 @@
 	} = $props();
 
 	const { actorRef, send, snapshot } = useActor(createAssessmentMachine(assessment, 1000));
-
+	let runState: ProblemRunState | undefined = undefined;
 	let events = useSelector(actorRef, (state) => state.context.events);
 	let questionState = useSelector(actorRef, (state) => {
-		let runState: ProblemRunState | undefined = undefined;
 		return {
 			currentProblem: state.context.currentQuestion,
 			runStateChangeHandler: (state: ProblemRunState) => {
@@ -181,6 +182,16 @@
 								problem={$questionState.currentProblem}
 								onRunStateChange={$questionState.runStateChangeHandler}
 							/>
+						{:else if $questionState.currentProblem.kind === ProblemKind.DIGIT_TILE_PROBLEM}
+							<DigitTile
+								mode="assess"
+								problem={$questionState.currentProblem as DigitTileProblem}
+								onRunStateChange={$questionState.runStateChangeHandler}
+							/>
+						{:else}
+							<p class="text-red-500">
+								Unsupported problem type: {$questionState.currentProblem.kind}
+							</p>
 						{/if}
 					{/key}
 				</div>

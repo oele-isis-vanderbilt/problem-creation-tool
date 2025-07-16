@@ -19,7 +19,7 @@
 
 	onMount(() => {
 		if (mode === 'preview') {
-			if (!carryBlockValues?.length) {	
+			if (!carryBlockValues?.length) {
 				carryBlockValues = Array(getCarryBurrowBlocks(problem.operand1).length).fill('');
 			}
 			if (!resultBlockValues?.length) {

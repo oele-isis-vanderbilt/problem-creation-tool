@@ -1,11 +1,16 @@
 <script lang="ts">
 	import BaseProblem, { type BaseProblemProps } from '../base-problem/problem.svelte';
-	import { Operator, type DigitTileProblem } from '$lib/services/models';
+	import {
+		Operator,
+		type DigitTileProblem,
+		type DigitTileProblemRunState
+	} from '$lib/services/models';
 	import validateProblem from './validator';
-	import { Select, type SelectOptionType } from 'flowbite-svelte';
+	import { Input, Select, type SelectOptionType } from 'flowbite-svelte';
 	import ProblemTerms from './terms.svelte';
 	import Preview from './preview.svelte';
-	import ProblemTiles from './tiles.svelte';
+	import Snapshot from './snapshot.svelte';
+	import Error from '../base-problem/error.svelte';
 
 	let {
 		problem,
@@ -15,8 +20,8 @@
 		problemSnapshot = null
 	}: Omit<BaseProblemProps, 'problem' | 'problemSnapshot'> & {
 		problem: DigitTileProblem;
-		problemSnapshot?: null;
-		onRunStateChange: (state: any) => void;
+		problemSnapshot?: DigitTileProblemRunState | null;
+		onRunStateChange: (state: DigitTileProblemRunState) => void;
 	} = $props();
 
 	let editedProblem = $state<DigitTileProblem>(JSON.parse(JSON.stringify(problem)));
@@ -30,13 +35,11 @@
 
 	$effect(() => {
 		editedProblem.operator;
-		editedProblem.tiles.forEach((tile) => {
-			tile;
-		});
 		editedProblem.terms.forEach((term) => {
-			term.digitSlots;
+			term.digits;
 			term.role;
 		});
+		editedProblem.solution;
 		onProblemUpdated(editedProblem);
 	});
 </script>
@@ -59,12 +62,22 @@
 					class="min-w-32"
 				/>
 			</div>
-			<ProblemTiles bind:problem={editedProblem} />
-
 			<ProblemTerms bind:problem={editedProblem} />
+			<div class="mb-4 flex flex-row items-center justify-between gap-6">
+				<h2 class="text-2xl font-bold">Solution</h2>
+				<Input
+					type="number"
+					bind:value={editedProblem.solution}
+					placeholder="Solution"
+					class="min-w-32"
+				/>
+			</div>
 		{/if}
 		{#if displayMode === 'assess'}
-			<Preview {problem} />
+			<Preview {problem} {onRunStateChange} {problemSnapshot} />
+		{/if}
+		{#if displayMode === 'snapshot'}
+			<Snapshot {problem} {problemSnapshot} />
 		{/if}
 	{/snippet}
 </BaseProblem>

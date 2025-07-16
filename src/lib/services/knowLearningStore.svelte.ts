@@ -465,9 +465,7 @@ async function initializeStore(problemsStore: ProblemStore) {
 						updatedAt: new Date().toISOString(),
 						createdBy: userId,
 						operator: Operator.PLUS,
-						tiles: [],
-						terms: [],
-						objective: { direction: 'max' }
+						terms: []
 					};
 					await problemsStore.addEmptyProblem(digitTileProblem);
 					module.problems = [...module.problems, digitTileProblem.id];
