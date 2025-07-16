@@ -29,7 +29,7 @@
 	} = $props();
 
 	let editedProblem = $state<MultipleChoiceProblem>(JSON.parse(JSON.stringify(problem)));
-	let selectedOptionId = $state<string | null>(null);
+	let selectedOptionId = $state<string | null>(problemSnapshot?.selectedOptionId || null);
 
 	const isCorrectOption = (optionId: string | null): boolean => {
 		const correctOption = editedProblem.options.find((option) => option.isCorrect);

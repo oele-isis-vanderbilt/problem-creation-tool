@@ -23,8 +23,13 @@
 
 	let expectedResult: number = $state(getExpectedResult(problem));
 
-	let carryBlockValues: string[] = $state([]);
-	let resultBlockValues: string[] = $state([]);
+	let carryBlockValues: string[] = $state(problemSnapshot ?
+		problemSnapshot.carryAndBurrowBlocks :
+		[]
+	);
+	let resultBlockValues: string[] = $state(
+		problemSnapshot ? problemSnapshot.finalResult.split('') : []
+	);
 
 	function getCanGrade(): boolean {
 		return resultBlockValues.length > 0 && resultBlockValues.every((value) => value.trim() !== '');
