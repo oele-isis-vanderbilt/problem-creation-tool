@@ -182,11 +182,21 @@ export type KLDigitTileProblem = Omit<
 >;
 export type KLProblem = KLMultipleChoiceProblem | KLWordProblem | KLNDigitOperation;
 
+export interface XAPIStatement {
+	verb: string;
+	object: string;
+	actor?: string;
+	result?: any;
+	extensions?: any;
+}
+
 export interface BaseProblemRunState {
 	problem: Problem;
 	isCorrect: boolean;
 	canGrade: boolean;
 	canGradeFeedback: string[];
+	initialized: boolean;
+	xapi?: XAPIStatement;
 }
 
 export interface MCQProblemRunState extends BaseProblemRunState {

@@ -12,7 +12,7 @@
 	} = $props();
 
 	onMount(() => {
-		blockValues = Array(answerBlocks.length).fill('');
+		// blockValues = Array(answerBlocks.length).fill('');
 	});
 </script>
 
