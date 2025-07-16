@@ -1,18 +1,16 @@
 <script lang="ts">
-	import type { TermConfig } from '$lib/services/models';
+	import type { DigitTileProblem } from '$lib/services/models';
 	import { Button, Input, Select } from 'flowbite-svelte';
 	import { Operator } from '$lib/services/models';
 
 	let {
-		operator,
-		terms = $bindable()
+		problem = $bindable()
 	}: {
-		operator: Operator;
-		terms: TermConfig[];
+		problem: DigitTileProblem;
 	} = $props();
 
 	const selectItems = $derived.by(() => {
-		switch (operator) {
+		switch (problem.operator) {
 			case Operator.PLUS:
 				return [
 					{
@@ -46,15 +44,27 @@
 	});
 </script>
 
+<div class="mb-4 flex flex-row items-center justify-between">
+	<h2 class="text-2xl font-bold">Terms</h2>
+	<Button
+		onclick={() => {
+			// @ts-ignore
+			problem.terms = [...problem.terms, { digitSlots: 1, role: selectItems[0].value }];
+			problem.terms = problem.terms;
+		}}>Add Terms</Button
+	>
+</div>
+
 <div class="flex flex-col">
-	{#each terms as term, index}
+	{#each problem.terms as term, index}
 		<div class="mb-2 flex items-center gap-2">
 			<Select items={selectItems} bind:value={term.role}></Select>
-			<Input type="text" placeholder="Enter number of digit slots" bind:value={term.digitSlots} />
+			<Input type="number" placeholder="Enter number of digit slots" bind:value={term.digitSlots} />
 			<Button
 				color="red"
 				onclick={() => {
-					terms.splice(index, 1);
+					problem.terms.splice(index, 1);
+					problem.terms = problem.terms; // Trigger reactivity
 				}}
 			>
 				Remove

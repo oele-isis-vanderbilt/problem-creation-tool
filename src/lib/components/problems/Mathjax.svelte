@@ -2,7 +2,7 @@
 	// https://www.thespatula.io/svelte/mathjax_svelte/
 	import { onDestroy, onMount } from 'svelte';
 
-	let { math } = $props();
+	let { math, textSize = 'text-2xl' } = $props();
 
 	onMount(() => {
 		let script = document.createElement('script');
@@ -31,6 +31,6 @@
 	});
 </script>
 
-<p class="text-2xl">
+<p class={textSize}>
 	{math}
 </p>

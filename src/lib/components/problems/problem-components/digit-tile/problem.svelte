@@ -2,8 +2,10 @@
 	import BaseProblem, { type BaseProblemProps } from '../base-problem/problem.svelte';
 	import { Operator, type DigitTileProblem } from '$lib/services/models';
 	import validateProblem from './validator';
-	import { Button, Input, Select, type SelectOptionType } from 'flowbite-svelte';
+	import { Select, type SelectOptionType } from 'flowbite-svelte';
 	import ProblemTerms from './terms.svelte';
+	import Preview from './preview.svelte';
+	import ProblemTiles from './tiles.svelte';
 
 	let {
 		problem,
@@ -28,8 +30,13 @@
 
 	$effect(() => {
 		editedProblem.operator;
-		editedProblem.tiles;
-		editedProblem.terms;
+		editedProblem.tiles.forEach((tile) => {
+			tile;
+		});
+		editedProblem.terms.forEach((term) => {
+			term.digitSlots;
+			term.role;
+		});
 		onProblemUpdated(editedProblem);
 	});
 </script>
@@ -52,51 +59,12 @@
 					class="min-w-32"
 				/>
 			</div>
-			<div class="mb-4 flex flex-row items-center justify-between">
-				<h2 class="text-2xl font-bold">Tiles</h2>
-				<Button
-					onclick={() => {
-						editedProblem.tiles = [...editedProblem.tiles, 0];
-					}}>Add Tiles</Button
-				>
-			</div>
-			<div class="align-center mb-4 flex flex-row items-start justify-start gap-4">
-				{#each editedProblem.tiles as tile, index}
-					<div>
-						<Input
-							type="number"
-							placeholder="Enter value"
-							bind:value={editedProblem.tiles[index]}
-							class="mb-2 w-32"
-						/>
-					</div>
-					<div>
-						<Button
-							color="red"
-							onclick={() => {
-								editedProblem.tiles.splice(index, 1);
-							}}>Remove</Button
-						>
-					</div>
-				{/each}
-			</div>
-			<div class="mb-4 flex flex-row items-center justify-between">
-				<h2 class="text-2xl font-bold">Terms</h2>
-				<Button
-					onclick={() => {
-						editedProblem.terms = [...editedProblem.terms, { digitSlots: 1, role: 'subtrahend' }];
-					}}>Add Terms</Button
-				>
-			</div>
-			<!-- {#each problem.tiles as tile, index}
-					<Input
-						type="number"
-						placeholder="Enter value"
-						bind:value={editedProblem.tiles[index]}
-						class="mb-2 w-32"
-					/>
-            {/each} -->
-			<ProblemTerms bind:terms={editedProblem.terms} operator={editedProblem.operator} />
+			<ProblemTiles bind:problem={editedProblem} />
+
+			<ProblemTerms bind:problem={editedProblem} />
+		{/if}
+		{#if displayMode === 'assess'}
+			<Preview {problem} />
 		{/if}
 	{/snippet}
 </BaseProblem>
