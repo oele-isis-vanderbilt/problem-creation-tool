@@ -21,7 +21,7 @@
 	});
 
 	onMount(() => {
-		selectedOptionId = null;
+		// selectedOptionId = null;
 	});
 </script>
 

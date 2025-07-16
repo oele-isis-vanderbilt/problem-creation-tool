@@ -44,7 +44,8 @@ export interface StateModule extends Omit<Module, 'problems'> {
 export enum ProblemKind {
 	MULTIPLE_CHOICE = 'multiple_choice',
 	WORD_PROBLEM = 'word_problem',
-	N_DIGIT_OPERATION = 'n_digit_operation'
+	N_DIGIT_OPERATION = 'n_digit_operation',
+	DIGIT_TILE_PROBLEM = 'digit_tile_problem'
 }
 
 export enum ProblemDifficulty {
@@ -152,11 +153,21 @@ export type KLNDigitOperation = Omit<
 >;
 export type KLProblem = KLMultipleChoiceProblem | KLWordProblem | KLNDigitOperation;
 
+export interface XAPIStatement {
+	verb: string;
+	object: string;
+	actor?: string;
+	result?: any;
+	extensions?: any;
+}
+
 export interface BaseProblemRunState {
 	problem: Problem;
 	isCorrect: boolean;
 	canGrade: boolean;
 	canGradeFeedback: string[];
+	initialized: boolean;
+	xapi?: XAPIStatement;
 }
 
 export interface MCQProblemRunState extends BaseProblemRunState {
@@ -173,6 +184,10 @@ export interface NDigitOperationRunState extends BaseProblemRunState {
 	kind: ProblemKind.N_DIGIT_OPERATION;
 	carryAndBurrowBlocks: string[];
 	finalResult: string;
+}
+export interface DigitTileProblemRunState extends BaseProblemRunState {
+	kind: ProblemKind.DIGIT_TILE_PROBLEM;
+	// selectedTiles: TileValue[]
 }
 
 export type ProblemRunState = MCQProblemRunState | WordProblemRunState | NDigitOperationRunState;

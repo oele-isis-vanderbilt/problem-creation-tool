@@ -19,8 +19,12 @@
 
 	onMount(() => {
 		if (mode === 'preview') {
-			carryBlockValues = Array(getCarryBurrowBlocks(problem.operand1).length).fill('');
-			resultBlockValues = Array(getInputBlocks().length).fill('');
+			if (!carryBlockValues?.length) {	
+				carryBlockValues = Array(getCarryBurrowBlocks(problem.operand1).length).fill('');
+			}
+			if (!resultBlockValues?.length) {
+				resultBlockValues = Array(getInputBlocks().length).fill('');
+			}
 		} else if (mode === 'frozen' && !carryBlockValues?.length) {
 			carryBlockValues = Array(getCarryBurrowBlocks(problem.operand1).length).fill('');
 		}
