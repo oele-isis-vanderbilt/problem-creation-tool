@@ -23,9 +23,8 @@
 
 	let expectedResult: number = $state(getExpectedResult(problem));
 
-	let carryBlockValues: string[] = $state(problemSnapshot ?
-		problemSnapshot.carryAndBurrowBlocks :
-		[]
+	let carryBlockValues: string[] = $state(
+		problemSnapshot ? problemSnapshot.carryAndBurrowBlocks : []
 	);
 	let resultBlockValues: string[] = $state(
 		problemSnapshot ? problemSnapshot.finalResult.split('') : []

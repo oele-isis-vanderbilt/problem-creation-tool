@@ -140,7 +140,27 @@ export interface NDigitOperation extends BaseProblem {
 	includeCarryAndBorrow: boolean;
 }
 
-export type Problem = MultipleChoiceProblem | WordProblem | NDigitOperation;
+export const TERM_ROLES = [
+	'minuend',
+	'subtrahend',
+	'addend',
+	'multiplicand',
+	'multiplier'
+] as const;
+
+export interface TermConfig {
+	role: (typeof TERM_ROLES)[number];
+	digits: number;
+}
+
+export interface DigitTileProblem extends BaseProblem {
+	kind: ProblemKind.DIGIT_TILE_PROBLEM;
+	operator: Operator;
+	terms: TermConfig[];
+	solution: number;
+}
+
+export type Problem = MultipleChoiceProblem | WordProblem | NDigitOperation | DigitTileProblem;
 
 export type KLMultipleChoiceProblem = Omit<
 	MultipleChoiceProblem,
@@ -149,6 +169,10 @@ export type KLMultipleChoiceProblem = Omit<
 export type KLWordProblem = Omit<WordProblem, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'>;
 export type KLNDigitOperation = Omit<
 	NDigitOperation,
+	'id' | 'createdAt' | 'updatedAt' | 'createdBy'
+>;
+export type KLDigitTileProblem = Omit<
+	DigitTileProblem,
 	'id' | 'createdAt' | 'updatedAt' | 'createdBy'
 >;
 export type KLProblem = KLMultipleChoiceProblem | KLWordProblem | KLNDigitOperation;
@@ -166,8 +190,6 @@ export interface BaseProblemRunState {
 	isCorrect: boolean;
 	canGrade: boolean;
 	canGradeFeedback: string[];
-	initialized: boolean;
-	xapi?: XAPIStatement;
 }
 
 export interface MCQProblemRunState extends BaseProblemRunState {
@@ -187,19 +209,41 @@ export interface NDigitOperationRunState extends BaseProblemRunState {
 }
 export interface DigitTileProblemRunState extends BaseProblemRunState {
 	kind: ProblemKind.DIGIT_TILE_PROBLEM;
-	// selectedTiles: TileValue[]
+	terms: {
+		slotIndex: number;
+		termIndex: number;
+		value: number | null;
+	}[];
 }
 
-export type ProblemRunState = MCQProblemRunState | WordProblemRunState | NDigitOperationRunState;
+export type ProblemRunState =
+	| MCQProblemRunState
+	| WordProblemRunState
+	| NDigitOperationRunState
+	| DigitTileProblemRunState;
 
-export type KLMCQProblemRunState = Omit<MCQProblemRunState, 'problem'>;
-export type KLWordProblemRunState = Omit<WordProblemRunState, 'problem'>;
-export type KLNDigitOperationRunState = Omit<NDigitOperationRunState, 'problem'>;
+export type KLMCQProblemRunState = Omit<MCQProblemRunState, 'problem'> & {
+	initialized: boolean;
+	xapi?: XAPIStatement;
+};
+export type KLWordProblemRunState = Omit<WordProblemRunState, 'problem'> & {
+	initialized: boolean;
+	xapi?: XAPIStatement;
+};
+export type KLNDigitOperationRunState = Omit<NDigitOperationRunState, 'problem'> & {
+	initialized: boolean;
+	xapi?: XAPIStatement;
+};
+export type KLDigitTileProblemRunState = Omit<DigitTileProblemRunState, 'problem'> & {
+	initialized: boolean;
+	xapi?: XAPIStatement;
+};
 
 export type KLProblemRunState =
 	| KLMCQProblemRunState
 	| KLWordProblemRunState
-	| KLNDigitOperationRunState;
+	| KLNDigitOperationRunState
+	| KLDigitTileProblemRunState;
 
 export enum AssessmentGroup {
 	CONTROL = 'control',

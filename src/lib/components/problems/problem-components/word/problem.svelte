@@ -22,9 +22,10 @@
 
 	let editedProblem = $state<WordProblem>(JSON.parse(JSON.stringify(problem)));
 
-	let blockValues = $state(problemSnapshot ?
-		problemSnapshot.answerBlockValues : 
-		Array(problem.answerBlocks.length).fill('')
+	let blockValues = $state(
+		problemSnapshot
+			? problemSnapshot.answerBlockValues
+			: Array(problem.answerBlocks.length).fill('')
 	);
 
 	const isCorrect = (blockValues: string[], answerBlocks: { value: string }[]): boolean => {
@@ -45,7 +46,7 @@
 					return '';
 				})
 				.filter((msg) => msg !== ''),
-			problem: {...editedProblem},
+			problem: { ...editedProblem },
 			answerBlockValues: [...blockValues],
 			isCorrect: isCorrect(blockValues, editedProblem.answerBlocks)
 		} as WordProblemRunState;

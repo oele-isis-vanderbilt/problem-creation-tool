@@ -5,6 +5,7 @@ import {
 	ProblemKind,
 	type Assessment,
 	type Concept,
+	type DigitTileProblem,
 	type ExportedAssessment,
 	type ExportedModule,
 	type Misconception,
@@ -446,6 +447,28 @@ async function initializeStore(problemsStore: ProblemStore) {
 					};
 					await problemsStore.addEmptyProblem(nDigitProblem);
 					module.problems = [...module.problems, nDigitProblem.id];
+					break;
+				case ProblemKind.DIGIT_TILE_PROBLEM:
+					let digitTileProblem = {} as DigitTileProblem;
+					digitTileProblem = {
+						...digitTileProblem,
+						id: uuid,
+						kind: ProblemKind.DIGIT_TILE_PROBLEM,
+						title: '',
+						description: '',
+						difficulty: ProblemDifficulty.EASY,
+						aiPrompt: '',
+						concepts: [],
+						tags: [],
+						misconceptions: [],
+						createdAt: new Date().toISOString(),
+						updatedAt: new Date().toISOString(),
+						createdBy: userId,
+						operator: Operator.PLUS,
+						terms: []
+					};
+					await problemsStore.addEmptyProblem(digitTileProblem);
+					module.problems = [...module.problems, digitTileProblem.id];
 					break;
 			}
 		},
