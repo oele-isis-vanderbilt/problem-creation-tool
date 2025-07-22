@@ -22,6 +22,7 @@
 	import Word from '../problems/problem-components/word/problem.svelte';
 	import NDigit from '../problems/problem-components/ndigit/problem.svelte';
 	import DigitTile from '../problems/problem-components/digit-tile/problem.svelte';
+	import FillInTheBlank from '../problems/problem-components/fill-in-the-blanks/problem.svelte';
 	import AssessmentReview from './assessment-review.svelte';
 	import AttemptSummary from './attempt-summary.svelte';
 
@@ -186,6 +187,12 @@
 							<DigitTile
 								mode="assess"
 								problem={$questionState.currentProblem as DigitTileProblem}
+								onRunStateChange={$questionState.runStateChangeHandler}
+							/>
+						{:else if $questionState.currentProblem.kind === ProblemKind.FILL_IN_THE_BLANK}
+							<FillInTheBlank
+								mode="assess"
+								problem={$questionState.currentProblem}
 								onRunStateChange={$questionState.runStateChangeHandler}
 							/>
 						{:else}

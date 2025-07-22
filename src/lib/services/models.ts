@@ -45,7 +45,8 @@ export enum ProblemKind {
 	MULTIPLE_CHOICE = 'multiple_choice',
 	WORD_PROBLEM = 'word_problem',
 	N_DIGIT_OPERATION = 'n_digit_operation',
-	DIGIT_TILE_PROBLEM = 'digit_tile_problem'
+	DIGIT_TILE_PROBLEM = 'digit_tile_problem',
+	FILL_IN_THE_BLANK = 'fill_in_the_blank'
 }
 
 export enum ProblemDifficulty {
@@ -160,7 +161,20 @@ export interface DigitTileProblem extends BaseProblem {
 	solution: number;
 }
 
-export type Problem = MultipleChoiceProblem | WordProblem | NDigitOperation | DigitTileProblem;
+export interface FillInTheBlankProblem extends BaseProblem {
+	kind: ProblemKind.FILL_IN_THE_BLANK;
+	latex: string;
+	blanks: {
+		[key: string]: number | string;
+	};
+}
+
+export type Problem =
+	| MultipleChoiceProblem
+	| WordProblem
+	| NDigitOperation
+	| DigitTileProblem
+	| FillInTheBlankProblem;
 
 export type KLMultipleChoiceProblem = Omit<
 	MultipleChoiceProblem,
@@ -175,7 +189,18 @@ export type KLDigitTileProblem = Omit<
 	DigitTileProblem,
 	'id' | 'createdAt' | 'updatedAt' | 'createdBy'
 >;
-export type KLProblem = KLMultipleChoiceProblem | KLWordProblem | KLNDigitOperation;
+
+export type KLFillInTheBlankProblem = Omit<
+	FillInTheBlankProblem,
+	'id' | 'createdAt' | 'updatedAt' | 'createdBy'
+>;
+
+export type KLProblem =
+	| KLMultipleChoiceProblem
+	| KLWordProblem
+	| KLNDigitOperation
+	| KLDigitTileProblem
+	| KLFillInTheBlankProblem;
 
 export interface XAPIStatement {
 	verb: string;
@@ -216,11 +241,17 @@ export interface DigitTileProblemRunState extends BaseProblemRunState {
 	}[];
 }
 
+export interface FillInTheBlankProblemRunState extends BaseProblemRunState {
+	kind: ProblemKind.FILL_IN_THE_BLANK;
+	blankValues: Record<string, string>;
+}
+
 export type ProblemRunState =
 	| MCQProblemRunState
 	| WordProblemRunState
 	| NDigitOperationRunState
-	| DigitTileProblemRunState;
+	| DigitTileProblemRunState
+	| FillInTheBlankProblemRunState;
 
 export type KLMCQProblemRunState = Omit<MCQProblemRunState, 'problem'> & {
 	initialized: boolean;
@@ -239,11 +270,17 @@ export type KLDigitTileProblemRunState = Omit<DigitTileProblemRunState, 'problem
 	xapi?: XAPIStatement;
 };
 
+export type KLFillInTheBlankProblemRunState = Omit<FillInTheBlankProblemRunState, 'problem'> & {
+	initialized: boolean;
+	xapi?: XAPIStatement;
+};
+
 export type KLProblemRunState =
 	| KLMCQProblemRunState
 	| KLWordProblemRunState
 	| KLNDigitOperationRunState
-	| KLDigitTileProblemRunState;
+	| KLDigitTileProblemRunState
+	| KLFillInTheBlankProblemRunState;
 
 export enum AssessmentGroup {
 	CONTROL = 'control',
