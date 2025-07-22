@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { FillInTheBlankProblem } from '$lib/services/models';
-	import MathField from '../../MathField.svelte';
+	import MathField from '$lib/components/problems/MathField.svelte';
 	import type { MathfieldElement, Selection } from 'mathlive';
 	import { onMount } from 'svelte';
 
@@ -26,7 +26,6 @@
 
 	onMount(() => {
 		if (mfElement) {
-			console.log('Mathfield Element:', mfElement);
 			mfElement.menuItems = [
 				{
 					label: 'Mark as Blank',

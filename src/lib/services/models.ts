@@ -243,9 +243,7 @@ export interface DigitTileProblemRunState extends BaseProblemRunState {
 
 export interface FillInTheBlankProblemRunState extends BaseProblemRunState {
 	kind: ProblemKind.FILL_IN_THE_BLANK;
-	blankValues: {
-		[key: string]: string | number;
-	};
+	blankValues: Record<string, string>;
 }
 
 export type ProblemRunState =

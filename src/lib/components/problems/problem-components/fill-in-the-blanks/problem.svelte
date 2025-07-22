@@ -5,9 +5,9 @@
 	import FillInTheBlankBuilder from './builder.svelte';
 	import FillInTheBlankPreview from './preview.svelte';
 	import { MathfieldElement } from 'mathlive';
-	import { Circle3 } from 'svelte-loading-spinners';
-	import { on } from 'svelte/events';
 	import Error from '../base-problem/error.svelte';
+	import FillInTheBlankSnapshot from './snapshot.svelte';
+	import { isCorrect } from './grade';
 
 	let {
 		problem,
@@ -23,7 +23,7 @@
 
 	let editedProblem = $state<FillInTheBlankProblem>(JSON.parse(JSON.stringify(problem)));
 	let previewMathField: MathfieldElement | null = $state(null);
-	let blankValues = $state<Record<string, string>>({});
+	let blankValues = $state<Record<string, string>>(problemSnapshot?.blankValues || {});
 
 	const { canGrade, canGradeFeedback } = $derived.by(() => {
 		const cg = Object.keys(blankValues).length === Object.keys(editedProblem.blanks).length;
@@ -38,13 +38,9 @@
 			problem: $state.snapshot(editedProblem),
 			blankValues: $state.snapshot(blankValues),
 			isCorrect: Object.entries(blankValues).every(([key, value]) => {
-				const ce = MathfieldElement.computeEngine;
-				if (!ce || !previewMathField) return false;
-				const promptValue = previewMathField.getPromptValue(key);
-				const answer = ce.parse(promptValue);
-				const correctAnswer = ce.parse(problem.blanks[key] as LatexString);
-				const isCorrect = answer.isSame(correctAnswer);
-				return isCorrect;
+				const correctValue = editedProblem.blanks[key].toString();
+				const enteredValue = value.trim().toString();
+				return isCorrect(enteredValue, correctValue);
 			}),
 			canGrade: canGrade,
 			canGradeFeedback: canGradeFeedback,
@@ -85,6 +81,8 @@
 				bind:blankValues
 			/>
 			<Error validators={[validator]} />
-		{:else if displayMode == 'snapshot'}{/if}
+		{:else if displayMode == 'snapshot'}
+			<FillInTheBlankSnapshot problem={editedProblem} {problemSnapshot} />
+		{/if}
 	{/snippet}
 </BaseProblem>
