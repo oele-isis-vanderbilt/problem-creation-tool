@@ -16,16 +16,16 @@
 
 	let tagItems = $derived.by(() => {
 		const tags = getTagsFn()();
-		const items = Object.values(tags).map((tag) => {
+		const items = Object.entries(tags).map(([id, tag]) => {
 			return {
-				value: tag.id,
-				name: tag.tagName
+				value: id,
+				name: tag.tagName || tag.name,
 			} as SelectOptionType<string>;
 		});
 		if (items.length === 0) {
 			items.push({
-				value: 'No concepts available',
-				name: 'No concepts available',
+				value: 'No tags available',
+				name: 'No tags available',
 				disabled: true
 			} as SelectOptionType<string>);
 		}

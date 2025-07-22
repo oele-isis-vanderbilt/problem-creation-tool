@@ -8,11 +8,12 @@
 	import { Button, Listgroup, ListgroupItem, Pagination } from 'flowbite-svelte';
 	import { emptyConcept, emptyMisconception } from '$lib/utils';
 	import AddEditTag from '$lib/components/tag/add-edit-tag.svelte';
+	import { onMount } from 'svelte';
 
 	const MisconceptionHeader = ConceptHeader;
 	const TagHeader = ConceptHeader;
 
-	const { getConceptsFn, getMisconceptionsFn, getTagsFn } = store!;
+	const { getConceptsFn, getMisconceptionsFn, getTagsFn, fetchTags } = store!;
 
 	const PAGE_SIZE = 5;
 
@@ -20,6 +21,8 @@
 		const concepts = getConceptsFn()();
 		return paginate(Object.values(concepts), PAGE_SIZE);
 	});
+
+
 
 	const pagedMisconceptions = $derived.by(() => {
 		const misconceptions = getMisconceptionsFn()();
@@ -137,6 +140,11 @@
 			return pages;
 		}
 	);
+
+	onMount(async () => {
+		const UUID = '78258510-671e-11f0-9844-e72ae61bd4c3';
+		await fetchTags(UUID);
+	});
 </script>
 
 <div class="container mx-auto mt-2 flex h-full w-full flex-col">
@@ -239,7 +247,7 @@
 		{#each pagedTags[currentTagPageNo] as tag}
 			<ListgroupItem class="py-2">
 				<TagHeader
-					name={tag.tagName}
+					name={tag.tagName || tag.name}
 					onEdit={() => {
 						currentTag = tag;
 						isTagAdderOpen = true;

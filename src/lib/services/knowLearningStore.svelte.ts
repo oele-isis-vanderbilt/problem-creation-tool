@@ -25,6 +25,7 @@ const NAMED_CONCEPTS_STATE = 'oecd.math-rct.concepts';
 const NAMED_MISCONCEPTIONS_STATE = 'oecd.math-rct.misconceptions';
 const NAMED_ASSESSMENTS_STATE = 'oecd.math-rct.assessments';
 const NAMED_TAGS_STATE = 'oecd.math-rct.tags';
+const TAG_SET_UUID = '78258510-671e-11f0-9844-e72ae61bd4c3';
 
 export let store: {
 	getFn: () => Record<string, StateModule>;
@@ -67,7 +68,29 @@ export let store: {
 	updateAssessment: (assessment: Assessment) => void;
 	deleteAssessment: (assessmentId: string) => void;
 	exportAssessment: (assessment: StateAssessment) => Promise<string>;
+
+	fetchTags: (uuid: string[]) => Promise<Record<string, any>>;
 } | null = null;
+
+async function fetchTagsState() {
+	const tagSet = [
+				TAG_SET_UUID
+			];
+
+	const partition = "Public Tags";
+	const tags = await Agent.query('taggings-intersection', [partition, tagSet], 'tags.knowlearning.systems');
+	const tagObjects = Object.fromEntries(await Promise.all(
+		tags.map(async (tag) => {
+			return [tag.target, await Agent.state(tag.target)]
+		}))
+	);
+
+	return {
+		tags: tagObjects
+	};
+}
+
+
 
 export async function initialize(problemsStore: ProblemStore) {
 	store = await initializeStore(problemsStore);
@@ -147,9 +170,7 @@ async function initializeStore(problemsStore: ProblemStore) {
 		assessments: Record<string, Assessment>;
 	};
 
-	const _tagsState = (await Agent.state(NAMED_TAGS_STATE)) as {
-		tags: Record<string, Tag>;
-	};
+	const _tagsState = (await fetchTagsState());
 
 	if (!_modulesState.modules) {
 		_modulesState.modules = {};
@@ -163,9 +184,9 @@ async function initializeStore(problemsStore: ProblemStore) {
 		_misconceptionsState.misconceptions = {};
 	}
 
-	if (!_tagsState.tags) {
-		_tagsState.tags = {};
-	}
+	// if (!_tagsState.tags) {
+	// 	_tagsState.tags = {};
+	// }
 
 	if (!_assessmentsState.assessments) {
 		_assessmentsState.assessments = {};
@@ -213,7 +234,7 @@ async function initializeStore(problemsStore: ProblemStore) {
 	Agent.watch(NAMED_MODULES_STATE, modulesCallback);
 	Agent.watch(NAMED_CONCEPTS_STATE, conceptsCallback);
 	Agent.watch(NAMED_MISCONCEPTIONS_STATE, misconceptionsCallback);
-	Agent.watch(NAMED_TAGS_STATE, tagsCallback);
+	// Agent.watch(NAMED_TAGS_STATE, tagsCallback);
 	Agent.watch(NAMED_ASSESSMENTS_STATE, assessmentsCallback);
 
 	return {
@@ -629,6 +650,22 @@ async function initializeStore(problemsStore: ProblemStore) {
 			const exportedAssessmentState = (await Agent.state(uuid)) as ExportedAssessment;
 			Object.assign(exportedAssessmentState, JSON.parse(JSON.stringify(exportedAssessment)));
 			return uuid;
+		},
+		fetchTags: async (uuid: string) => {
+			const tagSet = [
+				uuid
+			];
+
+			const partition = "Public Tags";
+			const tags = await Agent.query('taggings-intersection', [partition, tagSet], 'tags.knowlearning.systems');
+			const tagObjects = await Promise.all(
+				tags.map(async (tag) => {
+					return await Agent.state(tag.target)
+				})
+			);
+
+			console.log('Fetched tags:', tagObjects);
+			return tagObjects;
 		}
 	};
 }
