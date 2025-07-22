@@ -8,6 +8,7 @@ import {
 	type DigitTileProblem,
 	type ExportedAssessment,
 	type ExportedModule,
+	type FillInTheBlankProblem,
 	type Misconception,
 	type Module,
 	type MultipleChoiceProblem,
@@ -469,6 +470,28 @@ async function initializeStore(problemsStore: ProblemStore) {
 					};
 					await problemsStore.addEmptyProblem(digitTileProblem);
 					module.problems = [...module.problems, digitTileProblem.id];
+					break;
+				case ProblemKind.FILL_IN_THE_BLANK:
+					let fillInTheBlankProblem = {} as FillInTheBlankProblem;
+					fillInTheBlankProblem = {
+						...fillInTheBlankProblem,
+						id: uuid,
+						kind: ProblemKind.FILL_IN_THE_BLANK,
+						title: '',
+						description: '',
+						difficulty: ProblemDifficulty.EASY,
+						aiPrompt: '',
+						concepts: [],
+						tags: [],
+						misconceptions: [],
+						createdAt: new Date().toISOString(),
+						updatedAt: new Date().toISOString(),
+						createdBy: userId,
+						latex: '',
+						blanks: {}
+					};
+					await problemsStore.addEmptyProblem(fillInTheBlankProblem);
+					module.problems = [...module.problems, fillInTheBlankProblem.id];
 					break;
 			}
 		},
