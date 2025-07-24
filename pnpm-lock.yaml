@@ -32,6 +32,9 @@ importers:
       '@xstate/svelte':
         specifier: ^5.0.0
         version: 5.0.0(svelte@5.34.7)(xstate@5.20.0)
+      fast-json-patch:
+        specifier: ^3.1.1
+        version: 3.1.1
       katex:
         specifier: ^0.16.22
         version: 0.16.22
@@ -836,8 +839,14 @@ packages:
       vitest:
         optional: true
 
+    resolution: {integrity: sha512-9edVcakYkoCzU6pNIwmJ6Cf+9anECod26Ue/rL3Ssf5LyuLaBLXtBx4H4U8YwQCkwtMeSGFf0OsiMpPpFjvCcg==}
+    peerDependencies:
+      svelte: ^5.0.0
+
   '@thisux/sveltednd@0.0.14':
     resolution: {integrity: sha512-Vbq69SU3HUomPg6oCXtb89OG89hka0YIkdaErYibn3waK7tYE66IcQxD/Fzg8YNW3EVsXoA9kc7kW5EUBCSQGg==}
+    peerDependencies:
+      svelte: ^5.0.0
 
   '@thisux/sveltednd@0.0.17':
     resolution: {integrity: sha512-lRninjw439phhA8xAHqCpMAX0hnwFMdbXW4M0XJgAdnGxeum+QsLiIC4P3HnkNXAygsVKUqxRcbS84CxDZ9hPw==}
@@ -3235,11 +3244,18 @@ snapshots:
       vite: 6.3.5(jiti@2.4.2)(lightningcss@1.30.1)
       vitest: 3.2.4(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)
 
-  '@thisux/sveltednd@0.0.14': {}
+  '@thisux/sveltednd@0.0.12(svelte@5.34.7)':
+    dependencies:
+      svelte: 5.34.7
+
+  '@thisux/sveltednd@0.0.14(svelte@5.34.7)':
+    dependencies:
+      '@thisux/sveltednd': 0.0.12(svelte@5.34.7)
+      svelte: 5.34.7
 
   '@thisux/sveltednd@0.0.17(svelte@5.34.7)':
     dependencies:
-      '@thisux/sveltednd': 0.0.14
+      '@thisux/sveltednd': 0.0.14(svelte@5.34.7)
       svelte: 5.34.7
 
   '@thisux/sveltednd@0.0.18(svelte@5.34.7)':

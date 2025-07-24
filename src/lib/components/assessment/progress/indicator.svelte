@@ -1,4 +1,4 @@
-<script module>
+<script context="module" lang="ts">
 	type IndicatorType = 'skipped' | 'correct' | 'incorrect' | 'notAttempted';
 	type IndicatorProps = {
 		type: IndicatorType;

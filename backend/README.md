@@ -1,38 +1,41 @@
-# Betty's Brain Math Chatbot Backend
+# 🧮 Betty's Brain Math Chatbot Backend
 
-This backend powers a warm, encouraging math tutor chatbot that helps middle school students solve math problems using GPT.
+This backend powers a warm, encouraging math tutor chatbot designed to help middle school students solve math problems using GPT.
 
-The chatbot:
 - Uses a supportive tutor persona with prompt engineering
-- Responds to student questions with hints and nudges (never direct answers)
-- Incorporates a database of problems and misconceptions for context-aware guidance
+- Responds with hints and scaffolding (never direct answers)
+- Integrates problem context, misconceptions, and history
 
 ---
 
-### 🧠 Endpoints
+## 🚀 Setup
 
-- `GET /` — Status message  
-- `GET /health` — Health check + number of loaded problems  
-- `GET /problems` — Returns all math problems from `math_problems.json`  
-- `POST /chat` — Main endpoint to chat with the tutor  
+### First Time
+```bash
+cd backend
+cp .env.example .env  
+docker-compose up -d --build
+```
+
+### Regular Use
+```bash
+cd backend      
+docker-compose up -d      
+```
 
 ---
 
-### ⚙️ Installation Instructions
+## 📁 Project Structure
 
-1. Install dependencies
-
-```bash
-pip install -r requirements.txt
 ```
-
-
-2. Create a .env file in the root directory with your OpenAI API key:
-```bash
-OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-2. Start the server
-```bash
-uvicorn main:app --reload
+backend/
+├── main.py               # FastAPI app and routes
+├── prompt_engineering.py # LLM prompt construction
+├── utils/
+│   ├── chat_completion.py # OpenAI API calls
+│   └── memory.py         # Chat history management
+├── docker-compose.yml
+├── Dockerfile
+├── requirements.txt
+└── .env                 # Your API keys (create this)
 ```
