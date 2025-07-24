@@ -25,7 +25,7 @@
 	import FillInTheBlank from '../problems/problem-components/fill-in-the-blanks/problem.svelte';
 	import AssessmentReview from './assessment-review.svelte';
 	import AttemptSummary from './attempt-summary.svelte';
-
+    import Chatbot from '../chatbot/Chatbot.svelte';
 	let {
 		assessment
 	}: {
@@ -202,7 +202,12 @@
 						{/if}
 					{/key}
 				</div>
-				<div class="w-1/3">LLM Chat</div>
+				<div class="w-1/3">
+				    <Chatbot
+                        assessment={assessment}
+                        currentProblem={$questionState.currentProblem}/>
+				</div>
+
 			</div>
 		{/if}
 		{#if isInReview()}
