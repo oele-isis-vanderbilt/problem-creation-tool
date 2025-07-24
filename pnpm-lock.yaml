@@ -839,6 +839,7 @@ packages:
       vitest:
         optional: true
 
+  '@thisux/sveltednd@0.0.12':
     resolution: {integrity: sha512-9edVcakYkoCzU6pNIwmJ6Cf+9anECod26Ue/rL3Ssf5LyuLaBLXtBx4H4U8YwQCkwtMeSGFf0OsiMpPpFjvCcg==}
     peerDependencies:
       svelte: ^5.0.0
